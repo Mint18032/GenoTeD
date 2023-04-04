@@ -6,7 +6,9 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import io.testrest.datatype.OperationNode;
+import io.testrest.datatype.Method;
+import io.testrest.datatype.graph.OperationNode;
+import io.testrest.datatype.OperationNodeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,17 +16,17 @@ import java.util.Map;
 
 public class OpenAPIParser {
     private static OpenAPI openAPI;
-    private static List<OperationNode> operations = new ArrayList<>();
     private static List<Server> servers = new ArrayList<>();
     private static List<String> urls = new ArrayList<>();
     private static Paths paths;
+    private static List<String> pathUrls = new ArrayList<>();
 
     /**
      * Reads OpenAPI from the given path/link and parses it to Java POJOs.
      * @param openApiSpecPath the path or url to the specification.
      * @throws Exception Throws exception when the actions get error or the openAPI missing necessary parameter.
      */
-    public static void readOAS(String openApiSpecPath) throws Exception {
+    public static void readOAS(String openApiSpecPath, OperationNodeList operationList) throws Exception {
         // Read OpenAPI Specification and parse it to POJO type
         ParseOptions parseOptions = new ParseOptions();
         parseOptions.setResolve(true);
@@ -40,8 +42,7 @@ public class OpenAPIParser {
 
         // Read data
         readURLs();
-        readOperations();
-        System.out.println(operations);
+        readOperations(operationList);
     }
 
     /**
@@ -60,40 +61,41 @@ public class OpenAPIParser {
     /**
      * Reads the operations of the API from the specification, transfers them to OperationVectors and adds to List.
      */
-    public static void readOperations() throws CannotParseOperationException {
+    public static void readOperations(OperationNodeList operationList) throws CannotParseOperationException {
         paths = openAPI.getPaths();
-        for (Map.Entry m : paths.entrySet()) {
+        for (Map.Entry<String, PathItem> m : paths.entrySet()) {
             // m.key is the path
             // m.value is the pathItem which contains tags, summary, description and Operations.
             PathItem pathItem;
-            if (m.getValue() instanceof PathItem) {
-                pathItem = (PathItem) m.getValue();
+            try {
+                pathItem = m.getValue();
+                pathUrls.add(m.getKey());
                 if (pathItem.getGet() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.GET, m.getKey().toString(), pathItem.getGet()));
+                    operationList.addOperation(new OperationNode(Method.GET, m.getKey(), pathItem.getGet()));
                 }
                 if (pathItem.getPut() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.PUT, m.getKey().toString(), pathItem.getPut()));
+                    operationList.addOperation(new OperationNode(Method.PUT, m.getKey(), pathItem.getPut()));
                 }
                 if (pathItem.getPost() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.POST, m.getKey().toString(), pathItem.getPost()));
+                    operationList.addOperation(new OperationNode(Method.POST, m.getKey(), pathItem.getPost()));
                 }
                 if (pathItem.getDelete() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.DELETE, m.getKey().toString(), pathItem.getDelete()));
+                    operationList.addOperation(new OperationNode(Method.DELETE, m.getKey(), pathItem.getDelete()));
                 }
                 if (pathItem.getOptions() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.OPTIONS, m.getKey().toString(), pathItem.getOptions()));
+                    operationList.addOperation(new OperationNode(Method.OPTIONS, m.getKey(), pathItem.getOptions()));
                 }
                 if (pathItem.getHead() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.HEAD, m.getKey().toString(), pathItem.getHead()));
+                    operationList.addOperation(new OperationNode(Method.HEAD, m.getKey(), pathItem.getHead()));
                 }
                 if (pathItem.getPatch() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.PATCH, m.getKey().toString(), pathItem.getPatch()));
+                    operationList.addOperation(new OperationNode(Method.PATCH, m.getKey(), pathItem.getPatch()));
                 }
                 if (pathItem.getTrace() != null) {
-                    operations.add(new OperationNode(OperationNode.METHOD.TRACE, m.getKey().toString(), pathItem.getTrace()));
+                    operationList.addOperation(new OperationNode(Method.TRACE, m.getKey(), pathItem.getTrace()));
                 }
-            } else {
-                throw new CannotParseOperationException("Unable to cast paths.entrySet().getValue() to PathItems");
+            } catch (Exception e) {
+                throw new CannotParseOperationException("Unable to cast paths.entrySet().getValue() to PathItems:\n" + e);
             }
         }
     }
@@ -114,14 +116,6 @@ public class OpenAPIParser {
         return urls;
     }
 
-    public static void setOperations(List<OperationNode> operations) {
-        OpenAPIParser.operations = operations;
-    }
-
-    public static List<OperationNode> getOperations() {
-        return operations;
-    }
-
     public static Paths getPaths() {
         return paths;
     }
@@ -137,5 +131,14 @@ public class OpenAPIParser {
     public static void setServers(List<Server> servers) {
         OpenAPIParser.servers = servers;
     }
+
+    public static List<String> getPathUrls() {
+        return pathUrls;
+    }
+
+    public static void setPathUrls(List<String> pathUrls) {
+        OpenAPIParser.pathUrls = pathUrls;
+    }
+
 }
 
