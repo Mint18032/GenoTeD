@@ -1,5 +1,6 @@
 package io.testrest.parser;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -19,6 +20,7 @@ public class OpenAPIParser {
     private static List<Server> servers = new ArrayList<>();
     private static List<String> urls = new ArrayList<>();
     private static Paths paths;
+    private static Components components = new Components();
     private static List<String> pathUrls = new ArrayList<>();
 
     /**
@@ -43,6 +45,8 @@ public class OpenAPIParser {
         // Read data
         readURLs();
         readOperations(operationList);
+        components = openAPI.getComponents();
+//        System.out.println(components);
     }
 
     /**
@@ -138,6 +142,14 @@ public class OpenAPIParser {
 
     public static void setPathUrls(List<String> pathUrls) {
         OpenAPIParser.pathUrls = pathUrls;
+    }
+
+    public static Components getComponents() {
+        return components;
+    }
+
+    public static void setComponents(Components components) {
+        OpenAPIParser.components = components;
     }
 
 }

@@ -6,11 +6,15 @@ import io.testrest.datatype.Method;
 public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private Method method;
     private String path;
+
+
+    private Boolean tested;
     private String operationNodeId;
     private static int idGenerationNum = 0;
 
     public OperationNode(Method method) {
         super();
+        this.tested = false;
         this.method = method;
         this.operationNodeId = this.getOperationId() + idGenerationNum;
         idGenerationNum++;
@@ -18,6 +22,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(Method method, String path) {
         super();
+        this.tested = false;
         this.method = method;
         this.path = path;
         this.operationNodeId = this.getOperationId() + idGenerationNum;
@@ -26,6 +31,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(Method method, String path, Operation operation) {
         super();
+        this.tested = false;
         this.method = method;
         this.path = path;
         this.setTags(operation.getTags());
@@ -84,5 +90,11 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.path = path;
     }
 
+    public Boolean isTested() {
+        return tested;
+    }
 
+    public void markAsTested() {
+        tested = true;
+    }
 }

@@ -67,7 +67,8 @@ public class OperationDependencyGraph {
      */
     public String toMatrix() {
         StringBuilder matrix = new StringBuilder();
-        matrix.append("\t\t\t\t");
+        matrix.append("\n\nOperation Dependency Graph Matrix Representation:\n\n");
+        matrix.append("                     ");
         Set<OperationNode> vertexSet = graph.vertexSet();
         List<OperationNode> vertexList = new ArrayList<>(vertexSet);
 
@@ -75,12 +76,18 @@ public class OperationDependencyGraph {
             matrix.append(vertexList.get(i).getOperationId()).append("\t");
         }
         for (int i = 0; i < vertexList.size(); ++i) {
-            matrix.append("\n").append(vertexList.get(i).getOperationId()).append("\t");
+            matrix.append("\n").append(vertexList.get(i).getOperationId());
+            int len = 20;
+            while (len > vertexList.get(i).getOperationId().length()) {
+                len--;
+                matrix.append(" ");
+            }
             for (int j = 0; j < vertexList.size(); ++j) {
                 if (i != j && graph.containsEdge(vertexList.get(i), vertexList.get(j))) {
                     matrix.append(graph.getEdge(vertexList.get(i), vertexList.get(j)).getDependencyType().toString());
-                } else {
                     matrix.append("\t\t");
+                } else {
+                    matrix.append("\t\t\t");
                 }
             }
         }

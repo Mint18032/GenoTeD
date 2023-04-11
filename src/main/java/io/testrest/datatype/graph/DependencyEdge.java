@@ -5,6 +5,10 @@ import org.jgrapht.graph.DefaultEdge;
 public class DependencyEdge extends DefaultEdge {
     private DependencyType dependencyType;
 
+    public DependencyEdge(DependencyType dependencyType) {
+        this.dependencyType = dependencyType;
+    }
+
     public DependencyType getDependencyType() {
         return dependencyType;
     }

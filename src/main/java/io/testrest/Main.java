@@ -2,11 +2,9 @@ package io.testrest;
 
 import io.testrest.datatype.OperationNodeList;
 import io.testrest.datatype.graph.OperationDependencyGraph;
-import io.testrest.implementation.CannotBuildODGException;
 import io.testrest.implementation.GraphBuilder;
 import io.testrest.parser.OpenAPIParser;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Main {
