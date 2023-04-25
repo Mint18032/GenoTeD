@@ -67,27 +67,36 @@ public class OperationDependencyGraph {
      */
     public String toMatrix() {
         StringBuilder matrix = new StringBuilder();
-        matrix.append("\n\nOperation Dependency Graph Matrix Representation:\n\n");
-        matrix.append("                     ");
+        matrix.append("Operation Dependency Graph Matrix Representation:\n\n");
         Set<OperationNode> vertexSet = graph.vertexSet();
         List<OperationNode> vertexList = new ArrayList<>(vertexSet);
+        int gapLength = 0;
+
+        for (OperationNode operationNode : vertexList) {
+            if (operationNode.getOperationId().concat("\t\t").length() > gapLength) {
+                gapLength = operationNode.getOperationId().concat("\t\t").length();
+            }
+        }
+
+        matrix.append(" ".repeat(gapLength));
+
+        for (OperationNode operationNode : vertexList)
+            matrix.append(operationNode.getOperationId()).append(" ".repeat(gapLength - operationNode.getOperationId().length()));
 
         for (int i = 0; i < vertexList.size(); ++i) {
-            matrix.append(vertexList.get(i).getOperationId()).append("\t");
-        }
-        for (int i = 0; i < vertexList.size(); ++i) {
             matrix.append("\n").append(vertexList.get(i).getOperationId());
-            int len = 20;
+            int len = gapLength;
             while (len > vertexList.get(i).getOperationId().length()) {
                 len--;
                 matrix.append(" ");
             }
             for (int j = 0; j < vertexList.size(); ++j) {
                 if (i != j && graph.containsEdge(vertexList.get(i), vertexList.get(j))) {
-                    matrix.append(graph.getEdge(vertexList.get(i), vertexList.get(j)).getDependencyType().toString());
-                    matrix.append("\t\t");
+                    String param = graph.getEdge(vertexList.get(i), vertexList.get(j)).getParameterName();
+                    matrix.append(param);
+                    matrix.append(" ".repeat(gapLength > param.length() ? gapLength - param.length() : 0));
                 } else {
-                    matrix.append("\t\t\t");
+                    matrix.append(" ".repeat(gapLength));
                 }
             }
         }

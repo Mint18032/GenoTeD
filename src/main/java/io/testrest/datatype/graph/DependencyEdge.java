@@ -5,8 +5,10 @@ import org.jgrapht.graph.DefaultEdge;
 public class DependencyEdge extends DefaultEdge {
     private DependencyType dependencyType;
 
-    public DependencyEdge(DependencyType dependencyType) {
-        this.dependencyType = dependencyType;
+    private String parameterName;
+
+    public DependencyEdge(String parameterName) {
+        this.parameterName = parameterName;
     }
 
     public DependencyType getDependencyType() {
@@ -15,5 +17,13 @@ public class DependencyEdge extends DefaultEdge {
 
     public void setDependencyType(DependencyType dependencyType) {
         this.dependencyType = dependencyType;
+    }
+
+    public String getParameterName() {
+        return parameterName;
+    }
+
+    public void setParameterName(String parameterName) {
+        this.parameterName = parameterName;
     }
 }

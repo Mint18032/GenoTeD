@@ -6,8 +6,6 @@ import io.testrest.datatype.Method;
 public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private Method method;
     private String path;
-
-
     private Boolean tested;
     private String operationNodeId;
     private static int idGenerationNum = 0;
