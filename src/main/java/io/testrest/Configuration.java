@@ -2,13 +2,18 @@ package io.testrest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Configuration {
 
+    private static final String openApiSpecPath = "specifications/openapi.yaml"; // path to openapi specification, can be either a link or a file.
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;
     private String openAPIName;
+
+    private List<String> qualifiableNames;
 
     public Configuration() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
@@ -16,6 +21,13 @@ public class Configuration {
         testingSessionName = "testing-session-" + dtf.format(now);
         outputPath = System.getProperty("user.dir") + "/output/";
         odgFileName = "odg.txt";
+        qualifiableNames = new ArrayList<>();
+        qualifiableNames.add("id");
+        qualifiableNames.add("name");
+    }
+
+    public static String getOpenApiSpecPath() {
+        return openApiSpecPath;
     }
 
     public String getOutputPath() {
@@ -49,5 +61,13 @@ public class Configuration {
     public void setOpenAPIName(String openAPIName) {
         this.openAPIName = openAPIName;
         this.outputPath += "/" + openAPIName + "/";
+    }
+
+    public List<String> getQualifiableNames() {
+        return qualifiableNames;
+    }
+
+    public void setQualifiableNames(List<String> qualifiableNames) {
+        this.qualifiableNames = qualifiableNames;
     }
 }

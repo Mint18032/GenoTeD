@@ -1,16 +1,19 @@
 package io.testrest.datatype.graph;
 
 import io.swagger.v3.oas.models.Operation;
-import io.testrest.datatype.Method;
+import io.testrest.Configuration;
+import io.testrest.datatype.HttpMethod;
 
 public class OperationNode extends io.swagger.v3.oas.models.Operation {
-    private Method method;
+    private Boolean isReadOnly = false;
+    private HttpMethod method;
     private String path;
     private Boolean tested;
     private String operationNodeId;
     private static int idGenerationNum = 0;
 
-    public OperationNode(Method method) {
+    //todo: match type
+    public OperationNode(HttpMethod method) {
         super();
         this.tested = false;
         this.method = method;
@@ -18,7 +21,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         idGenerationNum++;
     }
 
-    public OperationNode(Method method, String path) {
+    public OperationNode(HttpMethod method, String path) {
         super();
         this.tested = false;
         this.method = method;
@@ -27,7 +30,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         idGenerationNum++;
     }
 
-    public OperationNode(Method method, String path, Operation operation) {
+    public OperationNode(HttpMethod method, String path, Operation operation) {
         super();
         this.tested = false;
         this.method = method;
@@ -72,11 +75,11 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.operationNodeId = operationNodeId;
     }
 
-    public Method getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
-    public void setMethod(Method method) {
+    public void setMethod(HttpMethod method) {
         this.method = method;
     }
 
@@ -86,6 +89,22 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getEndpoint() {
+        return Configuration.getOpenApiSpecPath();
+    }
+
+    public Boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setReadOnly(Boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
+
+    public Operation deepClone() {
+        return new OperationNode(this.method, this.path, this);
     }
 
     public Boolean isTested() {

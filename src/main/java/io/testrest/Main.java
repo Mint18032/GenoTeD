@@ -11,15 +11,21 @@ public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
-    private static Configuration configuration = new Configuration();
+    private static Configuration configuration;
 
-    private static final String openApiSpecPath = "specifications/openapi.yaml"; // path to openapi specification, can be either a link or a file.
+    private static Environment environment;
+
+    private static String openApiSpecPath; // path to openapi specification, can be either a link or a file.
 
     private static OperationNodeList operationList;
 
     private static OperationDependencyGraph ODG;
 
     public static void main(String[] args) {
+
+        environment = Environment.getInstance();
+        configuration = Environment.getConfiguration();
+        openApiSpecPath = Configuration.getOpenApiSpecPath();
 
         logger.info("Reading OpenAPI Specification.");
         try {
@@ -49,5 +55,13 @@ public class Main {
 
     public static OperationNodeList getOperationList() {
         return operationList;
+    }
+
+    public static Environment getEnvironment() {
+        return environment;
+    }
+
+    public static void setEnvironment(Environment environment) {
+        Main.environment = environment;
     }
 }

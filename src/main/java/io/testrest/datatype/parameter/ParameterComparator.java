@@ -1,4 +1,4 @@
-package io.testrest.implementation;
+package io.testrest.datatype.parameter;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.datatype.graph.OperationNode;

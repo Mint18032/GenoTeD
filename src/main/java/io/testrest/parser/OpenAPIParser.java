@@ -4,10 +4,11 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import io.testrest.datatype.Method;
+import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.OperationNodeList;
 
@@ -22,6 +23,8 @@ public class OpenAPIParser {
     private static Paths paths;
     private static Components components = new Components();
     private static List<String> pathUrls = new ArrayList<>();
+
+    private static Map<String, Schema> schema;
 
     /**
      * Reads OpenAPI from the given path/link and parses it to Java POJOs.
@@ -44,8 +47,9 @@ public class OpenAPIParser {
 
         // Read data
         readURLs();
-        readOperations(operationList);
         components = openAPI.getComponents();
+        schema = components.getSchemas();
+        readOperations(operationList);
 //        System.out.println(components);
     }
 
@@ -75,28 +79,28 @@ public class OpenAPIParser {
                 pathItem = m.getValue();
                 pathUrls.add(m.getKey());
                 if (pathItem.getGet() != null) {
-                    operationList.addOperation(new OperationNode(Method.GET, m.getKey(), pathItem.getGet()));
+                    operationList.addOperation(new OperationNode(HttpMethod.GET, m.getKey(), pathItem.getGet()));
                 }
                 if (pathItem.getPut() != null) {
-                    operationList.addOperation(new OperationNode(Method.PUT, m.getKey(), pathItem.getPut()));
+                    operationList.addOperation(new OperationNode(HttpMethod.PUT, m.getKey(), pathItem.getPut()));
                 }
                 if (pathItem.getPost() != null) {
-                    operationList.addOperation(new OperationNode(Method.POST, m.getKey(), pathItem.getPost()));
+                    operationList.addOperation(new OperationNode(HttpMethod.POST, m.getKey(), pathItem.getPost()));
                 }
                 if (pathItem.getDelete() != null) {
-                    operationList.addOperation(new OperationNode(Method.DELETE, m.getKey(), pathItem.getDelete()));
+                    operationList.addOperation(new OperationNode(HttpMethod.DELETE, m.getKey(), pathItem.getDelete()));
                 }
                 if (pathItem.getOptions() != null) {
-                    operationList.addOperation(new OperationNode(Method.OPTIONS, m.getKey(), pathItem.getOptions()));
+                    operationList.addOperation(new OperationNode(HttpMethod.OPTIONS, m.getKey(), pathItem.getOptions()));
                 }
                 if (pathItem.getHead() != null) {
-                    operationList.addOperation(new OperationNode(Method.HEAD, m.getKey(), pathItem.getHead()));
+                    operationList.addOperation(new OperationNode(HttpMethod.HEAD, m.getKey(), pathItem.getHead()));
                 }
                 if (pathItem.getPatch() != null) {
-                    operationList.addOperation(new OperationNode(Method.PATCH, m.getKey(), pathItem.getPatch()));
+                    operationList.addOperation(new OperationNode(HttpMethod.PATCH, m.getKey(), pathItem.getPatch()));
                 }
                 if (pathItem.getTrace() != null) {
-                    operationList.addOperation(new OperationNode(Method.TRACE, m.getKey(), pathItem.getTrace()));
+                    operationList.addOperation(new OperationNode(HttpMethod.TRACE, m.getKey(), pathItem.getTrace()));
                 }
             } catch (Exception e) {
                 throw new CannotParseOperationException("Unable to cast paths.entrySet().getValue() to PathItems:\n" + e);
@@ -150,6 +154,14 @@ public class OpenAPIParser {
 
     public static void setComponents(Components components) {
         OpenAPIParser.components = components;
+    }
+
+    public static Map<String, Schema> getSchema() {
+        return schema;
+    }
+
+    public static void setSchema(Map<String, Schema> schema) {
+        OpenAPIParser.schema = schema;
     }
 
 }
