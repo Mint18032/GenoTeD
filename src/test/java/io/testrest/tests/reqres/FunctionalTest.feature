@@ -1,7 +1,7 @@
 Feature: FunctionalTest
 
   Background:
-    Given url 'https://reqres.in/'
+    Given url 'https://reqres.in'
 
   @registerPass
   Scenario: Register - Successful

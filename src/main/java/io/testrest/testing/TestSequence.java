@@ -1,8 +1,6 @@
 package io.testrest.testing;
 
 import io.testrest.Environment;
-import io.testrest.datatype.parameter.ParameterElement;
-import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.helper.Taggable;
 

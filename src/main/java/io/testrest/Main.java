@@ -3,7 +3,9 @@ package io.testrest;
 import io.testrest.datatype.OperationNodeList;
 import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.implementation.GraphBuilder;
+import io.testrest.implementation.NominalTestGenerator;
 import io.testrest.parser.OpenAPIParser;
+import io.testrest.testing.TestRunner;
 
 import java.util.logging.Logger;
 
@@ -21,11 +23,14 @@ public class Main {
 
     private static OperationDependencyGraph ODG;
 
+    private static TestRunner testRunner;
+
     public static void main(String[] args) {
 
         environment = Environment.getInstance();
         configuration = Environment.getConfiguration();
         openApiSpecPath = Configuration.getOpenApiSpecPath();
+        testRunner = new TestRunner();
 
         logger.info("Reading OpenAPI Specification.");
         try {
@@ -46,7 +51,13 @@ public class Main {
             e.printStackTrace();
         }
 
-//        logger.info("Successfully built the Operation Dependency Graph. \nStarting generating nominal testcases.");
+        logger.info("Successfully built the Operation Dependency Graph. \nStarting generating nominal testcases.");
+        NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(operationList, OpenAPIParser.getUrls());
+        logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
+        logger.info("Running nominal test cases");
+        String path = nominalTestGenerator.getTestOutPutPath().substring(nominalTestGenerator.getTestOutPutPath().indexOf("output/")).concat("Tests.feature");
+//        testRunner.testAll(path);
+        testRunner.testOperation(path, "v2All");
     }
 
     public static Configuration getConfiguration() {
@@ -64,4 +75,13 @@ public class Main {
     public static void setEnvironment(Environment environment) {
         Main.environment = environment;
     }
+
+    public static TestRunner getTestRunner() {
+        return testRunner;
+    }
+
+    public static void setTestRunner(TestRunner testRunner) {
+        Main.testRunner = testRunner;
+    }
+
 }
