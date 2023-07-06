@@ -1,6 +1,7 @@
 package io.testrest.datatype.parameter;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.testrest.helper.ObjectHelper;
 import io.testrest.parser.EditReadOnlyOperationException;
 import io.testrest.datatype.graph.OperationNode;
 
@@ -34,7 +35,7 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
         setupFields(parameterMap);
     }
 
-    protected CombinedSchemaParameter(ParameterElement other) {
+    protected CombinedSchemaParameter(Parameter other) {
         super(other);
 
         this.parametersSchemas = new LinkedList<>();
@@ -42,7 +43,22 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
     }
 
     protected CombinedSchemaParameter(CombinedSchemaParameter other) {
-        super(other);
+        name = other.getName();
+        schemaName = other.getSchemaName();
+        required = other.isRequired();
+        type = other.getType(); // Amedeo did: ParameterType.getTypeFromString(other.type.name());
+        format = other.getFormat();
+        setLocation(other.getLocation());
+        setStyle(other.getStyle());
+        setExplode(other.isExplode());
+        setOperation(other.getOperation());
+
+        setDescription(other.getDescription());
+
+        defaultValue = ObjectHelper.deepCloneObject(other.getDefaultValue());
+        enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.getEnumValues()));
+        examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples()));
+
 
         this.parametersSchemas = new LinkedList<>();
         other.parametersSchemas.forEach(ps -> this.parametersSchemas.add(ps.deepClone()));
@@ -54,7 +70,22 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
     }
 
     protected CombinedSchemaParameter(CombinedSchemaParameter other, OperationNode operation, ParameterElement parent) {
-        super(other, operation, parent);
+        super(operation, parent);
+        name = other.getName();
+        schemaName = other.getSchemaName();
+        required = other.isRequired();
+        type = other.getType(); // Amedeo did: ParameterType.getTypeFromString(other.type.name());
+        format = other.getFormat();
+        setLocation(other.getLocation());
+        setStyle(other.getStyle());
+        setExplode(other.isExplode());
+        setOperation(other.getOperation());
+
+        setDescription(other.getDescription());
+
+        defaultValue = ObjectHelper.deepCloneObject(other.getDefaultValue());
+        enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.getEnumValues()));
+        examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples()));
 
         this.parametersSchemas = new LinkedList<>();
         other.parametersSchemas.forEach(ps -> this.parametersSchemas.add(ps.deepClone()));
@@ -217,7 +248,7 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
         if (numberOfSchemas <= 0) {
             logger.warning("Tried to merge a non-positive number of schemas. The number of schemas to be" +
                     " merged MUST be greater than zero. Setting selected parameter to null.");
-            this.outputParameterSchema = new NullParameter(this);
+            this.outputParameterSchema = this;
         } else if (numberOfSchemas >= this.parametersSchemas.size()) {
             logger.warning("Tried to merge more schemas than the declared ones. All the declared schemas will be " +
                     "merged.");

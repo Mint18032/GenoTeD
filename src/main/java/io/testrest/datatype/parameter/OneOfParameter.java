@@ -18,7 +18,7 @@ public class OneOfParameter extends CombinedSchemaParameter {
         super(parameterMap, operation, name);
     }
 
-    protected OneOfParameter(ParameterElement other) {
+    protected OneOfParameter(Parameter other) {
         super(other);
     }
 

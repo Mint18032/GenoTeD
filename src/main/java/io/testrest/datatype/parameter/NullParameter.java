@@ -1,6 +1,7 @@
 package io.testrest.datatype.parameter;
 
 import com.google.gson.JsonElement;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.datatype.graph.OperationNode;
 
 import java.util.Collection;
@@ -16,18 +17,13 @@ public class NullParameter extends ParameterLeaf {
     - avoid the crash in many methods and using okhttp caused by NullPointerExceptions
      */
 
-    public NullParameter(NullParameter other) {
+    public NullParameter(Parameter other) {
         super(other);
         this.value = "null";
     }
 
     public NullParameter(NullParameter other, OperationNode operation, ParameterElement parent) {
         super(other, operation, parent);
-        this.value = "null";
-    }
-
-    public NullParameter(ParameterElement source) {
-        super(source);
         this.value = "null";
     }
 
@@ -77,7 +73,7 @@ public class NullParameter extends ParameterLeaf {
 
     @Override
     public NullParameter deepClone() {
-        return new NullParameter(this);
+        return this;
     }
 
     @Override

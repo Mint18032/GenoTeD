@@ -20,7 +20,7 @@ public class AllOfParameter extends CombinedSchemaParameter {
         super(parameterMap, operation, name);
     }
 
-    protected AllOfParameter(ParameterElement other) {
+    protected AllOfParameter(Parameter other) {
         super(other);
     }
 

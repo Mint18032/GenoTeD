@@ -25,18 +25,34 @@ public abstract class ParameterLeaf extends ParameterElement {
         this(parent, parameterMap, operation,null);
     }
 
-    protected ParameterLeaf(ParameterLeaf other) {
+    protected ParameterLeaf(Parameter other) {
         super(other);
-        value = ObjectHelper.deepCloneObject(other.value);
+//        value = ObjectHelper.deepCloneObject(other);
+    }
+
+    protected ParameterLeaf(Parameter other, OperationNode operation) {
+        super(other, operation);
+//        value = ObjectHelper.deepCloneObject(other);
     }
 
     protected ParameterLeaf(ParameterLeaf other, OperationNode operation, ParameterElement parent) {
-        super(other, operation, parent);
-        value = ObjectHelper.deepCloneObject(other.value);
-    }
+        super(operation, parent);
+        name = other.getName();
+        schemaName = other.getSchemaName();
+        required = other.isRequired();
+        type = other.getType(); // Amedeo did: ParameterType.getTypeFromString(other.type.name());
+        format = other.getFormat();
+        setLocation(other.getLocation());
+        setStyle(other.getStyle());
+        setExplode(other.isExplode());
+        setOperation(other.getOperation());
 
-    protected ParameterLeaf(ParameterElement other) {
-        super(other);
+        setDescription(other.getDescription());
+
+        defaultValue = ObjectHelper.deepCloneObject(other.getDefaultValue());
+        enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.getEnumValues()));
+        examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples()));
+        value = ObjectHelper.deepCloneObject(other.value);
     }
 
     public ParameterLeaf(OperationNode operation, ParameterElement parent) {

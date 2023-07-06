@@ -9,7 +9,7 @@ Feature: FunctionalTest
    """
   {
     "email": "eve.holt@reqres.in",
-    "password": "pistol"
+    "password": "pistol",
   }
    """
     Given path 'api/register'

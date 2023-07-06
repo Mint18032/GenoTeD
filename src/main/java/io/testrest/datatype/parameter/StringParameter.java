@@ -52,12 +52,20 @@ public class StringParameter extends ParameterLeaf {
         this(parent, parameterMap, operation, null);
     }
 
-    public StringParameter(StringParameter other) {
+    public StringParameter(Parameter other) {
         super(other);
 
-        maxLength = other.maxLength;
-        minLength = other.minLength;
-        pattern = other.pattern;
+        maxLength = other.getSchema().getMaxLength();
+        minLength = other.getSchema().getMinLength();
+        pattern = other.getSchema().getPattern();
+    }
+
+    public StringParameter(Parameter other, OperationNode operation) {
+        super(other, operation);
+
+        maxLength = other.getSchema().getMaxLength();
+        minLength = other.getSchema().getMinLength();
+        pattern = other.getSchema().getPattern();
     }
 
     public StringParameter(StringParameter other, OperationNode operation, ParameterElement parent) {
@@ -66,11 +74,6 @@ public class StringParameter extends ParameterLeaf {
         maxLength = other.maxLength;
         minLength = other.minLength;
         pattern = other.pattern;
-    }
-
-    public StringParameter(ParameterElement source) {
-        super(source);
-        this.value = null;
     }
 
     public StringParameter(JsonPrimitive jsonPrimitive, OperationNode operation, ParameterElement parent, String name) {
@@ -106,7 +109,7 @@ public class StringParameter extends ParameterLeaf {
         }
 
         StringParameter stringParameter = (StringParameter) other;
-        StringParameter merged = new StringParameter(this);
+        StringParameter merged = this;
         merged.maxLength = this.maxLength == null ?
                 stringParameter.maxLength : stringParameter.maxLength != null ?
                 Math.min(this.maxLength, stringParameter.maxLength) : null;
@@ -257,7 +260,7 @@ public class StringParameter extends ParameterLeaf {
 
     @Override
     public StringParameter deepClone() {
-        return new StringParameter(this);
+        return this;
     }
 
     @Override

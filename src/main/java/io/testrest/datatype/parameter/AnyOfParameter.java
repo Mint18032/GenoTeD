@@ -18,7 +18,7 @@ public class AnyOfParameter extends CombinedSchemaParameter {
         super(parameterMap, operation, name);
     }
 
-    protected AnyOfParameter(ParameterElement other) {
+    protected AnyOfParameter(Parameter other) {
         super(other);
     }
 

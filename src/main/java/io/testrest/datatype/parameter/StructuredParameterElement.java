@@ -1,9 +1,11 @@
 package io.testrest.datatype.parameter;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.testrest.helper.ObjectHelper;
 import io.testrest.parser.EditReadOnlyOperationException;
 import io.testrest.datatype.graph.OperationNode;
 
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 public abstract class StructuredParameterElement extends ParameterElement {
@@ -19,21 +21,36 @@ public abstract class StructuredParameterElement extends ParameterElement {
         this(parent, parameter, operation, null);
     }
 
-    protected StructuredParameterElement(StructuredParameterElement other) {
+    protected StructuredParameterElement(Parameter other) {
         super(other);
-        this.keepIfEmpty = other.keepIfEmpty;
+        this.keepIfEmpty = other.getAllowEmptyValue();
     }
 
     protected StructuredParameterElement(StructuredParameterElement other, OperationNode operation, ParameterElement parent) {
-        super(other, operation, parent);
-    }
+        super(operation, parent);
+        name = other.getName();
+        schemaName = other.getSchemaName();
+        required = other.isRequired();
+        type = other.getType(); // Amedeo did: ParameterType.getTypeFromString(other.type.name());
+        format = other.getFormat();
+        setLocation(other.getLocation());
+        setStyle(other.getStyle());
+        setExplode(other.isExplode());
+        setOperation(other.getOperation());
 
-    protected StructuredParameterElement(ParameterElement other) {
-        super(other);
+        setDescription(other.getDescription());
+
+        defaultValue = ObjectHelper.deepCloneObject(other.getDefaultValue());
+        enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.getEnumValues()));
+        examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples()));
     }
 
     public StructuredParameterElement(OperationNode operation, ParameterElement parent) {
         super(operation, parent);
+    }
+
+    public StructuredParameterElement(Parameter p, OperationNode operation) {
+        super(p, operation);
     }
 
     @Override

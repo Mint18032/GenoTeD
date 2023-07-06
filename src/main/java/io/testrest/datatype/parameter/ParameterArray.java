@@ -63,15 +63,26 @@ public class ParameterArray extends StructuredParameterElement {
         }
     }
 
-    private ParameterArray(ParameterArray other) {
+    public ParameterArray(Parameter other) {
         super(other);
-
-        referenceElement = other.referenceElement.deepClone();
+// TODO: ref elements of array
+//        referenceElement = other.referenceElement.deepClone();
         elements = new LinkedList<>();
-        other.elements.forEach(e -> elements.add(e.deepClone()));
-        minItems = other.minItems;
-        maxItems = other.maxItems;
-        uniqueItems = other.uniqueItems;
+//        other.elements.forEach(e -> elements.add(e.deepClone()));
+        minItems = other.getSchema().getMinItems();
+        maxItems = other.getSchema().getMaxItems();
+        uniqueItems = other.getSchema().getUniqueItems();
+    }
+
+    public ParameterArray(Parameter other, OperationNode operation) {
+        super(other, operation);
+// TODO: ref elements of array
+//        referenceElement = other.referenceElement.deepClone();
+        elements = new LinkedList<>();
+//        other.elements.forEach(e -> elements.add(e.deepClone()));
+        minItems = other.getSchema().getMinItems();
+        maxItems = other.getSchema().getMaxItems();
+        uniqueItems = other.getSchema().getUniqueItems();
     }
 
     private ParameterArray(ParameterArray other, OperationNode operation, ParameterElement parent) {
@@ -83,13 +94,6 @@ public class ParameterArray extends StructuredParameterElement {
         minItems = other.minItems;
         maxItems = other.maxItems;
         uniqueItems = other.uniqueItems;
-    }
-
-    public ParameterArray(ParameterElement other) {
-        super(other);
-
-        referenceElement = null;
-        elements = new LinkedList<>();
     }
 
     public ParameterArray(JsonArray jsonArray, OperationNode operation, ParameterElement parent, String name) {
@@ -116,7 +120,7 @@ public class ParameterArray extends StructuredParameterElement {
         }
 
         ParameterArray stringParameter = (ParameterArray) other;
-        ParameterArray merged = new ParameterArray(this);
+        ParameterArray merged = this;
         merged.referenceElement = this.referenceElement.merge(stringParameter.referenceElement);
 
         return merged;
@@ -427,7 +431,7 @@ public class ParameterArray extends StructuredParameterElement {
 
     @Override
     public ParameterArray deepClone() {
-        return new ParameterArray(this);
+        return this;
     }
 
     @Override

@@ -60,7 +60,7 @@ public class Configuration {
 
     public void setOpenAPIName(String openAPIName) {
         this.openAPIName = openAPIName;
-        this.outputPath += "/" + openAPIName + "/";
+        this.outputPath += "/" + openAPIName + "/" + testingSessionName;
     }
 
     public List<String> getQualifiableNames() {

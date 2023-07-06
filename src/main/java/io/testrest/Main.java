@@ -57,7 +57,7 @@ public class Main {
         logger.info("Running nominal test cases");
         String path = nominalTestGenerator.getTestOutPutPath().substring(nominalTestGenerator.getTestOutPutPath().indexOf("output/")).concat("Tests.feature");
 //        testRunner.testAll(path);
-        testRunner.testOperation(path, "v2All");
+//        testRunner.testOperation(path, "v2All");
     }
 
     public static Configuration getConfiguration() {

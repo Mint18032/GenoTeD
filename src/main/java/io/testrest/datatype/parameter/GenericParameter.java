@@ -21,16 +21,12 @@ public class GenericParameter extends ParameterLeaf {
         super(parent, parameterMap, operation);
     }
 
-    protected GenericParameter(ParameterLeaf other) {
+    protected GenericParameter(Parameter other) {
         super(other);
     }
 
     protected GenericParameter(ParameterLeaf other, OperationNode operation, ParameterElement parent) {
         super(other, operation, parent);
-    }
-
-    protected GenericParameter(ParameterElement other) {
-        super(other);
     }
 
     @Override
@@ -56,7 +52,7 @@ public class GenericParameter extends ParameterLeaf {
 
     @Override
     public ParameterElement deepClone() {
-        return new GenericParameter(this);
+        return this;
     }
 
     @Override

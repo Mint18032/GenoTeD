@@ -42,13 +42,22 @@ public class NumberParameter extends ParameterLeaf {
         this(parent, parameterMap, operation, null);
     }
 
-    private NumberParameter(NumberParameter other) {
+    public NumberParameter(Parameter other) {
         super(other);
 
-        maximum = other.maximum;
-        minimum = other.minimum;
-        exclusiveMaximum = other.exclusiveMaximum;
-        exclusiveMinimum = other.exclusiveMinimum;
+        maximum = other.getSchema().getMaximum().doubleValue();
+        minimum = other.getSchema().getMinimum().doubleValue();
+        exclusiveMaximum = other.getSchema().getExclusiveMaximum();
+        exclusiveMinimum = other.getSchema().getExclusiveMinimum();
+    }
+
+    public NumberParameter(Parameter other, OperationNode operation) {
+        super(other, operation);
+
+        maximum = other.getSchema().getMaximum().doubleValue();
+        minimum = other.getSchema().getMinimum().doubleValue();
+        exclusiveMaximum = other.getSchema().getExclusiveMaximum();
+        exclusiveMinimum = other.getSchema().getExclusiveMinimum();
     }
 
     public NumberParameter(NumberParameter other, OperationNode operation, ParameterElement parent) {
@@ -58,11 +67,6 @@ public class NumberParameter extends ParameterLeaf {
         minimum = other.minimum;
         exclusiveMaximum = other.exclusiveMaximum;
         exclusiveMinimum = other.exclusiveMinimum;
-    }
-
-    public NumberParameter(ParameterElement source) {
-        super(source);
-        this.value = "null";
     }
 
     public NumberParameter(JsonPrimitive jsonPrimitive, OperationNode operation, ParameterElement parent, String name) {
@@ -98,7 +102,7 @@ public class NumberParameter extends ParameterLeaf {
         }
 
         NumberParameter numberParameter = (NumberParameter) other;
-        NumberParameter merged = new NumberParameter(this);
+        NumberParameter merged = this;
         merged.maximum = this.maximum == null ?
                 numberParameter.maximum : numberParameter.maximum != null ?
                 Math.min(this.maximum, numberParameter.maximum) : null;
@@ -250,7 +254,7 @@ public class NumberParameter extends ParameterLeaf {
 
     @Override
     public NumberParameter deepClone() {
-        return new NumberParameter(this);
+        return this;
     }
 
     @Override

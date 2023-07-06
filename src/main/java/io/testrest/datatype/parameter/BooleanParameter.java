@@ -23,21 +23,16 @@ public class BooleanParameter extends ParameterLeaf {
         this(parent, parameterMap, operation, null);
     }
 
-    public BooleanParameter(BooleanParameter other) {
+    public BooleanParameter(Parameter other) {
         super(other);
+    }
+
+    public BooleanParameter(Parameter other, OperationNode operation) {
+        super(other, operation);
     }
 
     public BooleanParameter(BooleanParameter other, OperationNode operation, ParameterElement parent) {
         super(other, operation, parent);
-    }
-
-    public BooleanParameter(ParameterLeaf source) {
-        super(source);
-        this.value = "null";
-    }
-
-    public BooleanParameter(ParameterElement source) {
-        super(source);
     }
 
     public BooleanParameter(JsonPrimitive jsonPrimitive, OperationNode operation, ParameterElement parent, String name) {
@@ -96,7 +91,7 @@ public class BooleanParameter extends ParameterLeaf {
 
     @Override
     public BooleanParameter deepClone() {
-        return new BooleanParameter(this);
+        return this;
     }
 
     @Override

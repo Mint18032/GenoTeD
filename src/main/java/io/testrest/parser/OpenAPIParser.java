@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import io.testrest.datatype.HttpMethod;
@@ -35,10 +36,10 @@ public class OpenAPIParser {
         // Read OpenAPI Specification and parse it to POJO type
         ParseOptions parseOptions = new ParseOptions();
         parseOptions.setResolve(true);
-        SwaggerParseResult result = new io.swagger.parser.OpenAPIParser().readLocation(openApiSpecPath, null, parseOptions);
-        openAPI = result.getOpenAPI();
+        parseOptions.setResolveFully(true);
+        openAPI = new OpenAPIV3Parser().read(openApiSpecPath, null, parseOptions);
 
-        if (result.getMessages() == null || openAPI == null) {
+        if (openAPI == null) {
             throw new CannotParseOpenAPIException("getOpenAPI() returns null.");
         }
 
@@ -50,7 +51,7 @@ public class OpenAPIParser {
         components = openAPI.getComponents();
         schema = components.getSchemas();
         readOperations(operationList);
-//        System.out.println(components);
+
     }
 
     /**

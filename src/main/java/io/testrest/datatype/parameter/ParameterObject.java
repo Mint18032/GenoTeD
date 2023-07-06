@@ -56,11 +56,20 @@ public class ParameterObject extends StructuredParameterElement {
         }
     }
 
-    private ParameterObject(ParameterObject other) {
+    public ParameterObject(Parameter other) {
         super(other);
 
         properties = new LinkedList<>();
-        other.properties.forEach(p -> properties.add(p.deepClone()));
+//        TODO: map object properties
+        other.getSchema().getProperties();
+    }
+
+    public ParameterObject(Parameter other, OperationNode operation) {
+        super(other, operation);
+
+        properties = new LinkedList<>();
+//        TODO: map object properties
+        other.getSchema().getProperties();
     }
 
     private ParameterObject(ParameterObject other, OperationNode operation, ParameterElement parent) {
@@ -68,12 +77,6 @@ public class ParameterObject extends StructuredParameterElement {
 
         properties = new LinkedList<>();
         other.properties.forEach(p -> properties.add(p.deepClone(operation, this)));
-    }
-
-    public ParameterObject(ParameterElement other) {
-        super(other);
-
-        this.properties = new LinkedList<>();
     }
 
     public ParameterObject(JsonObject jsonObject, OperationNode operation, ParameterElement parent, String name) {
@@ -101,7 +104,7 @@ public class ParameterObject extends StructuredParameterElement {
         }
 
         ParameterObject parameterObject = (ParameterObject) other;
-        ParameterObject merged = new ParameterObject(this);
+        ParameterObject merged = this;
 
         merged.properties = this.mergeProperties(parameterObject.properties);
 
@@ -442,7 +445,7 @@ public class ParameterObject extends StructuredParameterElement {
 
     @Override
     public ParameterObject deepClone() {
-        return new ParameterObject(this);
+        return this;
     }
 
     @Override

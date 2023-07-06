@@ -51,10 +51,10 @@ public class OperationDependencyGraph {
             return map;
         });
 
-        File file = new File(Main.getConfiguration().getOutputPath() + Main.getConfiguration().getTestingSessionName() + "/");
+        File file = new File(Main.getConfiguration().getOutputPath() + "/");
         file.mkdirs();
 
-        Writer writer = new FileWriter(Main.getConfiguration().getOutputPath() + Main.getConfiguration().getTestingSessionName() + "/" +
+        Writer writer = new FileWriter(Main.getConfiguration().getOutputPath() + "/" +
                 Main.getConfiguration().getOdgFileName());
         exporter.exportGraph(this.graph, writer);
         writer.flush();

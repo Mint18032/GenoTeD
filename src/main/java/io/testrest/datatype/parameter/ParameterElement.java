@@ -32,10 +32,10 @@ public abstract class ParameterElement extends Taggable {
     private boolean explode;
 
     protected Object defaultValue;
-    protected Set<Object> enumValues;
+    protected HashSet enumValues;
     protected Set<Object> examples;
 
-    private final String description;
+    private String description;
 
     private OperationNode operation; // Operation to which the parameter is associated
     private ParameterElement parent; // Reference to the parent Parameter if any; else null
@@ -44,6 +44,8 @@ public abstract class ParameterElement extends Taggable {
             "cast to fit the right type.";
     private static final String discardedWarn = "' is not compliant to parameter type. The value will be discarded.";
     private static final Logger logger = Logger.getLogger(ParameterElement.class.getName());
+
+    public ParameterElement(){}
 
     public ParameterElement(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         if (name != null) {
@@ -170,36 +172,66 @@ public abstract class ParameterElement extends Taggable {
      * Copy constructors used to clone parameters. They are declared as protected to force the use of the function
      * deepCopy externally.
      */
-    protected ParameterElement(ParameterElement other) {
-        name = other.name.deepClone();
-        normalizedName = other.normalizedName;
-        schemaName = other.schemaName;
-        required = other.required;
-        type = other.type; // Amedeo did: ParameterType.getTypeFromString(other.type.name());
-        format = other.format;
-        location = other.location;
-        style = other.style;
-        explode = other.explode;
+    protected ParameterElement(Parameter other) {
+        name = new ParameterName(other.getName());
+        schemaName = other.getSchema().getName();
+        required = other.getRequired();
+        type = ParameterType.getTypeFromString(other.getSchema().getType());
+        format = ParameterTypeFormat.getFormatFromString(other.getSchema().getFormat());
+        location = ParameterLocation.getLocationFromString(other.getIn());
+        style = ParameterStyle.getStyleFromString(other.getStyle().toString());
+        explode = other.getExplode();
 
-        description = other.description;
+        description = other.getDescription();
 
-        defaultValue = ObjectHelper.deepCloneObject(other.defaultValue);
-        enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.enumValues));
-        examples = new HashSet<>(ObjectHelper.deepCloneObject(other.examples));
+        defaultValue = ObjectHelper.deepCloneObject(other.getSchema().getDefault());
+        enumValues = new HashSet<>();
+        if (other.getSchema().getEnum() != null) {
+            other.getSchema().getEnum().forEach(p -> enumValues.add(p));
+        }
+        if (other.getExamples() != null) {
+            examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples().entrySet()));
+        }
 
-        operation = other.operation;
-        parent = other.parent;
-
-        tags.addAll(other.tags);
+//        parent = other.parent;
+//        tags.addAll(other.tags);
+//        normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
     }
 
-    protected ParameterElement(ParameterElement other, OperationNode operation, ParameterElement parent) {
+    protected ParameterElement(Parameter other, OperationNode operation) {
+        name = new ParameterName(other.getName());
+        schemaName = other.getSchema().getName();
+        required = other.getRequired();
+        type = ParameterType.getTypeFromString(other.getSchema().getType());
+        format = ParameterTypeFormat.getFormatFromString(other.getSchema().getFormat());
+        location = ParameterLocation.getLocationFromString(other.getIn());
+        style = ParameterStyle.getStyleFromString(other.getStyle().toString());
+        explode = other.getExplode();
+
+        description = other.getDescription();
+
+        defaultValue = ObjectHelper.deepCloneObject(other.getSchema().getDefault());
+        enumValues = new HashSet<>();
+        if (other.getSchema().getEnum() != null) {
+            other.getSchema().getEnum().forEach(p -> enumValues.add(p));
+        }
+        if (other.getExamples() != null) {
+            examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples().entrySet()));
+        }
+
+//        parent = other.parent;
+//        tags.addAll(other.tags);
+        normalizedName = new NormalizedParameterName(ParameterComparator.normalize(operation, other));
+    }
+
+    protected ParameterElement(Parameter other, OperationNode operation, ParameterElement parent) {
         this(other);
 
+        this.normalizedName = new NormalizedParameterName(other.getName());
         this.operation = operation;
         this.parent = parent;
 
-        tags.addAll(other.tags);
+//        tags.addAll(other.tags);
     }
 
     protected ParameterElement(OperationNode operation, ParameterElement parent) {
@@ -408,6 +440,10 @@ public abstract class ParameterElement extends Taggable {
     public String getDescription() {
         return description;
     }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 
     public NormalizedParameterName getNormalizedName() {
         return this.normalizedName;
