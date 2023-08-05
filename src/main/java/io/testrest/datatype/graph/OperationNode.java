@@ -63,31 +63,38 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.operationNodeId = this.getOperationId() + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
         idGenerationNum++;
+        System.out.println(path);
 
-        for (Parameter p : getParameters()) {
-            // TODO: match oneof, anyof, allof types
-            switch (p.getSchema().getType()) {
-                case "number":
-                case "integer":
-                    parameterLeafList.add(new NumberParameter(p, this));
-                    break;
-                case "boolean":
-                    parameterLeafList.add(new BooleanParameter(p, this));
-                    break;
-                default: // "string"
-                    parameterLeafList.add(new StringParameter(p, this));
-                    break;
-//                case "array":
-//                    parameterElementList.add(new ParameterArray(p, this));
-//                    break;
-//                default: //object
-//                    parameterElementList.add(new ParameterObject(p, this));
+        if (getParameters() != null) {
+            for (Parameter p : getParameters()) {
+
+                // TODO: match oneof, anyof, allof types
+                switch (p.getSchema().getType()) {
+                    case "number":
+                    case "integer":
+                        System.out.println(p.getName());
+                        NumberParameter temp = new NumberParameter(p, this);
+                        System.out.println(temp);
+                        parameterLeafList.add(temp);
+                        break;
+                    case "boolean":
+                        parameterLeafList.add(new BooleanParameter(p, this));
+                        break;
+                    default: // "string"
+                        parameterLeafList.add(new StringParameter(p, this));
+                        break;
+        //                case "array":
+        //                    parameterElementList.add(new ParameterArray(p, this));
+        //                    break;
+        //                default: //object
+        //                    parameterElementList.add(new ParameterObject(p, this));
+                }
             }
+            System.out.println(parameterLeafList);
+        //        for(ParameterLeaf leaf : parameterLeafList) {
+        //            System.out.println(leaf.getNormalizedName());
+        //        }
         }
-        System.out.println(parameterLeafList);
-//        for(ParameterLeaf leaf : parameterLeafList) {
-//            System.out.println(leaf.getNormalizedName());
-//        }
     }
 
     @Override

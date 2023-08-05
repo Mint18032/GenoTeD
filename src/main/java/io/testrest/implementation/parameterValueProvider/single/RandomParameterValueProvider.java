@@ -102,6 +102,12 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
                 case LOCATION:
                     generatedString = random.nextLocation();
                     break;
+                case COUNTRY_CODE:
+                    generatedString = random.nextCountryCode(length);
+                    break;
+                case CURRENCY:
+                    generatedString = random.nextCurrency();
+                    break;
                 default:
                     generatedString = random.nextString(length);
             }

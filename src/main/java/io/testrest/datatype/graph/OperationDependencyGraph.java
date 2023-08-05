@@ -73,20 +73,20 @@ public class OperationDependencyGraph {
         int gapLength = 0;
 
         for (OperationNode operationNode : vertexList) {
-            if (operationNode.getOperationId().concat("\t\t").length() > gapLength) {
-                gapLength = operationNode.getOperationId().concat("\t\t").length();
+            if (operationNode.getOperationNodeId().concat("\t\t").length() > gapLength) {
+                gapLength = operationNode.getOperationNodeId().concat("\t\t").length();
             }
         }
 
         matrix.append(" ".repeat(gapLength));
 
         for (OperationNode operationNode : vertexList)
-            matrix.append(operationNode.getOperationId()).append(" ".repeat(gapLength - operationNode.getOperationId().length()));
+            matrix.append(operationNode.getOperationNodeId()).append(" ".repeat(gapLength - operationNode.getOperationNodeId().length()));
 
         for (int i = 0; i < vertexList.size(); ++i) {
-            matrix.append("\n").append(vertexList.get(i).getOperationId());
+            matrix.append("\n").append(vertexList.get(i).getOperationNodeId());
             int len = gapLength;
-            while (len > vertexList.get(i).getOperationId().length()) {
+            while (len > vertexList.get(i).getOperationNodeId().length()) {
                 len--;
                 matrix.append(" ");
             }

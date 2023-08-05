@@ -253,7 +253,12 @@ public class StringParameter extends ParameterLeaf {
                     return ParameterTypeFormat.HASH;
                 } else if (name.endsWith("location")) {
                     return ParameterTypeFormat.LOCATION;
+                } else if (name.contains("country") || name.contains("alpha")) {
+                    return ParameterTypeFormat.COUNTRY_CODE;
+                } else if (name.contains("currency")) {
+                    return ParameterTypeFormat.CURRENCY;
                 }
+                // TODO: optimize country code, capital, continent. Classify by description
                 return ParameterTypeFormat.MISSING;
         }
     }

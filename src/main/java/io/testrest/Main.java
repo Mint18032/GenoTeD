@@ -7,6 +7,7 @@ import io.testrest.implementation.NominalTestGenerator;
 import io.testrest.parser.OpenAPIParser;
 import io.testrest.testing.TestRunner;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Main {
@@ -40,6 +41,7 @@ public class Main {
         } catch (Exception e) {
             logger.warning(e.toString());
             e.printStackTrace();
+            System.exit(-1);
         }
 
         logger.info("Successfully read the OpenAPI Specification. \nStarting building Operation Dependency Graph.");
@@ -55,9 +57,11 @@ public class Main {
         NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(operationList, OpenAPIParser.getUrls());
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
         logger.info("Running nominal test cases");
-        String path = nominalTestGenerator.getTestOutPutPath().substring(nominalTestGenerator.getTestOutPutPath().indexOf("output/")).concat("Tests.feature");
-//        testRunner.testAll(path);
-//        testRunner.testOperation(path, "v2All");
+        List<String> paths = nominalTestGenerator.getNominalTestPaths();
+        for (String path : paths) {
+            testRunner.testAll(path);
+            //        testRunner.testOperation(path, "v2All");
+        }
     }
 
     public static Configuration getConfiguration() {

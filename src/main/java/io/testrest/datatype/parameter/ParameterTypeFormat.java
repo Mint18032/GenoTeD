@@ -35,6 +35,8 @@ public enum ParameterTypeFormat {
     LATITUDE,
     LONGITUDE,
     LOCATION,
+    COUNTRY_CODE,
+    CURRENCY,
 
     MISSING,    // To codify missing format and increase fault tolerance
     UNKNOWN     // Unknown format. To increase fault tolerance

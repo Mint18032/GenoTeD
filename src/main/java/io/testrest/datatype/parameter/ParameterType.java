@@ -23,7 +23,7 @@ public enum ParameterType {
 
     public static ParameterType getTypeFromString(String typeName) {
         if (typeName == null) {
-            return  MISSING;
+            return MISSING;
         }
 
         switch (typeName.toLowerCase()) {

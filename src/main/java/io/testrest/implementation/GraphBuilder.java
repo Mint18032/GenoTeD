@@ -26,10 +26,12 @@ public class GraphBuilder {
         // Identify parameter dependencies, add edges to ODG
         for (int i = 0; i < operationNodeList.size()-1; i++) {
             for (int j = i+1; j < operationNodeList.size(); j++) {
-                for (Parameter pi: operationNodeList.get(i).getParameters()) {
-                    for (Parameter pj: operationNodeList.get(j).getParameters()) {
-                        if (ParameterComparator.matchedNames(operationNodeList.get(i), pi, operationNodeList.get(j), pj)) {
-                            ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(ParameterComparator.normalize(operationNodeList.get(i), pi)));
+                if (operationNodeList.get(i).getParameters() != null && operationNodeList.get(j).getParameters() != null) {
+                    for (Parameter pi: operationNodeList.get(i).getParameters()) {
+                        for (Parameter pj: operationNodeList.get(j).getParameters()) {
+                            if (ParameterComparator.matchedNames(operationNodeList.get(i), pi, operationNodeList.get(j), pj)) {
+                                ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(ParameterComparator.normalize(operationNodeList.get(i), pi)));
+                            }
                         }
                     }
                 }
