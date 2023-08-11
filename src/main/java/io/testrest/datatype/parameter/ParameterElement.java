@@ -201,12 +201,13 @@ public abstract class ParameterElement extends Taggable {
     protected ParameterElement(Parameter other, OperationNode operation) {
         name = new ParameterName(other.getName());
         schemaName = other.getSchema().getName();
-        required = other.getRequired();
+        required = other.getRequired() != null ? other.getRequired() : false;
         type = ParameterType.getTypeFromString(other.getSchema().getType());
         format = ParameterTypeFormat.getFormatFromString(other.getSchema().getFormat());
         location = ParameterLocation.getLocationFromString(other.getIn());
-        style = ParameterStyle.getStyleFromString(other.getStyle().toString());
-        explode = other.getExplode();
+        if (other.getStyle() != null)
+            style = ParameterStyle.getStyleFromString(other.getStyle().toString());
+        explode = other.getExplode() != null ? other.getExplode() : false;
 
         description = other.getDescription();
 

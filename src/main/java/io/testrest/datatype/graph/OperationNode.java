@@ -24,10 +24,14 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         super();
         this.tested = false;
         this.method = method;
-        this.operationNodeId = this.getOperationId() + idGenerationNum;
+        this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
         this.testingAttempts = 0;
         idGenerationNum++;
+
+        if (getOperationId() == null) {
+            setOperationId(this.operationNodeId);
+        }
     }
 
     public OperationNode(HttpMethod method, String path) {
@@ -35,10 +39,14 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.tested = false;
         this.method = method;
         this.path = path;
-        this.operationNodeId = this.getOperationId() + idGenerationNum;
+        this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
         this.testingAttempts = 0;
         idGenerationNum++;
+
+        if (getOperationId() == null) {
+            setOperationId(this.operationNodeId);
+        }
     }
 
     public OperationNode(HttpMethod method, String path, Operation operation) {
@@ -60,10 +68,13 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.setSecurity(operation.getSecurity());
         this.setServers(operation.getServers());
         this.setExtensions(operation.getExtensions());
-        this.operationNodeId = this.getOperationId() + idGenerationNum;
+        this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
         idGenerationNum++;
-        System.out.println(path);
+
+        if (getOperationId() == null) {
+            setOperationId(this.operationNodeId);
+        }
 
         if (getParameters() != null) {
             for (Parameter p : getParameters()) {

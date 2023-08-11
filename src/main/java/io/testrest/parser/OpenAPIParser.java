@@ -6,17 +6,26 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.servers.ServerVariable;
+import io.swagger.v3.oas.models.servers.ServerVariables;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
+import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.OperationNodeList;
+import io.testrest.helper.ExtendedRandom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class OpenAPIParser {
+    private static final Logger logger = Logger.getLogger(OpenAPIParser.class.getName());
+    private static final ExtendedRandom random = Environment.getInstance().getRandom();
     private static OpenAPI openAPI;
     private static List<Server> servers = new ArrayList<>();
     private static List<String> urls = new ArrayList<>(); // servers' Urls
@@ -48,7 +57,7 @@ public class OpenAPIParser {
         // Read data
         readURLs();
         components = openAPI.getComponents();
-        schema = components.getSchemas();
+        schema = components == null ? new HashMap<>() : components.getSchemas();
         readOperations(operationList);
 
     }
@@ -59,10 +68,26 @@ public class OpenAPIParser {
     public static void readURLs() throws NoServerUrlFoundException {
         servers = openAPI.getServers();
         for (Server s: servers) {
-            urls.add(s.getUrl());
+            if (OpenAPIValidator.isValidServer(s.getUrl())) {
+                String url = s.getUrl();
+                // if server url has variables, replace them with relevant values
+                if (s.getVariables() != null) {
+                    for (Map.Entry<String, ServerVariable> serverVariable : s.getVariables().entrySet()) {
+                        String var_name = serverVariable.getKey();
+                        String var_value = serverVariable.getValue().getEnum() == null ? serverVariable.getValue().getDefault() : serverVariable.getValue().getEnum().get(random.nextInt(0, serverVariable.getValue().getEnum().size()));
+                        url = url.replace("{" + var_name + "}", var_value);
+                    }
+                }
+
+                // servers having the same url are considered 1
+                if (!urls.contains(url))
+                    urls.add(url);
+                else
+                    logger.warning("Server " + url + " is duplicated and will be tested one time only.");
+            }
         }
         if (urls == null) {
-            throw new NoServerUrlFoundException("No URL found among the API servers.");
+            throw new NoServerUrlFoundException("No valid URL found among the API servers.");
         }
     }
 

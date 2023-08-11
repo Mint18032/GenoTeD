@@ -153,10 +153,11 @@ public class NominalTestGenerator extends TestGenerator {
         sb.append("\n\t\tWhen method ").append(operation.getMethod());
 
 //        TODO: other status
-        sb.append("\n\t\tThen status ").append(operation.getResponses().entrySet().stream()
+        String response_status = operation.getResponses().entrySet().stream()
                 .map(Map.Entry::getKey)
                 .findFirst()
-                .orElse("200"));
+                .orElse("200");
+        sb.append("\n\t\tThen status ").append(response_status.contains("default") ? "200" : response_status);
         sb.append("\n\t\tAnd print response");
 
         try {

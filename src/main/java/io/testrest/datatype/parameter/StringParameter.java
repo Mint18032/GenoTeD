@@ -63,8 +63,11 @@ public class StringParameter extends ParameterLeaf {
     public StringParameter(Parameter other, OperationNode operation) {
         super(other, operation);
 
-        maxLength = other.getSchema().getMaxLength();
-        minLength = other.getSchema().getMinLength();
+        if (other.getSchema().getMaxLength() != null) {
+            maxLength = other.getSchema().getMaxLength();
+        }
+
+        minLength = other.getSchema().getMinLength() != null ? other.getSchema().getMinLength() : 0;
         pattern = other.getSchema().getPattern();
     }
 
