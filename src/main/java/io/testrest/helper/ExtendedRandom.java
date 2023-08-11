@@ -461,12 +461,13 @@ public class ExtendedRandom extends Random {
                 return min + nextDouble() * Math.abs(min) + nextDouble() * Math.abs(max);
             }
         }
-        return null;
+        return 0.0;
     }
 
     public Float nextFloat(Float min, Float max) {
         min = min != null ? min : -Float.MAX_VALUE;
         max = max != null ? max : Float.MAX_VALUE;
+
         if (min <= max) {
             if (min >= 0 || max <= 0) {
                 return min + nextFloat() * (max - min);
@@ -474,7 +475,7 @@ public class ExtendedRandom extends Random {
                 return min + nextFloat() * Math.abs(min) + nextFloat() * Math.abs(max);
             }
         }
-        return null;
+        return 0.0f;
     }
 
     /**
@@ -666,7 +667,7 @@ public class ExtendedRandom extends Random {
                 return min + (int) (nextDouble() * Math.abs(min)) + (int) (nextDouble() * Math.abs(max));
             }
         }
-        return null;
+        return 0;
     }
 
     /**
@@ -693,7 +694,7 @@ public class ExtendedRandom extends Random {
                 return min + (long) (nextDouble() * Math.abs(min)) + (long) (nextDouble() * Math.abs(max));
             }
         }
-        return null;
+        return 0L;
     }
 
     /**

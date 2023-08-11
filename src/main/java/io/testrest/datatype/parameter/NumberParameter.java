@@ -54,8 +54,8 @@ public class NumberParameter extends ParameterLeaf {
     public NumberParameter(Parameter other, OperationNode operation) {
         super(other, operation);
 
-        maximum = other.getSchema().getMaximum() != null ? other.getSchema().getMaximum().doubleValue() : Double.MAX_VALUE;
-        minimum = other.getSchema().getMinimum() != null ? other.getSchema().getMinimum().doubleValue() : Double.MIN_VALUE;
+        maximum = other.getSchema().getMaximum() != null ? other.getSchema().getMaximum().doubleValue() : null;
+        minimum = other.getSchema().getMinimum() != null ? other.getSchema().getMinimum().doubleValue() : null;
         exclusiveMaximum = other.getSchema().getExclusiveMaximum() != null ? other.getSchema().getExclusiveMaximum() : false;
         exclusiveMinimum = other.getSchema().getExclusiveMinimum() != null ? other.getSchema().getExclusiveMinimum() : false;
     }

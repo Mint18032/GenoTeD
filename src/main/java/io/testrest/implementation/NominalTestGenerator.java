@@ -179,6 +179,7 @@ public class NominalTestGenerator extends TestGenerator {
         }
         StringBuilder input = new StringBuilder();
         input.append(", '").append(valueProvider.provideValueFor(parameterLeaf)).append("'");
+        System.out.println(input);
 
         testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
 

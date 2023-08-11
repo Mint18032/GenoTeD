@@ -165,6 +165,8 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
             // Set min and max value, if defined
             float min = parameter.getMinimum() != null ? parameter.getMinimum().floatValue() : -Float.MAX_VALUE;
             float max = parameter.getMaximum() != null ? parameter.getMaximum().floatValue() : Float.MAX_VALUE;
+            System.out.println(max);
+            System.out.println(min);
 
             // If min is not less than max, reset one of the two variables randomly
             if (min > max) {

@@ -83,7 +83,6 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
                 switch (p.getSchema().getType()) {
                     case "number":
                     case "integer":
-                        System.out.println(p.getName());
                         NumberParameter temp = new NumberParameter(p, this);
                         System.out.println(temp);
                         parameterLeafList.add(temp);
