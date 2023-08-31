@@ -22,10 +22,11 @@ public class EnumParameterValueProvider extends CountableParameterValueProvider 
     public Object provideValueFor(ParameterLeaf parameterLeaf) {
         ExtendedRandom random = Environment.getInstance().getRandom();
         if (!strict) {
-            return random.nextElement(parameterLeaf.getEnumValues()).orElse(null);
+            System.out.println(parameterLeaf.getNormalizedName());
+            return random.elementFromSet(parameterLeaf.getEnumValues());
         } else {
-            return random.nextElement(parameterLeaf.getEnumValues().stream().filter(parameterLeaf::isValueCompliant)
-                    .collect(Collectors.toSet())).orElse(null);
+            return random.elementFromSet(parameterLeaf.getEnumValues().stream().filter(parameterLeaf::isValueCompliant)
+                    .collect(Collectors.toSet()));
         }
     }
 }

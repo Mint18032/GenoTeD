@@ -7,6 +7,7 @@ import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.NormalizedParameterName;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.ParameterLocation;
+import io.testrest.implementation.parameterValueProvider.single.EnumParameterValueProvider;
 import io.testrest.implementation.parameterValueProvider.single.RandomParameterValueProvider;
 import io.testrest.parser.OpenAPIParser;
 
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 
 public class NominalTestGenerator extends TestGenerator {
     private static Map<NormalizedParameterName, String> testinputs = new HashMap<>();
-    private RandomParameterValueProvider valueProvider = new RandomParameterValueProvider();
+    private RandomParameterValueProvider randomParameterValueProvider = new RandomParameterValueProvider();
+    private EnumParameterValueProvider enumParameterValueProvider = new EnumParameterValueProvider();
     private List<String> nominalTestPaths = new ArrayList<>();
 
     /**
@@ -178,8 +180,7 @@ public class NominalTestGenerator extends TestGenerator {
             }
         }
         StringBuilder input = new StringBuilder();
-        input.append(", '").append(valueProvider.provideValueFor(parameterLeaf)).append("'");
-        System.out.println(input);
+        input.append(", '").append(this.provideValueFor(parameterLeaf)).append("'");
 
         testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
 
@@ -194,11 +195,33 @@ public class NominalTestGenerator extends TestGenerator {
         }
         StringBuilder input = new StringBuilder();
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
-        input.append("\"").append(valueProvider.provideValueFor(parameterLeaf)).append("\"");
+        input.append("\"").append(this.provideValueFor(parameterLeaf)).append("\"");
 
         testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
 
         return input.toString();
+    }
+
+    public String generateBodyInput(ParameterLeaf parameterLeaf) {
+        for (Map.Entry<NormalizedParameterName, String> testinput : testinputs.entrySet()) {
+            if(testinput.getKey().equals(parameterLeaf.getNormalizedName())) {
+                return testinput.getValue();
+            }
+        }
+        StringBuilder input = new StringBuilder();
+        input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
+        input.append("\"").append(this.provideValueFor(parameterLeaf)).append("\"");
+
+        testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
+
+        return input.toString();
+    }
+
+    public Object provideValueFor(ParameterLeaf parameterLeaf) {
+        if (parameterLeaf.isEnum()) {
+            return enumParameterValueProvider.provideValueFor(parameterLeaf);
+        }
+        return randomParameterValueProvider.provideValueFor(parameterLeaf);
     }
 
     public static Map<NormalizedParameterName, String> getTestinputs() {
@@ -209,14 +232,21 @@ public class NominalTestGenerator extends TestGenerator {
         NominalTestGenerator.testinputs = testinputs;
     }
 
-    public RandomParameterValueProvider getValueProvider() {
-        return valueProvider;
+    public RandomParameterValueProvider getRandomParameterValueProvider() {
+        return randomParameterValueProvider;
     }
 
-    public void setValueProvider(RandomParameterValueProvider valueProvider) {
-        this.valueProvider = valueProvider;
+    public void setRandomParameterValueProvider(RandomParameterValueProvider randomParameterValueProvider) {
+        this.randomParameterValueProvider = randomParameterValueProvider;
     }
 
+    public EnumParameterValueProvider getEnumParameterValueProvider() {
+        return enumParameterValueProvider;
+    }
+
+    public void setEnumParameterValueProvider(EnumParameterValueProvider enumParameterValueProvider) {
+        this.enumParameterValueProvider = enumParameterValueProvider;
+    }
 
     public List<String> getNominalTestPaths() {
         return nominalTestPaths;

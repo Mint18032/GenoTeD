@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.values;
 
 /**
  * Extension of the java.util.Random class providing primitives for random strings, lengths, and other.
@@ -89,6 +90,18 @@ public class ExtendedRandom extends Random {
             }
         }
         return length;
+    }
+
+    public Object elementFromSet(Set<Object> enumSet) {
+        int p = nextInt(0, enumSet.size());
+        int i = 0;
+        for(Object value : enumSet) {
+            if (p == i) {
+                return value;
+            }
+            i++;
+        }
+        return enumSet.stream().findFirst();
     }
 
     /**

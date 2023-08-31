@@ -432,9 +432,6 @@ public abstract class ParameterElement extends Taggable {
     }
 
     public Set<Object> getEnumValues() {
-        if (operation.isReadOnly()) {
-            return Collections.unmodifiableSet(enumValues);
-        }
         return enumValues;
     }
 
