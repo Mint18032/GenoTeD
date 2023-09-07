@@ -133,9 +133,9 @@ public abstract class ParameterLeaf extends ParameterElement {
     }
 
     public void setValue(Object value) {
-        if (getOperation().isReadOnly()) {
-            throw new EditReadOnlyOperationException(getOperation());
-        }
+//        if (getOperation().isReadOnly()) {
+//            throw new EditReadOnlyOperationException(getOperation());
+//        }
         if (this.isObjectTypeCompliant(value)) {
             this.value = value;
         } else {

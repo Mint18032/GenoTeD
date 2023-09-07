@@ -7,14 +7,13 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.servers.ServerVariable;
-import io.swagger.v3.oas.models.servers.ServerVariables;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.testrest.Environment;
-import io.testrest.Main;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.OperationNodeList;
+import io.testrest.datatype.normalizer.PathNormalizer;
 import io.testrest.helper.ExtendedRandom;
 
 import java.util.ArrayList;
@@ -101,31 +100,32 @@ public class OpenAPIParser {
             // m.value is the pathItem which contains tags, summary, description and Operations.
 
             try {
-                pathUrls.add(m.getKey());
+                String normalized_path_url = PathNormalizer.normalize(m.getKey());
+                pathUrls.add(normalized_path_url);
                 PathItem pathItem = m.getValue();
                 if (pathItem.getHead() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.HEAD, m.getKey(), pathItem.getHead()));
+                    operationList.addOperation(new OperationNode(HttpMethod.HEAD, normalized_path_url, pathItem.getHead()));
                 }
                 if (pathItem.getPost() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.POST, m.getKey(), pathItem.getPost()));
+                    operationList.addOperation(new OperationNode(HttpMethod.POST, normalized_path_url, pathItem.getPost()));
                 }
                 if (pathItem.getGet() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.GET, m.getKey(), pathItem.getGet()));
+                    operationList.addOperation(new OperationNode(HttpMethod.GET, normalized_path_url, pathItem.getGet()));
                 }
                 if (pathItem.getPut() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.PUT, m.getKey(), pathItem.getPut()));
+                    operationList.addOperation(new OperationNode(HttpMethod.PUT, normalized_path_url, pathItem.getPut()));
                 }
                 if (pathItem.getPatch() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.PATCH, m.getKey(), pathItem.getPatch()));
+                    operationList.addOperation(new OperationNode(HttpMethod.PATCH, normalized_path_url, pathItem.getPatch()));
                 }
                 if (pathItem.getOptions() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.OPTIONS, m.getKey(), pathItem.getOptions()));
+                    operationList.addOperation(new OperationNode(HttpMethod.OPTIONS, normalized_path_url, pathItem.getOptions()));
                 }
                 if (pathItem.getTrace() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.TRACE, m.getKey(), pathItem.getTrace()));
+                    operationList.addOperation(new OperationNode(HttpMethod.TRACE, normalized_path_url, pathItem.getTrace()));
                 }
                 if (pathItem.getDelete() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.DELETE, m.getKey(), pathItem.getDelete()));
+                    operationList.addOperation(new OperationNode(HttpMethod.DELETE, normalized_path_url, pathItem.getDelete()));
                 }
             } catch (Exception e) {
                 throw new CannotParseOperationException("Unable to cast paths.entrySet().getValue() to PathItems:\n" + e);

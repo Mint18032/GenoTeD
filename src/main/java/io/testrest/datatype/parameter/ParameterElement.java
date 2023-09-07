@@ -3,6 +3,7 @@ package io.testrest.datatype.parameter;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.testrest.datatype.normalizer.ParameterComparator;
 import io.testrest.parser.EditReadOnlyOperationException;
 import io.testrest.helper.ObjectHelper;
 import io.testrest.helper.Taggable;
@@ -199,6 +200,7 @@ public abstract class ParameterElement extends Taggable {
     }
 
     protected ParameterElement(Parameter other, OperationNode operation) {
+        this.operation = operation;
         name = new ParameterName(other.getName());
         schemaName = other.getSchema().getName();
         required = other.getRequired() != null ? other.getRequired() : false;
@@ -482,9 +484,6 @@ public abstract class ParameterElement extends Taggable {
     }
 
     public Set<Object> getExamples() {
-        if (operation.isReadOnly()) {
-            return Collections.unmodifiableSet(examples);
-        }
         return examples;
     }
 

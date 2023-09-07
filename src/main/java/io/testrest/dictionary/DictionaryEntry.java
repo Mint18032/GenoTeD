@@ -21,15 +21,16 @@ public class DictionaryEntry {
     private Timestamp discoveryTime;
     private Object value;
 
-    public DictionaryEntry(ParameterLeaf leaf) {
+    public DictionaryEntry(ParameterLeaf leaf, Object value) {
         if (leaf.getName() != null && leaf.getNormalizedName() != null && leaf.getType() != null &&
-                leaf.getOperation() != null && leaf.getValue() != null) {
+                leaf.getOperation() != null && value != null) {
             this.parameterName = leaf.getName();
             this.normalizedParameterName = leaf.getNormalizedName();
             this.type = leaf.getType();
             this.source = leaf;
             this.discoveryTime = Timestamp.from(Instant.now());
-            this.value = leaf.getValue();
+            this.value = value;
+            leaf.setValue(value);
         } else {
             throw new RuntimeException("Can not create dictionary entry from leaf with some null values.");
         }

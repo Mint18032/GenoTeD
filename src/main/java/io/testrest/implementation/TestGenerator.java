@@ -19,6 +19,14 @@ public abstract class TestGenerator {
         testFiles = new ArrayList<>();
     }
 
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
     public abstract void generateTestBackground(String url, String filename);
 
     public abstract void generateOperationTest(OperationNode operation, String filename);

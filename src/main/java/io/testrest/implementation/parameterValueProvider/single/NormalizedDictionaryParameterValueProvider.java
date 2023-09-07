@@ -38,7 +38,7 @@ public class NormalizedDictionaryParameterValueProvider extends CountableParamet
                             parameterLeaf.getType()).stream().filter(e -> parameterLeaf.isValueCompliant(e.getValue()))
                     .collect(Collectors.toSet()));
         }
-        return entry.map(DictionaryEntry::getSource).orElse(null);
+        return entry.get().getValue();
     }
 
     /**

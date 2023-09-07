@@ -4,26 +4,22 @@ import io.testrest.Environment;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.OperationNodeList;
 import io.testrest.datatype.graph.OperationNode;
-import io.testrest.datatype.parameter.NormalizedParameterName;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.ParameterLocation;
-import io.testrest.implementation.parameterValueProvider.single.EnumParameterValueProvider;
-import io.testrest.implementation.parameterValueProvider.single.RandomParameterValueProvider;
+import io.testrest.dictionary.DictionaryEntry;
+import io.testrest.implementation.parameterValueProvider.multi.CombinedProviderParameterValueProvider;
 import io.testrest.parser.OpenAPIParser;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NominalTestGenerator extends TestGenerator {
-    private static Map<NormalizedParameterName, String> testinputs = new HashMap<>();
-    private RandomParameterValueProvider randomParameterValueProvider = new RandomParameterValueProvider();
-    private EnumParameterValueProvider enumParameterValueProvider = new EnumParameterValueProvider();
+    private final CombinedProviderParameterValueProvider parameterValueProvider = new CombinedProviderParameterValueProvider();
     private List<String> nominalTestPaths = new ArrayList<>();
 
     /**
@@ -139,12 +135,12 @@ public class NominalTestGenerator extends TestGenerator {
 //            sb.append("\n\t\t\"\"\"").append("\n\t\t{");
 //            sb.append("\n\t\t}").append("\n\t\t\"\"\"");
 //        }
-        String path = operation.getPath().contains("{") ? operation.getPath().substring(0,operation.getPath().indexOf("{")) : operation.getPath();
-        sb.append("\n\t\tGiven path '").append(path).append("'");
+        String path = operation.getPath();
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.PATH || parameterLeaf.getLocation() == ParameterLocation.MISSING)
-                sb.append(generatePathInput(parameterLeaf));
+                path = generatePathInput(parameterLeaf, path);
         }
+        sb.append("\n\t\tGiven path '").append(path).append("'");
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
                 sb.append(generateQueryInput(parameterLeaf));
@@ -173,79 +169,36 @@ public class NominalTestGenerator extends TestGenerator {
         }
     }
 
-    public String generatePathInput(ParameterLeaf parameterLeaf) {
-        for (Map.Entry<NormalizedParameterName, String> testinput : testinputs.entrySet()) {
-            if(testinput.getKey().equals(parameterLeaf.getNormalizedName())) {
-                return testinput.getValue();
-            }
-        }
-        StringBuilder input = new StringBuilder();
-        input.append(", '").append(this.provideValueFor(parameterLeaf)).append("'");
+    public String generatePathInput(ParameterLeaf parameterLeaf, String path) {
+        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
 
-        testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
+        System.out.println("re: " + value);
+        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
+        path = path.replace("{" + parameterLeaf.getName() + "}", value.toString());
 
-        return input.toString();
+        return path;
     }
 
     public String generateQueryInput(ParameterLeaf parameterLeaf) {
-        for (Map.Entry<NormalizedParameterName, String> testinput : testinputs.entrySet()) {
-            if(testinput.getKey().equals(parameterLeaf.getNormalizedName())) {
-                return testinput.getValue();
-            }
-        }
         StringBuilder input = new StringBuilder();
+        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
-        input.append("\"").append(this.provideValueFor(parameterLeaf)).append("\"");
+        input.append("\"").append(value).append("\"");
 
-        testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
+        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
 
         return input.toString();
     }
 
     public String generateBodyInput(ParameterLeaf parameterLeaf) {
-        for (Map.Entry<NormalizedParameterName, String> testinput : testinputs.entrySet()) {
-            if(testinput.getKey().equals(parameterLeaf.getNormalizedName())) {
-                return testinput.getValue();
-            }
-        }
         StringBuilder input = new StringBuilder();
+        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
-        input.append("\"").append(this.provideValueFor(parameterLeaf)).append("\"");
+        input.append("\"").append(value).append("\"");
 
-        testinputs.put(parameterLeaf.getNormalizedName(), input.toString());
+        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
 
         return input.toString();
-    }
-
-    public Object provideValueFor(ParameterLeaf parameterLeaf) {
-        if (parameterLeaf.isEnum()) {
-            return enumParameterValueProvider.provideValueFor(parameterLeaf);
-        }
-        return randomParameterValueProvider.provideValueFor(parameterLeaf);
-    }
-
-    public static Map<NormalizedParameterName, String> getTestinputs() {
-        return testinputs;
-    }
-
-    public static void setTestinputs(Map<NormalizedParameterName, String> testinputs) {
-        NominalTestGenerator.testinputs = testinputs;
-    }
-
-    public RandomParameterValueProvider getRandomParameterValueProvider() {
-        return randomParameterValueProvider;
-    }
-
-    public void setRandomParameterValueProvider(RandomParameterValueProvider randomParameterValueProvider) {
-        this.randomParameterValueProvider = randomParameterValueProvider;
-    }
-
-    public EnumParameterValueProvider getEnumParameterValueProvider() {
-        return enumParameterValueProvider;
-    }
-
-    public void setEnumParameterValueProvider(EnumParameterValueProvider enumParameterValueProvider) {
-        this.enumParameterValueProvider = enumParameterValueProvider;
     }
 
     public List<String> getNominalTestPaths() {

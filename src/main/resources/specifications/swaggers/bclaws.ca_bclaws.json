@@ -120,7 +120,7 @@
             "name": "civixDocumentId",
             "required": true,
             "schema": {
-              "default": "statreg",
+              "default": "01009_01",
               "type": "string"
             }
           }

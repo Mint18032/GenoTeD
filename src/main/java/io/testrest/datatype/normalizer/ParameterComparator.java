@@ -1,10 +1,10 @@
-package io.testrest.datatype.parameter;
+package io.testrest.datatype.normalizer;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.porterStemmer.PorterStemmer;
 
-public class ParameterComparator {
+public class ParameterComparator extends Normalizer {
     /**
      * Normalizes parameter name follows 2 schemes: idCompletion and PorterStemmer.
      *
