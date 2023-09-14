@@ -1,14 +1,14 @@
 package io.testrest.datatype;
 
 public enum HttpMethod {
-    GET,
+    HEAD,
     POST,
+    GET,
     PUT,
     PATCH,
-    DELETE,
-    HEAD,
     OPTIONS,
-    TRACE;
+    TRACE,
+    DELETE;
 
     public static HttpMethod getMethod(String stringMethod) {
         for (HttpMethod method : HttpMethod.values()) {

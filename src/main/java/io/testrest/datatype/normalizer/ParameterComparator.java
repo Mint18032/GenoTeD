@@ -30,6 +30,12 @@ public class ParameterComparator extends Normalizer {
         return p1_name.equalsIgnoreCase(p2_name);
     }
 
+    public static boolean matchedNames(OperationNode o1, Parameter p1, String p2) {
+        String p1_name = PorterStemming(idCompletion(o1, p1));
+        String p2_name = PorterStemming(p2);
+        return p1_name.equalsIgnoreCase(p2_name);
+    }
+
     /**
      * ID completion: add prefix to a field named <i>id</i><br/>
      *   - If it is a field of a structured

@@ -1,21 +1,29 @@
 package io.testrest.datatype.graph;
 
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.testrest.Configuration;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.parameter.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private Boolean isReadOnly = false;
+    private Boolean containsHeader = false;
     private HttpMethod method;
     private String path;
     private Boolean tested;
     private String operationNodeId;
     private int testingAttempts;
+    private List<String> outputs;
 
     private List<ParameterLeaf> parameterLeafList;
     private static int idGenerationNum = 0;
@@ -71,6 +79,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
         idGenerationNum++;
+        parseOutput();
 
         if (getOperationId() == null) {
             setOperationId(this.operationNodeId);
@@ -78,6 +87,9 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
         if (getParameters() != null) {
             for (Parameter p : getParameters()) {
+                if (p.getIn().equals("header")) {
+                    setContainsHeader(true);
+                }
 
                 // TODO: match oneof, anyof, allof types
                 switch (p.getSchema().getType()) {
@@ -120,6 +132,51 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         sb.append("    requestBody: ").append(this.getRequestBody()).append("\n");
         sb.append("}");
         return sb.toString();
+    }
+
+    /**
+     * Reads all output parameters of an operation that is listed in OpenAPI.
+     */
+    public void parseOutput() {
+        outputs = new ArrayList<>();
+
+        ApiResponse apiResponse = this.getResponses().values().stream().findFirst().get();
+        List<MediaType> mediaTypeStream = new ArrayList<>(apiResponse.getContent().values());
+
+        // OAS v3
+        mediaTypeStream.forEach(mediaType -> {
+            if (mediaType.getSchema().getItems() != null)
+                for(Object key : mediaType.getSchema().getItems().getProperties().keySet())
+                    outputs.add(key.toString());
+        });
+
+        // OAS v2
+        if (outputs.isEmpty()) {
+            mediaTypeStream.forEach(objectSchema -> {
+                if (objectSchema.getSchema().getRequired() != null)
+                    for (Object param : objectSchema.getSchema().getRequired())
+                        outputs.add(param.toString());
+            });
+        }
+    }
+
+    /**
+     * @return all output parameters of an operation that is listed in OpenAPI.
+     */
+    public List<String> getOutputs() {
+        return this.outputs;
+    }
+
+    public void setOutputs(List<String> outputs) {
+        this.outputs = outputs;
+    }
+
+    public Boolean containsHeader() {
+        return containsHeader;
+    }
+
+    public void setContainsHeader(Boolean containsHeader) {
+        this.containsHeader = containsHeader;
     }
 
     public String getOperationNodeId() {

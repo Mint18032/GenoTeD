@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/bclaws.ca_bclaws.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/bbc.co.uk.json"; // path to openapi specification, can be either a link or a file.
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;

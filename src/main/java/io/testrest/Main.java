@@ -54,7 +54,8 @@ public class Main {
         }
 
         logger.info("Successfully built the Operation Dependency Graph. \nStarting generating nominal testcases.");
-        NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(operationList, OpenAPIParser.getUrls());
+        NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(OpenAPIParser.getUrls());
+        nominalTestGenerator.generateTest(ODG);
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
         logger.info("Running nominal test cases");
         List<String> paths = nominalTestGenerator.getNominalTestPaths();

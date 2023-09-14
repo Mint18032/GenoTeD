@@ -1,14 +1,13 @@
 package io.testrest.implementation;
 
 import io.testrest.Environment;
-import io.testrest.datatype.HttpMethod;
-import io.testrest.datatype.OperationNodeList;
+import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.ParameterLocation;
 import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.implementation.parameterValueProvider.multi.CombinedProviderParameterValueProvider;
-import io.testrest.parser.OpenAPIParser;
+import io.testrest.testing.OperationsSorter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class NominalTestGenerator extends TestGenerator {
     private final CombinedProviderParameterValueProvider parameterValueProvider = new CombinedProviderParameterValueProvider();
@@ -25,85 +23,46 @@ public class NominalTestGenerator extends TestGenerator {
     /**
      * Initializes generator and generate testcases for all params of each operation of every path, the consequence is based on CRUD semantic.
      * Priorities: HEAD -> POST -> GET -> PUT & PATCH -> OPTIONS -> TRACE -> DELETE
-     * @param operationNodeList
      * @param serverUrls
      */
-    public NominalTestGenerator(OperationNodeList operationNodeList, List<String> serverUrls) {
+    public NominalTestGenerator(List<String> serverUrls) {
         super();
         setTestOutPutPath(Environment.getConfiguration().getOutputPath() + "/NominalTests/");
         for (String url : serverUrls) {
             String filename = (serverUrls.size() > 1 ? "TestServer" + serverUrls.indexOf(url) : "Tests") + ".feature";
+            addTestFile(filename);
             nominalTestPaths.add(getTestOutPutPath().substring(getTestOutPutPath().indexOf("output/")).concat(filename));
             generateTestBackground(url, filename);
         }
-        for(String path : OpenAPIParser.getPathUrls()) {
-            List<OperationNode> headOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.HEAD))).collect(Collectors.toList());
-            for(OperationNode operation : headOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
+    }
+
+    /**
+     * Main test generate and validate function.
+     * @param ODG Operation Dependencies Graph.
+     */
+    @Override
+    public void generateTest(OperationDependencyGraph ODG) {
+        while (ODG.getGraph().vertexSet().size() > 0) {
+            List<OperationNode> nodeToTest = ODG.getLeaves();
+
+            if (nodeToTest.size() == 0) {
+                nodeToTest = ODG.getNextDependentNodes();
             }
-            List<OperationNode> postOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.POST))).collect(Collectors.toList());
-            for(OperationNode operation : postOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> getOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.GET))).collect(Collectors.toList());
-            for(OperationNode operation : getOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> putOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.PUT))).collect(Collectors.toList());
-            for(OperationNode operation : putOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> patchOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.PATCH))).collect(Collectors.toList());
-            for(OperationNode operation : patchOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> optionsOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.OPTIONS))).collect(Collectors.toList());
-            for(OperationNode operation : optionsOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> traceOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.TRACE))).collect(Collectors.toList());
-            for(OperationNode operation : traceOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
-                }
-            }
-            List<OperationNode> deleteOperations = operationNodeList.getOperationNodeList().stream().filter(operationNode ->
-                    (operationNode.getPath().equals(path) && operationNode.getMethod().equals(HttpMethod.DELETE))).collect(Collectors.toList());
-            for(OperationNode operation : deleteOperations) {
-                // gen test
-                for (String url : getTestFiles()) {
-                    generateOperationTest(operation, url);
+
+            nodeToTest = OperationsSorter.semanticSort(nodeToTest);
+
+            // Test each operation
+            for (OperationNode operationNode : nodeToTest) {
+                boolean is_tested = generateOperationTest(operationNode);
+
+                // Remove successfully tested nodes
+                if (is_tested) {
+                    ODG.getGraph().removeVertex(operationNode);
                 }
             }
         }
-
     }
+
     public void generateTestBackground(String url, String filename) {
         File file = new File(getTestOutPutPath());
         file.mkdirs();
@@ -126,7 +85,7 @@ public class NominalTestGenerator extends TestGenerator {
         }
     }
 
-    public void generateOperationTest(OperationNode operation, String filename) {
+    public boolean generateOperationTest(OperationNode operation) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\n\t@").append(operation.getOperationId());
         sb.append("\n\tScenario: ").append(operation.getOperationId());
@@ -135,12 +94,23 @@ public class NominalTestGenerator extends TestGenerator {
 //            sb.append("\n\t\t\"\"\"").append("\n\t\t{");
 //            sb.append("\n\t\t}").append("\n\t\t\"\"\"");
 //        }
+
+        if (operation.containsHeader()) {
+            sb.append("\n\t\t* configure headers = {");
+            for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
+                if (parameterLeaf.getLocation() == ParameterLocation.HEADER)
+                    sb.append(generateHeaderInput(parameterLeaf));
+            }
+            sb.append(" }");
+        }
+
         String path = operation.getPath();
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.PATH || parameterLeaf.getLocation() == ParameterLocation.MISSING)
                 path = generatePathInput(parameterLeaf, path);
         }
         sb.append("\n\t\tGiven path '").append(path).append("'");
+
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
                 sb.append(generateQueryInput(parameterLeaf));
@@ -158,21 +128,22 @@ public class NominalTestGenerator extends TestGenerator {
         sb.append("\n\t\tThen status ").append(response_status.contains("default") ? "200" : response_status);
         sb.append("\n\t\tAnd print response");
 
-        try {
-            FileWriter myWriter = new FileWriter(filename, true);
-            myWriter.write(sb.toString());
-            myWriter.close();
-//            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred. Could not create background condition");
-            e.printStackTrace();
+        for (String filename : getTestFiles()) {
+            try {
+                FileWriter myWriter = new FileWriter(filename, true);
+                myWriter.write(sb.toString());
+                myWriter.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred. Could not write testcases to file " + filename);
+                e.printStackTrace();
+            }
         }
+        return true;
     }
 
     public String generatePathInput(ParameterLeaf parameterLeaf, String path) {
         Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
 
-        System.out.println("re: " + value);
         getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
         path = path.replace("{" + parameterLeaf.getName() + "}", value.toString());
 
@@ -184,6 +155,17 @@ public class NominalTestGenerator extends TestGenerator {
         Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
         input.append("\"").append(value).append("\"");
+
+        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
+
+        return input.toString();
+    }
+
+    public String generateHeaderInput(ParameterLeaf parameterLeaf) {
+        StringBuilder input = new StringBuilder();
+        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
+        input.append(" '").append(parameterLeaf.getName().toString()).append("' : ");
+        input.append("'").append(value).append("',");
 
         getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
 

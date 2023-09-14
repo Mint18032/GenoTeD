@@ -54,6 +54,7 @@ public enum ParameterTypeFormat {
                 return INT8;
             case("int16"):
                 return INT16;
+            case("integer"):
             case("int32"):
                 return INT32;
             case ("int64"):

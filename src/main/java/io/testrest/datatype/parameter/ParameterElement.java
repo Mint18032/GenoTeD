@@ -74,6 +74,7 @@ public abstract class ParameterElement extends Taggable {
         if (style == null) {
             switch (this.location) {
                 case HEADER:
+                    operation.setContainsHeader(true);
                 case PATH:
                     this.style = ParameterStyle.SIMPLE;
                     break;

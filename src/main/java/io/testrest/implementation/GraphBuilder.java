@@ -5,9 +5,10 @@ import io.testrest.Main;
 import io.testrest.datatype.graph.DependencyEdge;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.graph.OperationDependencyGraph;
-import io.testrest.datatype.parameter.ParameterComparator;
+import io.testrest.datatype.normalizer.ParameterComparator;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Builds OperationDependencyGraph.
@@ -24,18 +25,19 @@ public class GraphBuilder {
         }
 
         // Identify parameter dependencies, add edges to ODG
-        for (int i = 0; i < operationNodeList.size()-1; i++) {
-            for (int j = i+1; j < operationNodeList.size(); j++) {
-                if (operationNodeList.get(i).getParameters() != null && operationNodeList.get(j).getParameters() != null) {
-                    for (Parameter pi: operationNodeList.get(i).getParameters()) {
-                        for (Parameter pj: operationNodeList.get(j).getParameters()) {
-                            if (ParameterComparator.matchedNames(operationNodeList.get(i), pi, operationNodeList.get(j), pj)) {
-                                ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(ParameterComparator.normalize(operationNodeList.get(i), pi)));
+        for (int i = 0; i < operationNodeList.size(); i++) {
+            if (operationNodeList.get(i).getParameters() != null)
+                for (int j = 0; j < operationNodeList.size(); j++) {
+                    if (i != j && operationNodeList.get(j).getOutputs() != null) {
+                        for (Parameter pi: operationNodeList.get(i).getParameters()) {
+                            for (String pj: operationNodeList.get(j).getOutputs()) {
+                                if (ParameterComparator.matchedNames(operationNodeList.get(i), pi, pj)) {
+                                    ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(ParameterComparator.normalize(operationNodeList.get(i), pi)));
+                                }
                             }
                         }
                     }
                 }
-            }
         }
 
 //        for (String path : OpenAPIParser.getPathUrls()) {

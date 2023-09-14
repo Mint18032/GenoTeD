@@ -9,6 +9,7 @@ import org.jgrapht.nio.dot.DOTExporter;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -33,6 +34,30 @@ public class OperationDependencyGraph {
 
     public void addVertex(OperationNode operationNode) {
         graph.addVertex(operationNode);
+    }
+
+    /**
+     * Leaves are those operations with no outgoing edges, i.e. operations with no dependencies.
+     * No dependency means either no input fields or input fields found in the output of no operations.
+     *
+     * @return a list of nodes that have no dependencies.
+     */
+    public List<OperationNode> getLeaves() {
+        List<OperationNode> leaves = graph.vertexSet().stream().filter(v -> graph.outgoingEdgesOf(v).size() == 0).collect(Collectors.toList());
+
+        return leaves;
+    }
+
+    /**
+     * @return a list of nodes that have at least 1 mutual parameter.
+     */
+    public List<OperationNode> getNextDependentNodes() {
+        OperationNode firstNode = this.getGraph().vertexSet().iterator().next();
+        List<OperationNode> dependentNodes = new ArrayList<>();
+        dependentNodes.add(firstNode);
+        dependentNodes.addAll(graph.vertexSet().stream().filter(v -> graph.containsEdge(v, firstNode)).collect(Collectors.toList()));
+
+        return dependentNodes;
     }
 
     /**

@@ -1,10 +1,15 @@
 package io.testrest.implementation;
 
 import io.testrest.Environment;
+import io.testrest.datatype.HttpMethod;
+import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.datatype.graph.OperationNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class TestGenerator {
 
@@ -29,7 +34,9 @@ public abstract class TestGenerator {
 
     public abstract void generateTestBackground(String url, String filename);
 
-    public abstract void generateOperationTest(OperationNode operation, String filename);
+    public abstract boolean generateOperationTest(OperationNode operation);
+
+    public abstract void generateTest(OperationDependencyGraph ODG);
 
     public static List<String> getTestFiles() {
         return testFiles;
