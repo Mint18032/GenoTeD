@@ -60,7 +60,7 @@ public class Main {
         logger.info("Running nominal test cases");
         List<String> paths = nominalTestGenerator.getNominalTestPaths();
         for (String path : paths) {
-            testRunner.testAll(path);
+//            testRunner.testAll(path);
             //        testRunner.testOperation(path, "v2All");
         }
     }

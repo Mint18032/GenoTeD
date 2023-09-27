@@ -4,6 +4,7 @@ import io.testrest.Environment;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.datatype.graph.OperationNode;
+import io.testrest.implementation.oracle.StatusCodeOracle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,8 @@ public abstract class TestGenerator {
     private String testOutPutPath;
 
     private static List<String> testFiles;
+
+    private StatusCodeOracle statusCodeOracle;
 
     public TestGenerator() {
         environment = Environment.getInstance();
@@ -57,4 +60,13 @@ public abstract class TestGenerator {
     public void setTestOutPutPath(String outPutPath) {
         testOutPutPath = outPutPath;
     }
+
+    public StatusCodeOracle getStatusCodeOracle() {
+        return statusCodeOracle;
+    }
+
+    public void setStatusCodeOracle(StatusCodeOracle statusCodeOracle) {
+        this.statusCodeOracle = statusCodeOracle;
+    }
+
 }

@@ -20,7 +20,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private Boolean containsHeader = false;
     private HttpMethod method;
     private String path;
-    private Boolean tested;
+    private int tested;
     private String operationNodeId;
     private int testingAttempts;
     private List<String> outputs;
@@ -30,7 +30,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method) {
         super();
-        this.tested = false;
+        this.tested = 0;
         this.method = method;
         this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
@@ -44,7 +44,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method, String path) {
         super();
-        this.tested = false;
+        this.tested = 0;
         this.method = method;
         this.path = path;
         this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
@@ -59,7 +59,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method, String path, Operation operation) {
         super();
-        this.tested = false;
+        this.tested = 0;
         this.method = method;
         this.path = path;
         this.testingAttempts = 0;
@@ -219,12 +219,12 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         return new OperationNode(this.method, this.path, this);
     }
 
-    public Boolean isTested() {
+    public int getTestedTimes() {
         return tested;
     }
 
     public void markAsTested() {
-        tested = true;
+        tested++;
     }
 
     public List<ParameterLeaf> getParameterLeafList() {

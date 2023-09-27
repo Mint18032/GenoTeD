@@ -7,7 +7,8 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/bbc.co.uk.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/cnab-online.herokuapp.com.json"; // path to openapi specification, can be either a link or a file.
+    private final int maxFuzzingTimes = 5; // number of fuzzing times per operation
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;
@@ -32,6 +33,10 @@ public class Configuration {
 
     public String getOutputPath() {
         return outputPath;
+    }
+
+    public int getMaxFuzzingTimes() {
+        return maxFuzzingTimes;
     }
 
     public void setOutputPath(String outputPath) {

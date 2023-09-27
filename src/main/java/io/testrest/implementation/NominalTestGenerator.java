@@ -6,6 +6,7 @@ import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.ParameterLocation;
 import io.testrest.dictionary.DictionaryEntry;
+import io.testrest.implementation.oracle.NominalTestOracle;
 import io.testrest.implementation.parameterValueProvider.multi.CombinedProviderParameterValueProvider;
 import io.testrest.testing.OperationsSorter;
 
@@ -27,6 +28,7 @@ public class NominalTestGenerator extends TestGenerator {
      */
     public NominalTestGenerator(List<String> serverUrls) {
         super();
+        setStatusCodeOracle(new NominalTestOracle());
         setTestOutPutPath(Environment.getConfiguration().getOutputPath() + "/NominalTests/");
         for (String url : serverUrls) {
             String filename = (serverUrls.size() > 1 ? "TestServer" + serverUrls.indexOf(url) : "Tests") + ".feature";
@@ -42,6 +44,8 @@ public class NominalTestGenerator extends TestGenerator {
      */
     @Override
     public void generateTest(OperationDependencyGraph ODG) {
+        int maxFuzzingTimes = Environment.getConfiguration().getMaxFuzzingTimes();
+
         while (ODG.getGraph().vertexSet().size() > 0) {
             List<OperationNode> nodeToTest = ODG.getLeaves();
 
@@ -53,11 +57,15 @@ public class NominalTestGenerator extends TestGenerator {
 
             // Test each operation
             for (OperationNode operationNode : nodeToTest) {
-                boolean is_tested = generateOperationTest(operationNode);
+                while (operationNode.getTestedTimes() <= maxFuzzingTimes) {
+                    boolean success = generateOperationTest(operationNode);
+                    operationNode.markAsTested();
 
-                // Remove successfully tested nodes
-                if (is_tested) {
-                    ODG.getGraph().removeVertex(operationNode);
+                    // Remove successfully tested nodes
+                    if (success || operationNode.getTestedTimes() == maxFuzzingTimes) {
+                        ODG.getGraph().removeVertex(operationNode);
+                        break;
+                    }
                 }
             }
         }
@@ -89,11 +97,6 @@ public class NominalTestGenerator extends TestGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\n\t@").append(operation.getOperationId());
         sb.append("\n\tScenario: ").append(operation.getOperationId());
-//        if (!operation.getParameterLeafList().isEmpty()) {
-//            sb.append("\n\t\t* def param =");
-//            sb.append("\n\t\t\"\"\"").append("\n\t\t{");
-//            sb.append("\n\t\t}").append("\n\t\t\"\"\"");
-//        }
 
         if (operation.containsHeader()) {
             sb.append("\n\t\t* configure headers = {");
@@ -115,18 +118,15 @@ public class NominalTestGenerator extends TestGenerator {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
                 sb.append(generateQueryInput(parameterLeaf));
         }
-//        if (!operation.getParameterLeafList().isEmpty()) {
-//            sb.append("\n\t\tAnd request param");
-//        }
+
         sb.append("\n\t\tWhen method ").append(operation.getMethod());
 
-//        TODO: other status
         String response_status = operation.getResponses().entrySet().stream()
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse("200");
         sb.append("\n\t\tThen status ").append(response_status.contains("default") ? "200" : response_status);
-        sb.append("\n\t\tAnd print response");
+//        sb.append("\n\t\tAnd print response");
 
         for (String filename : getTestFiles()) {
             try {
@@ -138,7 +138,8 @@ public class NominalTestGenerator extends TestGenerator {
                 e.printStackTrace();
             }
         }
-        return true;
+
+        return getStatusCodeOracle().assessOperationTest(operation, getNominalTestPaths());
     }
 
     public String generatePathInput(ParameterLeaf parameterLeaf, String path) {
