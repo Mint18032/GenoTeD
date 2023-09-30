@@ -14,12 +14,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class NominalTestGenerator extends TestGenerator {
     private final CombinedProviderParameterValueProvider parameterValueProvider = new CombinedProviderParameterValueProvider();
     private List<String> nominalTestPaths = new ArrayList<>();
+    private List<DictionaryEntry> pendingEntries = new LinkedList<>();
 
     /**
      * Initializes generator and generate testcases for all params of each operation of every path, the consequence is based on CRUD semantic.
@@ -86,7 +88,6 @@ public class NominalTestGenerator extends TestGenerator {
             FileWriter myWriter = new FileWriter(filePath, true);
             myWriter.write(sb.toString());
             myWriter.close();
-//            System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
             System.out.println("An error occurred. Could not create background condition");
             e.printStackTrace();
@@ -112,7 +113,7 @@ public class NominalTestGenerator extends TestGenerator {
             if (parameterLeaf.getLocation() == ParameterLocation.PATH || parameterLeaf.getLocation() == ParameterLocation.MISSING)
                 path = generatePathInput(parameterLeaf, path);
         }
-        sb.append("\n\t\tGiven path '").append(path).append("'");
+        sb.append("\n\t\tGiven path \"").append(path).append("\"");
 
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
@@ -126,7 +127,7 @@ public class NominalTestGenerator extends TestGenerator {
                 .findFirst()
                 .orElse("200");
         sb.append("\n\t\tThen status ").append(response_status.contains("default") ? "200" : response_status);
-//        sb.append("\n\t\tAnd print response");
+        sb.append("\n\t\tAnd print response");
 
         for (String filename : getTestFiles()) {
             try {
@@ -139,14 +140,25 @@ public class NominalTestGenerator extends TestGenerator {
             }
         }
 
-        return getStatusCodeOracle().assessOperationTest(operation, getNominalTestPaths());
+        boolean statusCodePassed = getStatusCodeOracle().assessOperationTest(operation, getNominalTestPaths());
+
+        // add pending entries of successfully generated testcases to Dictionary
+        if (statusCodePassed) {
+            pendingEntries.forEach(dictionaryEntry -> {
+                getEnvironment().getGlobalDictionary().addEntry(dictionaryEntry);
+            });
+        }
+
+        pendingEntries.clear();
+
+        return statusCodePassed;
     }
 
     public String generatePathInput(ParameterLeaf parameterLeaf, String path) {
         Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
-
-        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
         path = path.replace("{" + parameterLeaf.getName() + "}", value.toString());
+
+        pendingEntries.add(new DictionaryEntry(parameterLeaf, value));
 
         return path;
     }
@@ -157,7 +169,7 @@ public class NominalTestGenerator extends TestGenerator {
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
         input.append("\"").append(value).append("\"");
 
-        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
+        pendingEntries.add(new DictionaryEntry(parameterLeaf, value));
 
         return input.toString();
     }
@@ -168,7 +180,7 @@ public class NominalTestGenerator extends TestGenerator {
         input.append(" '").append(parameterLeaf.getName().toString()).append("' : ");
         input.append("'").append(value).append("',");
 
-        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
+        pendingEntries.add(new DictionaryEntry(parameterLeaf, value));
 
         return input.toString();
     }
@@ -179,7 +191,7 @@ public class NominalTestGenerator extends TestGenerator {
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
         input.append("\"").append(value).append("\"");
 
-        getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(parameterLeaf, value));
+        pendingEntries.add(new DictionaryEntry(parameterLeaf, value));
 
         return input.toString();
     }
@@ -190,5 +202,13 @@ public class NominalTestGenerator extends TestGenerator {
 
     public void setNominalTestPaths(List<String> nominalTestPaths) {
         this.nominalTestPaths = nominalTestPaths;
+    }
+
+    public List<DictionaryEntry> getPendingEntries() {
+        return pendingEntries;
+    }
+
+    public void setPendingEntries(List<DictionaryEntry> pendingEntries) {
+        this.pendingEntries = pendingEntries;
     }
 }

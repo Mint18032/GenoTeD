@@ -1,5 +1,9 @@
 package io.testrest;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -7,12 +11,13 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/cnab-online.herokuapp.com.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/cybertaxonomy.eu.json"; // path to openapi specification, can be either a link or a file.
     private final int maxFuzzingTimes = 5; // number of fuzzing times per operation
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;
     private String openAPIName;
+    private int specVersion;
 
     private List<String> qualifiableNames;
 
@@ -25,6 +30,28 @@ public class Configuration {
         qualifiableNames = new ArrayList<>();
         qualifiableNames.add("id");
         qualifiableNames.add("name");
+        setSpecVersion(2);
+
+        try {
+            File inputFile = new File("src/main/resources/" + openApiSpecPath);
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            String currentLine;
+
+            while ((currentLine = reader.readLine()) != null) {
+                if (currentLine.contains("openapi:")) {
+                    String ver = currentLine.substring(currentLine.lastIndexOf("openapi:") + 8, currentLine.lastIndexOf("openapi:") + 11).trim();
+                    setSpecVersion(ver.startsWith("3") ? 3 : ver.startsWith("2") ? 2 : 4);
+                    break;
+                } else if (currentLine.contains("swagger")) {
+                    setSpecVersion(2);
+                    break;
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Unable to specify specification version\n" + e.getMessage());
+            setSpecVersion(4);
+        }
     }
 
     public static String getOpenApiSpecPath() {
@@ -74,5 +101,13 @@ public class Configuration {
 
     public void setQualifiableNames(List<String> qualifiableNames) {
         this.qualifiableNames = qualifiableNames;
+    }
+
+    public int getSpecVersion() {
+        return specVersion;
+    }
+
+    public void setSpecVersion(int specVersion) {
+        this.specVersion = specVersion;
     }
 }

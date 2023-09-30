@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.testrest.Configuration;
+import io.testrest.Environment;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.parameter.*;
 
@@ -141,22 +142,33 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         outputs = new ArrayList<>();
 
         ApiResponse apiResponse = this.getResponses().values().stream().findFirst().get();
+
+        if (apiResponse.getContent() == null) return; // no output
+
         List<MediaType> mediaTypeStream = new ArrayList<>(apiResponse.getContent().values());
 
-        // OAS v3
-        mediaTypeStream.forEach(mediaType -> {
-            if (mediaType.getSchema().getItems() != null)
-                for(Object key : mediaType.getSchema().getItems().getProperties().keySet())
-                    outputs.add(key.toString());
-        });
+        try {
+            // OAS v3
+            if (Environment.getConfiguration().getSpecVersion() >= 3) {
+                mediaTypeStream.forEach(mediaType -> {
+                    if (mediaType.getSchema().getItems() != null) {
+                        for (Object key : mediaType.getSchema().getItems().getProperties().keySet())
+                            outputs.add(key.toString());
+                    }
+                });
+            }
 
-        // OAS v2
-        if (outputs.isEmpty()) {
-            mediaTypeStream.forEach(objectSchema -> {
-                if (objectSchema.getSchema().getRequired() != null)
-                    for (Object param : objectSchema.getSchema().getRequired())
-                        outputs.add(param.toString());
-            });
+            // OAS v2
+            if (outputs.isEmpty()) {
+                mediaTypeStream.forEach(objectSchema -> {
+                    if (objectSchema.getSchema().getRequired() != null)
+                        for (Object param : objectSchema.getSchema().getRequired())
+                            outputs.add(param.toString());
+                    // TODO: parse output from example & properties
+                });
+            }
+        } catch (NullPointerException e) {
+            // ignore, no output to read
         }
     }
 

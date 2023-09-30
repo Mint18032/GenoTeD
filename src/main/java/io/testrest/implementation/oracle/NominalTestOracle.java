@@ -6,6 +6,7 @@ import io.testrest.datatype.graph.OperationNode;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class NominalTestOracle extends StatusCodeOracle {
     /**
@@ -22,7 +23,7 @@ public class NominalTestOracle extends StatusCodeOracle {
             String error = results.getErrors().get(0);
             String status = error.substring(error.indexOf("status code was: ") + 17, error.indexOf("status code was: ") + 20);
 
-            if (status.startsWith("4")) {
+            if (status.startsWith("4") || error.contains("Unexpected token")) {
                 testPaths.forEach(path -> {
                             try {
                                 deleteTestcase(path, operationNode.getOperationId());
@@ -47,5 +48,8 @@ public class NominalTestOracle extends StatusCodeOracle {
      * Gets values returned by a request and saves them to Dictionary.
      * @param results karate results object.
      */
-    public void receiveResponseValues(Results results) {}
+    public void receiveResponseValues(Results results) {
+        System.out.println("+++++++++++++++++++++++++++++++++++\n");
+        System.out.println();
+    }
 }

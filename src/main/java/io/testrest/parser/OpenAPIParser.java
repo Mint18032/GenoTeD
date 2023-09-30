@@ -103,11 +103,18 @@ public class OpenAPIParser {
                 String normalized_path_url = PathNormalizer.normalize(m.getKey());
                 pathUrls.add(normalized_path_url);
                 PathItem pathItem = m.getValue();
+//                System.out.println(m.getValue());
                 if (pathItem.getHead() != null) {
                     operationList.addOperation(new OperationNode(HttpMethod.HEAD, normalized_path_url, pathItem.getHead()));
                 }
                 if (pathItem.getPost() != null) {
-                    operationList.addOperation(new OperationNode(HttpMethod.POST, normalized_path_url, pathItem.getPost()));
+                    try {
+
+                        operationList.addOperation(new OperationNode(HttpMethod.POST, normalized_path_url, pathItem.getPost()));
+                    } catch (Exception e) {
+                        System.out.println("bug here");
+                        throw (e);
+                    }
                 }
                 if (pathItem.getGet() != null) {
                     operationList.addOperation(new OperationNode(HttpMethod.GET, normalized_path_url, pathItem.getGet()));
