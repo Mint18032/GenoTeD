@@ -1,4 +1,4 @@
-package io.testrest.implementation.parameterValueProvider.single;
+package io.testrest.testing.parameterValueProvider.single;
 
 
 import io.testrest.Environment;
@@ -6,7 +6,7 @@ import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.dictionary.Dictionary;
 import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.helper.ExtendedRandom;
-import io.testrest.implementation.parameterValueProvider.CountableParameterValueProvider;
+import io.testrest.testing.parameterValueProvider.CountableParameterValueProvider;
 
 import java.util.Optional;
 import java.util.stream.Collectors;

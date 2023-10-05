@@ -1,4 +1,4 @@
-package io.testrest.implementation.parameterValueProvider;
+package io.testrest.testing.parameterValueProvider;
 
 import io.testrest.datatype.parameter.ParameterLeaf;
 

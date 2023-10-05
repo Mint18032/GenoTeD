@@ -30,6 +30,11 @@ public abstract class ParameterLeaf extends ParameterElement {
 //        value = ObjectHelper.deepCloneObject(other);
     }
 
+    protected ParameterLeaf(ParameterLeaf other) {
+        super(other);
+//        value = ObjectHelper.deepCloneObject(other);
+    }
+
     protected ParameterLeaf(Parameter other, OperationNode operation) {
         super(other, operation);
 //        value = ObjectHelper.deepCloneObject(other);

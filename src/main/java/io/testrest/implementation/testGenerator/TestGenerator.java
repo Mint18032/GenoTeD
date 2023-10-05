@@ -1,18 +1,16 @@
-package io.testrest.implementation;
+package io.testrest.implementation.testGenerator;
 
 import io.testrest.Environment;
-import io.testrest.datatype.HttpMethod;
-import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.implementation.oracle.StatusCodeOracle;
+import io.testrest.testing.TestSequence;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 public abstract class TestGenerator {
+    protected Logger logger = Logger.getLogger(TestGenerator.class.getName());
 
     private Environment environment;
 
@@ -20,11 +18,14 @@ public abstract class TestGenerator {
 
     private static List<String> testFiles;
 
+    protected TestSequence testSequence;
+
     private StatusCodeOracle statusCodeOracle;
 
     public TestGenerator() {
         environment = Environment.getInstance();
         testFiles = new ArrayList<>();
+        testSequence = new TestSequence();
     }
 
     public Environment getEnvironment() {
@@ -36,10 +37,6 @@ public abstract class TestGenerator {
     }
 
     public abstract void generateTestBackground(String url, String filename);
-
-    public abstract boolean generateOperationTest(OperationNode operation);
-
-    public abstract void generateTest(OperationDependencyGraph ODG);
 
     public static List<String> getTestFiles() {
         return testFiles;
@@ -59,6 +56,14 @@ public abstract class TestGenerator {
 
     public void setTestOutPutPath(String outPutPath) {
         testOutPutPath = outPutPath;
+    }
+
+    public TestSequence getTestSequence() {
+        return testSequence;
+    }
+
+    public void setTestSequence(TestSequence testSequence) {
+        this.testSequence = testSequence;
     }
 
     public StatusCodeOracle getStatusCodeOracle() {

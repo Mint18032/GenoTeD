@@ -1,9 +1,9 @@
-package io.testrest.implementation.parameterValueProvider.multi;
+package io.testrest.testing.parameterValueProvider.multi;
 
 import io.testrest.Environment;
 import io.testrest.datatype.parameter.ParameterLeaf;
-import io.testrest.implementation.parameterValueProvider.ParameterValueProvider;
-import io.testrest.implementation.parameterValueProvider.single.*;
+import io.testrest.testing.parameterValueProvider.ParameterValueProvider;
+import io.testrest.testing.parameterValueProvider.single.*;
 
 import java.util.ArrayList;
 import java.util.List;

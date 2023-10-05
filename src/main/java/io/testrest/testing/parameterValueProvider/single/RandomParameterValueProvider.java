@@ -1,9 +1,9 @@
-package io.testrest.implementation.parameterValueProvider.single;
+package io.testrest.testing.parameterValueProvider.single;
 
 import io.testrest.Environment;
 import io.testrest.datatype.parameter.*;
 import io.testrest.helper.ExtendedRandom;
-import io.testrest.implementation.parameterValueProvider.ParameterValueProvider;
+import io.testrest.testing.parameterValueProvider.ParameterValueProvider;
 
 public class RandomParameterValueProvider extends ParameterValueProvider {
     private static final ExtendedRandom random = Environment.getInstance().getRandom();
@@ -36,83 +36,77 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
     }
 
     private String generateCompliantString(StringParameter parameter) {
-        // FIXME: move here generation of value
-
         // Generate a random length according to the provided bounds
         int length = random.nextLength(parameter.getMinLength(), parameter.getMaxLength());
 
         // Generate a random string in multiple format
-        String generatedString = random.nextString(length);
+        String generatedString;
 
-        // Replace the generated string with the actual correct format in 90% of the cases
-        if (random.nextInt(10) < 9) {
-            switch (parameter.inferFormat()) {
-                case BYTE:
-                    generatedString = random.nextBase64();
-                    break;
-                case BINARY:
-                    generatedString = random.nextBinaryString();
-                    break;
-                case DATE:
-                    generatedString = random.nextDate();
-                    break;
-                case DATE_TIME:
-                    generatedString = random.nextDateTime();
-                    break;
-                case TIME:
-                    generatedString = random.nextTime();
-                    break;
-                case DURATION:
-                    generatedString = random.nextTimeDuration();
-                    break;
-                case PASSWORD:
-                    generatedString = random.nextRandomString(length);
-                    break;
-                case HOSTNAME:
-                    generatedString = random.nextDomain(true);
-                    break;
-                case URI:
-                    generatedString = random.nextURI();
-                    break;
-                case UUID:
-                    generatedString = random.nextUUID();
-                    break;
-                case IPV4:
-                    generatedString = random.nextIPV4();
-                    break;
-                case IPV6:
-                    generatedString = random.nextIPV6();
-                    break;
-                case EMAIL:
-                    generatedString = random.nextEmail();
-                    break;
-                case PHONE:
-                    generatedString = random.nextPhoneNumber();
-                    break;
-                case IBAN:
-                    generatedString = random.nextIBAN();
-                    break;
-                case SSN:
-                    generatedString = random.nextSSN();
-                    break;
-                case FISCAL_CODE:
-                    // TODO Add Fiscal Code
-                    generatedString = random.nextString(length);
-                    break;
-                case LOCATION:
-                    generatedString = random.nextLocation();
-                    break;
-                case COUNTRY_CODE:
-                    generatedString = random.nextCountryCode(length);
-                    break;
-                case CURRENCY:
-                    generatedString = random.nextCurrency();
-                    break;
-                default:
-                    generatedString = random.nextString(length);
-            }
+        switch (parameter.inferFormat()) {
+            case BYTE:
+                generatedString = random.nextBase64();
+                break;
+            case BINARY:
+                generatedString = random.nextBinaryString();
+                break;
+            case DATE:
+                generatedString = random.nextDate();
+                break;
+            case DATE_TIME:
+                generatedString = random.nextDateTime();
+                break;
+            case TIME:
+                generatedString = random.nextTime();
+                break;
+            case DURATION:
+                generatedString = random.nextTimeDuration();
+                break;
+            case PASSWORD:
+                generatedString = random.nextRandomString(length);
+                break;
+            case HOSTNAME:
+                generatedString = random.nextDomain(true);
+                break;
+            case URI:
+                generatedString = random.nextURI();
+                break;
+            case UUID:
+                generatedString = random.nextUUID();
+                break;
+            case IPV4:
+                generatedString = random.nextIPV4();
+                break;
+            case IPV6:
+                generatedString = random.nextIPV6();
+                break;
+            case EMAIL:
+                generatedString = random.nextEmail();
+                break;
+            case PHONE:
+                generatedString = random.nextPhoneNumber();
+                break;
+            case IBAN:
+                generatedString = random.nextIBAN();
+                break;
+            case SSN:
+                generatedString = random.nextSSN();
+                break;
+            case FISCAL_CODE:
+                // TODO Add Fiscal Code
+                generatedString = random.nextString(length);
+                break;
+            case LOCATION:
+                generatedString = random.nextLocation();
+                break;
+            case COUNTRY_CODE:
+                generatedString = random.nextCountryCode(length);
+                break;
+            case CURRENCY:
+                generatedString = random.nextCurrency();
+                break;
+            default:
+                generatedString = random.nextString(length);
         }
-
 
         //logger.debug("Generated string value for parameter " + normalizedName + " (" + name + "): " + generatedString);
 

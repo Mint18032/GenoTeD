@@ -1,4 +1,4 @@
-package io.testrest.implementation;
+package io.testrest.implementation.testGenerator;
 
 import io.testrest.Environment;
 import io.testrest.datatype.graph.OperationDependencyGraph;
@@ -7,8 +7,10 @@ import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.ParameterLocation;
 import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.implementation.oracle.NominalTestOracle;
-import io.testrest.implementation.parameterValueProvider.multi.CombinedProviderParameterValueProvider;
+import io.testrest.testing.parameterValueProvider.multi.CombinedProviderParameterValueProvider;
 import io.testrest.testing.OperationsSorter;
+import io.testrest.testing.TestInteraction;
+import io.testrest.testing.TestSequence;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -44,8 +46,7 @@ public class NominalTestGenerator extends TestGenerator {
      * Main test generate and validate function.
      * @param ODG Operation Dependencies Graph.
      */
-    @Override
-    public void generateTest(OperationDependencyGraph ODG) {
+    public TestSequence generateTest(OperationDependencyGraph ODG) {
         int maxFuzzingTimes = Environment.getConfiguration().getMaxFuzzingTimes();
 
         while (ODG.getGraph().vertexSet().size() > 0) {
@@ -71,8 +72,11 @@ public class NominalTestGenerator extends TestGenerator {
                 }
             }
         }
+
+        return testSequence;
     }
 
+    @Override
     public void generateTestBackground(String url, String filename) {
         File file = new File(getTestOutPutPath());
         file.mkdirs();
@@ -142,11 +146,14 @@ public class NominalTestGenerator extends TestGenerator {
 
         boolean statusCodePassed = getStatusCodeOracle().assessOperationTest(operation, getNominalTestPaths());
 
-        // add pending entries of successfully generated testcases to Dictionary
         if (statusCodePassed) {
+            // add pending entries of successfully generated testcases to Dictionary
             pendingEntries.forEach(dictionaryEntry -> {
                 getEnvironment().getGlobalDictionary().addEntry(dictionaryEntry);
             });
+
+            // generate new test interaction
+            testSequence.append(new TestInteraction(operation, pendingEntries));
         }
 
         pendingEntries.clear();

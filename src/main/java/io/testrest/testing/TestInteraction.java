@@ -3,9 +3,13 @@ package io.testrest.testing;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.HttpStatusCode;
 import io.testrest.datatype.graph.OperationNode;
+import io.testrest.datatype.parameter.ParameterLeaf;
+import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.helper.Taggable;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single HTTP test interaction (including a request and a response).
@@ -19,6 +23,7 @@ public class TestInteraction extends Taggable {
     private String requestHeaders;
     private String requestBody;
     private Timestamp requestSentAt;
+    private List<DictionaryEntry> requestInputs;
 
     // Response fields
     private String responseProtocol;
@@ -34,6 +39,30 @@ public class TestInteraction extends Taggable {
 
     public TestInteraction(OperationNode operation) {
         this.operation = operation;
+        this.requestURL = operation.getPath();
+        this.requestMethod = operation.getMethod();
+        this.requestInputs = new ArrayList<>();
+    }
+
+    public TestInteraction(OperationNode operation, List<DictionaryEntry> dictionaryEntryList) {
+        this.operation = operation;
+        this.requestURL = operation.getPath();
+        this.requestMethod = operation.getMethod();
+        this.requestInputs = new ArrayList<>();
+
+        dictionaryEntryList.forEach(entry -> {
+            this.requestInputs.add(new DictionaryEntry(entry.getSource(), entry.getValue()));
+        });
+
+    }
+
+    public TestInteraction(OperationNode operation, HttpMethod requestMethod, String requestURL, String requestHeaders, String requestBody, List<DictionaryEntry> requestInputs) {
+        this.operation = operation;
+        this.requestMethod = requestMethod;
+        this.requestURL = requestURL;
+        this.requestHeaders = requestHeaders;
+        this.requestBody = requestBody;
+        this.requestInputs = requestInputs;
     }
 
     public OperationNode getOperation() {
@@ -140,6 +169,18 @@ public class TestInteraction extends Taggable {
         this.testStatus = testStatus;
     }
 
+    public void setRequestInputs(List<DictionaryEntry> requestInputs) {
+        this.requestInputs = requestInputs;
+    }
+
+    public List<DictionaryEntry> getRequestInputs() {
+        return requestInputs;
+    }
+
+    public void addRequestInput(DictionaryEntry dictionaryEntry) {
+        requestInputs.add(dictionaryEntry);
+    }
+
     public void setRequestInfo(HttpMethod httpMethod, String requestURL, String requestHeaders, String requestBody) {
         this.requestMethod = httpMethod;
         this.requestURL = requestURL;
@@ -166,6 +207,7 @@ public class TestInteraction extends Taggable {
         requestHeaders = null;
         requestBody = null;
         requestSentAt = null;
+        requestInputs.clear();
 
         // Reset response info
         responseProtocol = null;
@@ -186,6 +228,20 @@ public class TestInteraction extends Taggable {
 
     @Override
     public String toString() {
-        return operation.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Object TestInteraction\nOperationId: ").append(operation.getOperationId());
+        stringBuilder.append("\nHTTP Method: ").append(requestMethod.toString());
+        stringBuilder.append("\nRequest URL: ").append(requestURL);
+        stringBuilder.append("\nInputs: ").append(requestInputs.toString());
+
+        if (testStatus.equals(TestStatus.EXECUTED)) {
+            stringBuilder.append("\nResponse Protocol: ").append(responseProtocol);
+            stringBuilder.append("\nResponse Status Code: ").append(responseStatusCode);
+            stringBuilder.append("\nResponse Body: ").append(responseBody);
+            stringBuilder.append("\nResponse Received At: ").append(responseReceivedAt);
+        }
+
+        return stringBuilder.toString();
     }
+
 }

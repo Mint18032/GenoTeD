@@ -2,10 +2,12 @@ package io.testrest;
 
 import io.testrest.datatype.OperationNodeList;
 import io.testrest.datatype.graph.OperationDependencyGraph;
+import io.testrest.implementation.testGenerator.ErrorTestGenerator;
 import io.testrest.implementation.GraphBuilder;
-import io.testrest.implementation.NominalTestGenerator;
+import io.testrest.implementation.testGenerator.NominalTestGenerator;
 import io.testrest.parser.OpenAPIParser;
 import io.testrest.testing.TestRunner;
+import io.testrest.testing.TestSequence;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -55,14 +57,26 @@ public class Main {
 
         logger.info("Successfully built the Operation Dependency Graph. \nStarting generating nominal testcases.");
         NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(OpenAPIParser.getUrls());
-        nominalTestGenerator.generateTest(ODG);
+        TestSequence nominalTestSequence = nominalTestGenerator.generateTest(ODG);
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
-        logger.info("Running nominal test cases");
-        List<String> paths = nominalTestGenerator.getNominalTestPaths();
-        for (String path : paths) {
-//            testRunner.testAll(path);
-            //        testRunner.testOperation(path, "v2All");
-        }
+
+        logger.info("Successfully generated the Nominal test cases. \nStarting generating error testcases.");
+        ErrorTestGenerator errorTestGenerator = new ErrorTestGenerator(OpenAPIParser.getUrls());
+        errorTestGenerator.generateTest(nominalTestSequence);
+        logger.info("Successfully generated the Error test cases. \n");
+
+
+//        logger.info("Running nominal test cases");
+//        List<String> nominalTestPaths = nominalTestGenerator.getNominalTestPaths();
+//        for (String path : nominalTestPaths) {
+////            testRunner.testAll(path);
+//        }
+//
+//        logger.info("Running error test cases");
+//        List<String> errorTestPaths = errorTestGenerator.getErrorTestPaths();
+//        for (String path : errorTestPaths) {
+////            testRunner.testAll(path);
+//        }
     }
 
     public static Configuration getConfiguration() {

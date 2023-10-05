@@ -42,6 +42,13 @@ public class NumberParameter extends ParameterLeaf {
         this(parent, parameterMap, operation, null);
     }
 
+    /*
+     * Used to create wrong type version of a parameter.
+     */
+    public NumberParameter(ParameterLeaf other) {
+        super(other);
+    }
+
     public NumberParameter(Parameter other) {
         super(other);
 

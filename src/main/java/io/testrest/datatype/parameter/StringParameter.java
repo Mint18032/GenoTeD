@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class StringParameter extends ParameterLeaf {
 
@@ -58,6 +59,10 @@ public class StringParameter extends ParameterLeaf {
         maxLength = other.getSchema().getMaxLength();
         minLength = other.getSchema().getMinLength();
         pattern = other.getSchema().getPattern();
+    }
+
+    public StringParameter(ParameterLeaf other) {
+        super(other);
     }
 
     public StringParameter(Parameter other, OperationNode operation) {
@@ -156,7 +161,7 @@ public class StringParameter extends ParameterLeaf {
     }
 
     /**
-     * Infers a format from format, type, and name of the parameter.
+     * Infers a format from format, type, example and name of the parameter.
      * @return the inferred format.
      */
     public ParameterTypeFormat inferFormat() {
@@ -201,69 +206,118 @@ public class StringParameter extends ParameterLeaf {
             case SSN:
                 return ParameterTypeFormat.SSN;
             default:
-                if (name.contains("email") || name.contains("e-mail")) {
-                    return ParameterTypeFormat.EMAIL;
-                } else if (name.contains("password")) {
-                    return ParameterTypeFormat.PASSWORD;
-                } else if (name.endsWith("time") || name.startsWith("time")) {
-                    return ParameterTypeFormat.TIME;
-                } else if (name.contains("duration")) {
-                    return ParameterTypeFormat.DURATION;
-                } else if (name.contains("iban")) {
-                    return ParameterTypeFormat.IBAN;
-                } else if ((name.contains("codice") && name.contains("fiscale")) || name.startsWith("cf") ||
-                        name.endsWith("cf")) {
-                    return ParameterTypeFormat.FISCAL_CODE;
-                } else if ((name.contains("social") && name.contains("security") && name.contains("number")) ||
-                        name.contains("ssn")) {
-                    return ParameterTypeFormat.SSN;
-                } else if (name.contains("uuid")) {
-                    return ParameterTypeFormat.UUID;
-                } else if (name.contains("phone")) {
-                    return ParameterTypeFormat.PHONE;
-                } else if (name.startsWith("uri") || name.endsWith("uri") ||
-                        name.startsWith("url") || name.endsWith("url")) {
-                    return ParameterTypeFormat.URI;
-                } else if (name.contains("hostname")) {
-                    return ParameterTypeFormat.HOSTNAME;
-                } else if (name.contains("host")) {
-                    if (random.nextBoolean()) {
-                        return ParameterTypeFormat.HOSTNAME;
-                    }
-                    return ParameterTypeFormat.IPV4;
-                } else if (name.endsWith("ip") || name.startsWith("ip")) {
-                    if (random.nextInt(10) < 8) {
-                        return ParameterTypeFormat.IPV4;
-                    }
-                    return ParameterTypeFormat.IPV6;
-                } else if (name.startsWith("date") || name.endsWith("date")) {
-                    if (random.nextBoolean()) {
-                        return ParameterTypeFormat.DATE;
-                    }
-                    return ParameterTypeFormat.DATE_TIME;
-                } else if (name.endsWith("file")) {
-                    if (random.nextInt(10) < 8) {
-                        return ParameterTypeFormat.BINARY;
-                    }
-                    return ParameterTypeFormat.BYTE;
-                } else if (name.endsWith("time") || name.startsWith("time")) {
-                    if (random.nextBoolean()) {
-                        return ParameterTypeFormat.TIME;
-                    }
-                    return ParameterTypeFormat.DATE_TIME;
-                } else if (name.contains("sha-1") || name.endsWith("hash") || name.contains("md5") ||
-                        name.contains("sha-256")) {
-                    return ParameterTypeFormat.HASH;
-                } else if (name.endsWith("location")) {
-                    return ParameterTypeFormat.LOCATION;
-                } else if (name.contains("country") || name.contains("alpha")) {
-                    return ParameterTypeFormat.COUNTRY_CODE;
-                } else if (name.contains("currency")) {
-                    return ParameterTypeFormat.CURRENCY;
+                ParameterTypeFormat inferedValue = inferFormatFromName();
+                if (inferedValue.equals(ParameterTypeFormat.MISSING)) {
+                    inferedValue = inferFormatFromExample();
                 }
-                // TODO: optimize country code, capital, continent. Classify by description
-                return ParameterTypeFormat.MISSING;
+                return inferedValue;
         }
+    }
+
+    /**
+     * Infers a format from the example of the parameter.
+     * @return the inferred format.
+     */
+    public ParameterTypeFormat inferFormatFromExample() {
+        if (examples == null) return ParameterTypeFormat.MISSING;
+
+        String email_regex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+        Pattern mail_pat = Pattern.compile(email_regex);
+
+        for (Object example : examples.toArray()) {
+            if (mail_pat.matcher(example.toString()).matches()) {
+                return ParameterTypeFormat.EMAIL;
+            }
+
+            for (String currency : Environment.getInstance().getRandom().getCurrencies()) {
+                if (currency.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.CURRENCY;
+            }
+
+            for (String code : Environment.getInstance().getRandom().getAlpha2CountryCodes()) {
+                if (code.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.COUNTRY_CODE;
+            }
+
+            for (String code : Environment.getInstance().getRandom().getAlpha3CountryCodes()) {
+                if (code.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.COUNTRY_CODE;
+            }
+        }
+
+        return ParameterTypeFormat.MISSING;
+    }
+
+    /**
+     * Infers a format from the name of the parameter.
+     * @return the inferred format.
+     */
+    public ParameterTypeFormat inferFormatFromName() {
+        ExtendedRandom random = Environment.getInstance().getRandom();
+
+        if (name.contains("email") || name.contains("e-mail")) {
+            return ParameterTypeFormat.EMAIL;
+        } else if (name.contains("password")) {
+            return ParameterTypeFormat.PASSWORD;
+        } else if (name.endsWith("time") || name.startsWith("time")) {
+            return ParameterTypeFormat.TIME;
+        } else if (name.contains("duration")) {
+            return ParameterTypeFormat.DURATION;
+        } else if (name.contains("iban")) {
+            return ParameterTypeFormat.IBAN;
+        } else if ((name.contains("codice") && name.contains("fiscale")) || name.startsWith("cf") ||
+                name.endsWith("cf")) {
+            return ParameterTypeFormat.FISCAL_CODE;
+        } else if ((name.contains("social") && name.contains("security") && name.contains("number")) ||
+                name.contains("ssn")) {
+            return ParameterTypeFormat.SSN;
+        } else if (name.contains("uuid")) {
+            return ParameterTypeFormat.UUID;
+        } else if (name.contains("phone")) {
+            return ParameterTypeFormat.PHONE;
+        } else if (name.startsWith("uri") || name.endsWith("uri") ||
+                name.startsWith("url") || name.endsWith("url")) {
+            return ParameterTypeFormat.URI;
+        } else if (name.contains("hostname")) {
+            return ParameterTypeFormat.HOSTNAME;
+        } else if (name.contains("host")) {
+            if (random.nextBoolean()) {
+                return ParameterTypeFormat.HOSTNAME;
+            }
+            return ParameterTypeFormat.IPV4;
+        } else if (name.endsWith("ip") || name.startsWith("ip")) {
+            if (random.nextInt(10) < 8) {
+                return ParameterTypeFormat.IPV4;
+            }
+            return ParameterTypeFormat.IPV6;
+        } else if (name.startsWith("date") || name.endsWith("date")) {
+            if (random.nextBoolean()) {
+                return ParameterTypeFormat.DATE;
+            }
+            return ParameterTypeFormat.DATE_TIME;
+        } else if (name.endsWith("file")) {
+            if (random.nextInt(10) < 8) {
+                return ParameterTypeFormat.BINARY;
+            }
+            return ParameterTypeFormat.BYTE;
+        } else if (name.endsWith("time") || name.startsWith("time")) {
+            if (random.nextBoolean()) {
+                return ParameterTypeFormat.TIME;
+            }
+            return ParameterTypeFormat.DATE_TIME;
+        } else if (name.contains("sha-1") || name.endsWith("hash") || name.contains("md5") ||
+                name.contains("sha-256")) {
+            return ParameterTypeFormat.HASH;
+        } else if (name.endsWith("location")) {
+            return ParameterTypeFormat.LOCATION;
+        } else if (name.contains("country") || name.contains("alpha")) {
+            return ParameterTypeFormat.COUNTRY_CODE;
+        } else if (name.contains("currency")) {
+            return ParameterTypeFormat.CURRENCY;
+        }
+        // TODO: optimize country code, capital, continent. Classify by description
+
+        return ParameterTypeFormat.MISSING;
     }
 
     @Override

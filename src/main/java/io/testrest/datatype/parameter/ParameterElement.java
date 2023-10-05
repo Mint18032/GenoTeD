@@ -200,6 +200,20 @@ public abstract class ParameterElement extends Taggable {
 //        normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
     }
 
+    /*
+     * Used to create wrong type version of a parameter.
+     */
+    protected ParameterElement(ParameterElement other) {
+        name = other.getName();
+        required = other.isRequired();
+        location = other.getLocation();
+        style = ParameterStyle.getStyleFromString(other.getStyle().toString());
+        explode = other.isExplode();
+
+        description = other.getDescription();
+        enumValues = (HashSet) other.getEnumValues();
+    }
+
     protected ParameterElement(Parameter other, OperationNode operation) {
         this.operation = operation;
         name = new ParameterName(other.getName());

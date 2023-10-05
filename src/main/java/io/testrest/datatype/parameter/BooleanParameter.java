@@ -27,6 +27,13 @@ public class BooleanParameter extends ParameterLeaf {
         super(other);
     }
 
+    /*
+     * Used to create wrong type version of a parameter.
+     */
+    public BooleanParameter(ParameterLeaf other) {
+        super(other);
+    }
+
     public BooleanParameter(Parameter other, OperationNode operation) {
         super(other, operation);
     }

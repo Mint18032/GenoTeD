@@ -13,12 +13,12 @@ public class Configuration {
 
     private static final String openApiSpecPath = "specifications/swaggers/cybertaxonomy.eu.json"; // path to openapi specification, can be either a link or a file.
     private final int maxFuzzingTimes = 5; // number of fuzzing times per operation
+    private final int numberOfMutants = 10; // number of mutants for each nominal test
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;
     private String openAPIName;
     private int specVersion;
-
     private List<String> qualifiableNames;
 
     public Configuration() {
@@ -64,6 +64,10 @@ public class Configuration {
 
     public int getMaxFuzzingTimes() {
         return maxFuzzingTimes;
+    }
+
+    public int getNumberOfMutants() {
+        return numberOfMutants;
     }
 
     public void setOutputPath(String outputPath) {
