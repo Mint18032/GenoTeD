@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class NominalTestGenerator extends TestGenerator {
+    protected Logger logger = Logger.getLogger(NominalTestGenerator.class.getName());
     private final CombinedProviderParameterValueProvider parameterValueProvider = new CombinedProviderParameterValueProvider();
     private List<String> nominalTestPaths = new ArrayList<>();
     private List<DictionaryEntry> pendingEntries = new LinkedList<>();

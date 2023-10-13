@@ -3,7 +3,6 @@ package io.testrest.testing;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.HttpStatusCode;
 import io.testrest.datatype.graph.OperationNode;
-import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.helper.Taggable;
 
@@ -33,6 +32,7 @@ public class TestInteraction extends Taggable {
     private Timestamp responseReceivedAt;
 
     // Other fields
+    private String mutateInfo;
     private Timestamp executionTime;
     private transient TestStatus testStatus = TestStatus.CREATED;
 
@@ -42,6 +42,7 @@ public class TestInteraction extends Taggable {
         this.requestURL = operation.getPath();
         this.requestMethod = operation.getMethod();
         this.requestInputs = new ArrayList<>();
+        this.mutateInfo = "none";
     }
 
     public TestInteraction(OperationNode operation, List<DictionaryEntry> dictionaryEntryList) {
@@ -49,6 +50,7 @@ public class TestInteraction extends Taggable {
         this.requestURL = operation.getPath();
         this.requestMethod = operation.getMethod();
         this.requestInputs = new ArrayList<>();
+        this.mutateInfo = "none";
 
         dictionaryEntryList.forEach(entry -> {
             this.requestInputs.add(new DictionaryEntry(entry.getSource(), entry.getValue()));
@@ -199,6 +201,14 @@ public class TestInteraction extends Taggable {
         this.testStatus = TestStatus.EXECUTED;
     }
 
+    public String getMutateInfo() {
+        return mutateInfo;
+    }
+
+    public void setMutateInfo(String mutateInfo) {
+        this.mutateInfo = mutateInfo;
+    }
+
     public TestInteraction reset() {
 
         // Reset request info
@@ -223,7 +233,14 @@ public class TestInteraction extends Taggable {
     }
 
     public TestInteraction deepClone() {
-        return new TestInteraction((OperationNode) operation.deepClone());
+        List<DictionaryEntry> newInputList = new ArrayList<>();
+        requestInputs.forEach(input -> newInputList.add(new DictionaryEntry(input.getSource(), input.getValue())));
+
+        return new TestInteraction((OperationNode) operation.deepClone(), newInputList);
+    }
+
+    public void removeInput(DictionaryEntry entry) {
+        requestInputs.removeIf(input -> input.getSource().equals(entry.getSource()));
     }
 
     @Override

@@ -168,6 +168,8 @@ public class StringParameter extends ParameterLeaf {
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 
+        if (format == null) return ParameterTypeFormat.MISSING;
+
         switch (format) {
             case BYTE:
                 return ParameterTypeFormat.BYTE;

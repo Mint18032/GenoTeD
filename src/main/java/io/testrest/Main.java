@@ -46,7 +46,7 @@ public class Main {
             System.exit(-1);
         }
 
-        logger.info("Successfully read the OpenAPI Specification. \nStarting building Operation Dependency Graph.");
+        logger.info("Successfully read the OpenAPI Specification. Starting building Operation Dependency Graph.");
         try {
             ODG = new OperationDependencyGraph();
             GraphBuilder.buildGraph(ODG);
@@ -55,12 +55,12 @@ public class Main {
             e.printStackTrace();
         }
 
-        logger.info("Successfully built the Operation Dependency Graph. \nStarting generating nominal testcases.");
+        logger.info("Successfully built the Operation Dependency Graph. Starting generating nominal testcases.");
         NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(OpenAPIParser.getUrls());
         TestSequence nominalTestSequence = nominalTestGenerator.generateTest(ODG);
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
 
-        logger.info("Successfully generated the Nominal test cases. \nStarting generating error testcases.");
+        logger.info("Successfully generated the Nominal test cases. Starting generating error testcases.");
         ErrorTestGenerator errorTestGenerator = new ErrorTestGenerator(OpenAPIParser.getUrls());
         errorTestGenerator.generateTest(nominalTestSequence);
         logger.info("Successfully generated the Error test cases. \n");
@@ -71,12 +71,12 @@ public class Main {
 //        for (String path : nominalTestPaths) {
 ////            testRunner.testAll(path);
 //        }
-//
-//        logger.info("Running error test cases");
-//        List<String> errorTestPaths = errorTestGenerator.getErrorTestPaths();
-//        for (String path : errorTestPaths) {
-////            testRunner.testAll(path);
-//        }
+
+        logger.info("Running error test cases");
+        List<String> errorTestPaths = errorTestGenerator.getErrorTestPaths();
+        for (String path : errorTestPaths) {
+            testRunner.testAll(path);
+        }
     }
 
     public static Configuration getConfiguration() {

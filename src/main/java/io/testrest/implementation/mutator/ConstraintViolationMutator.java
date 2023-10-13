@@ -48,6 +48,8 @@ public class ConstraintViolationMutator extends Mutator {
 
     @Override
     public void mutate(DictionaryEntry entry, TestInteraction interaction) {
+        System.out.println("Applying constraint violation mutation.");
+
         ParameterLeaf parameter = entry.getSource();
         DictionaryEntry newEntry = new DictionaryEntry(entry.getSource(), entry.getValue());
 
@@ -55,17 +57,20 @@ public class ConstraintViolationMutator extends Mutator {
             if (parameter.isEnum() && parameter.getEnumValues().size() > 0) {
                 Object mutateValue = mutateEnum(parameter);
                 newEntry.setValue(mutateValue.toString());
+                interaction.setMutateInfo("Constraint Violation Mutation. Provided random value to enum parameter " + parameter.getName());
             } else if (parameter instanceof StringParameter) {
-                String mutateValue = mutateString((StringParameter) parameter);
+                String mutateValue = mutateLength((StringParameter) parameter);
                 newEntry.setValue(mutateValue);
+                interaction.setMutateInfo("Constraint Violation Mutation. Violated length constraint of parameter " + parameter.getName());
             } else if (parameter instanceof NumberParameter) {
                 Object mutateValue = mutateNumber((NumberParameter) parameter);
                 if (mutateValue != null) {
                     newEntry.setValue((Double) mutateValue);
+                    interaction.setMutateInfo("Constraint Violation Mutation. Violated range constraint of parameter " + parameter.getName());
                 }
             }
 
-            interaction.getRequestInputs().remove(entry);
+            interaction.removeInput(entry);
             interaction.getRequestInputs().add(newEntry);
 
         } else {
@@ -91,7 +96,7 @@ public class ConstraintViolationMutator extends Mutator {
      * String length is changed to violate length constraints
      * @param parameter the parameter to mutate
      */
-    private String mutateString(StringParameter parameter) {
+    private String mutateLength(StringParameter parameter) {
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 

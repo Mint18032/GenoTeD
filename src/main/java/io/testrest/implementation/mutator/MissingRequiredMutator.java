@@ -27,7 +27,9 @@ public class MissingRequiredMutator extends Mutator {
     @Override
     public void mutate(DictionaryEntry entry, TestInteraction interaction) {
         if (isParameterMutable(entry.getSource())) {
-            interaction.getRequestInputs().remove(entry);
+            System.out.println("Applying missing required mutation.");
+            interaction.removeInput(entry);
+            interaction.setMutateInfo("Missing Required Mutation. Missing parameter: " + entry.getSource().getName());
         } else {
             logger.warning("Cannot apply mutation. This parameter is not mandatory.");
         }

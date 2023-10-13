@@ -6,8 +6,14 @@ import io.testrest.datatype.graph.OperationNode;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NominalTestOracle extends StatusCodeOracle {
+    public NominalTestOracle() {
+        super();
+        logger = Logger.getLogger(NominalTestOracle.class.getName());
+    }
+
     /**
      * Deletes 4xx testcases and saves returned values of other testcases to Dictionary.
      * @param operationNode the Operation to be tested.

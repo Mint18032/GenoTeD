@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/cybertaxonomy.eu.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/afterbanks.com.json"; // path to openapi specification, can be either a link or a file.
     private final int maxFuzzingTimes = 5; // number of fuzzing times per operation
     private final int numberOfMutants = 10; // number of mutants for each nominal test
     private String outputPath;

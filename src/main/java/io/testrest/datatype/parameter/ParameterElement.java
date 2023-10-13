@@ -207,8 +207,9 @@ public abstract class ParameterElement extends Taggable {
         name = other.getName();
         required = other.isRequired();
         location = other.getLocation();
-        style = ParameterStyle.getStyleFromString(other.getStyle().toString());
+        style = other.getStyle();
         explode = other.isExplode();
+        operation = other.getOperation();
 
         description = other.getDescription();
         enumValues = (HashSet) other.getEnumValues();

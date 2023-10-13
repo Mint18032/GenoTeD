@@ -210,6 +210,8 @@ public class NumberParameter extends ParameterLeaf {
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 
+        if (format == null) return ParameterTypeFormat.MISSING;
+
         switch (format) {
             case INT8:
                 return ParameterTypeFormat.INT8;

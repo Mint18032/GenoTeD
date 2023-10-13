@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class StatusCodeOracle {
-    protected static final Logger logger = Logger.getLogger(StatusCodeOracle.class.getName());
+    protected static Logger logger;
 
     TestRunner testRunner;
 

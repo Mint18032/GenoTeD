@@ -9,7 +9,6 @@ import io.testrest.dictionary.DictionaryEntry;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.testing.Mutator;
 import io.testrest.testing.TestInteraction;
-import io.testrest.testing.parameterValueProvider.ParameterValueProvider;
 import io.testrest.testing.parameterValueProvider.single.RandomParameterValueProvider;
 
 import java.util.logging.Logger;
@@ -18,7 +17,7 @@ public class WrongTypeMutator extends Mutator {
 
     private static final Logger logger = Logger.getLogger(WrongTypeMutator.class.getName());
 
-    private final ParameterValueProvider valueProvider = new RandomParameterValueProvider();
+    private final RandomParameterValueProvider valueProvider = new RandomParameterValueProvider();
 
     @Override
     public boolean isParameterMutable(ParameterLeaf parameter) {
@@ -28,6 +27,7 @@ public class WrongTypeMutator extends Mutator {
 
     @Override
     public void mutate(DictionaryEntry entry, TestInteraction interaction) {
+        System.out.println("Applying wrong type mutation.");
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 
@@ -37,31 +37,37 @@ public class WrongTypeMutator extends Mutator {
         if (parameter instanceof StringParameter) {
             if (random.nextBoolean()) {
                 mutatedParameter = new NumberParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from String to Number.");
             } else {
                 mutatedParameter = new BooleanParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from String to Boolean.");
             }
 
-            interaction.getRequestInputs().remove(entry);
+            interaction.removeInput(entry);
             interaction.getRequestInputs().add(new DictionaryEntry(mutatedParameter, valueProvider.provideValueFor(mutatedParameter)));
 
         } else if (parameter instanceof NumberParameter) {
             if (random.nextBoolean()) {
                 mutatedParameter = new StringParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from Number to String.");
             } else {
                 mutatedParameter = new BooleanParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from Number to Boolean.");
             }
 
-            interaction.getRequestInputs().remove(entry);
+            interaction.removeInput(entry);
             interaction.getRequestInputs().add(new DictionaryEntry(mutatedParameter, valueProvider.provideValueFor(mutatedParameter)));
 
         } else if (parameter instanceof BooleanParameter) {
             if (random.nextBoolean()) {
                 mutatedParameter = new StringParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from Boolean to String.");
             } else {
                 mutatedParameter = new NumberParameter(parameter);
+                interaction.setMutateInfo("Wrong Type Mutation. Changed parameter '" + parameter.getName() + "' from Boolean to Number.");
             }
 
-            interaction.getRequestInputs().remove(entry);
+            interaction.removeInput(entry);
             interaction.getRequestInputs().add(new DictionaryEntry(mutatedParameter, valueProvider.provideValueFor(mutatedParameter)));
 
         } else {

@@ -30,8 +30,6 @@ public class NormalizedParameterName {
     public static void setQualifiableNames(Collection<String> names) {
         qualifiableNames = new HashSet<>();
 
-        logger.info("Names to qualify: " + names);
-
         for (String name : names) {
             qualifiableNames.add(stemmer.stemWord(name));
         }

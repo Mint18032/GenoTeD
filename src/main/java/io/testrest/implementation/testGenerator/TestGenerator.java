@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class TestGenerator {
-    protected Logger logger = Logger.getLogger(TestGenerator.class.getName());
-
     private Environment environment;
 
     private String testOutPutPath;

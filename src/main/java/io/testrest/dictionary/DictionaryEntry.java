@@ -22,8 +22,7 @@ public class DictionaryEntry {
     private Object value;
 
     public DictionaryEntry(ParameterLeaf leaf, Object value) {
-        if (leaf.getName() != null && leaf.getNormalizedName() != null && leaf.getType() != null &&
-                leaf.getOperation() != null && value != null) {
+        if (leaf.getName() != null && leaf.getOperation() != null) {
             this.parameterName = leaf.getName();
             this.normalizedParameterName = leaf.getNormalizedName();
             this.type = leaf.getType();
