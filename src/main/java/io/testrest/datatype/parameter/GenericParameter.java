@@ -5,7 +5,6 @@ import io.testrest.datatype.graph.OperationNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class GenericParameter extends ParameterLeaf {
@@ -65,7 +64,7 @@ public class GenericParameter extends ParameterLeaf {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
+    public Collection<ArrayParameter> getArrays() {
         return new LinkedList<>();
     }
 }

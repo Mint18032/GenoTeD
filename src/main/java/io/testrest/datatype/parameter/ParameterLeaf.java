@@ -2,12 +2,8 @@ package io.testrest.datatype.parameter;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.helper.ObjectHelper;
-import io.testrest.parser.EditReadOnlyOperationException;
-import io.testrest.parser.OpenAPIParser;
 import io.testrest.datatype.graph.OperationNode;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -164,16 +160,16 @@ public abstract class ParameterLeaf extends ParameterElement {
 
         if (getParent() == null) {
             return "$" + thisJsonPath;
-        } else if (getParent() instanceof ParameterArray) {
+        } else if (getParent() instanceof ArrayParameter) {
 
             // If this is the referenceElement of the array, return index = -1
-            if (this == ((ParameterArray) getParent()).getReferenceElement()) {
+            if (this == ((ArrayParameter) getParent()).getReferenceElement()) {
                 return getParent().getJsonPath() + "[-1]";
             }
 
             // If this is an element of the array, return its index
-            else if (((ParameterArray) getParent()).getElements().contains(this)) {
-                return getParent().getJsonPath() + "[" + ((ParameterArray) getParent()).getElements().indexOf(this) + "]";
+            else if (((ArrayParameter) getParent()).getElements().contains(this)) {
+                return getParent().getJsonPath() + "[" + ((ArrayParameter) getParent()).getElements().indexOf(this) + "]";
             }
 
             // If this is not contained in the array, return null
@@ -213,12 +209,12 @@ public abstract class ParameterLeaf extends ParameterElement {
     }
 
     @Override
-    public Collection<ParameterObject> getObjects() {
+    public Collection<ObjectParameter> getObjects() {
         return new LinkedList<>();
     }
 
     @Override
-    public Collection<ParameterObject> getReferenceObjects() {
+    public Collection<ObjectParameter> getReferenceObjects() {
         return new LinkedList<>();
     }
 
@@ -246,10 +242,10 @@ public abstract class ParameterLeaf extends ParameterElement {
 
         // If the leaf is contained in a parent element (array or object), remove it from the parent
         else {
-            if (getParent() instanceof ParameterArray) {
-                return ((ParameterArray) getParent()).getElements().remove(this);
-            } else if (getParent() instanceof ParameterObject) {
-                return ((ParameterObject) getParent()).getProperties().remove(this);
+            if (getParent() instanceof ArrayParameter) {
+                return ((ArrayParameter) getParent()).getElements().remove(this);
+            } else if (getParent() instanceof ObjectParameter) {
+                return ((ObjectParameter) getParent()).getProperties().remove(this);
             }
         }
 

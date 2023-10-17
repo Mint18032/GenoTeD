@@ -11,7 +11,6 @@ import io.testrest.helper.ObjectHelper;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -337,7 +336,7 @@ public class StringParameter extends ParameterLeaf {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
+    public Collection<ArrayParameter> getArrays() {
         return new LinkedList<>();
     }
 
@@ -345,7 +344,7 @@ public class StringParameter extends ParameterLeaf {
     public String getJSONString() {
 
         // If leaf is inside an array, don't print the leaf name
-        if (this.getParent() instanceof ParameterArray) {
+        if (this.getParent() instanceof ArrayParameter) {
             return "\"" + getConcreteValue() + "\"";
         } else {
             return getJSONHeading() + "\"" + getConcreteValue() + "\"";

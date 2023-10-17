@@ -2,7 +2,6 @@ package io.testrest.datatype.graph;
 
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.testrest.Configuration;
@@ -12,16 +11,12 @@ import io.testrest.datatype.parameter.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private Boolean isReadOnly = false;
     private Boolean containsHeader = false;
     private HttpMethod method;
     private String path;
-    private int tested;
     private String operationNodeId;
     private int testingAttempts;
     private List<String> outputs;
@@ -31,7 +26,6 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method) {
         super();
-        this.tested = 0;
         this.method = method;
         this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
         this.parameterLeafList = new ArrayList<>();
@@ -45,7 +39,6 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method, String path) {
         super();
-        this.tested = 0;
         this.method = method;
         this.path = path;
         this.operationNodeId = this.getOperationId() != null ? this.getOperationId() : "Operation" + idGenerationNum;
@@ -60,7 +53,6 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public OperationNode(HttpMethod method, String path, Operation operation) {
         super();
-        this.tested = 0;
         this.method = method;
         this.path = path;
         this.testingAttempts = 0;
@@ -107,10 +99,10 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
                         parameterLeafList.add(stringParameter);
                         break;
         //                case "array":
-        //                    parameterElementList.add(new ParameterArray(p, this));
+        //                    parameterElementList.add(new ArrayParameter(p, this));
         //                    break;
         //                default: //object
-        //                    parameterElementList.add(new ParameterObject(p, this));
+        //                    parameterElementList.add(new ObjectParameter(p, this));
                 }
             }
             System.out.println(parameterLeafList);
@@ -232,11 +224,11 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
     }
 
     public int getTestedTimes() {
-        return tested;
+        return testingAttempts;
     }
 
     public void markAsTested() {
-        tested++;
+        testingAttempts++;
     }
 
     public List<ParameterLeaf> getParameterLeafList() {
@@ -245,13 +237,5 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
 
     public void setParameterLeafList(List<ParameterLeaf> parameterLeafList) {
         this.parameterLeafList = parameterLeafList;
-    }
-
-    public int getTestingAttempts() {
-        return testingAttempts;
-    }
-
-    public void setTestingAttempts(int testingAttempts) {
-        this.testingAttempts = testingAttempts;
     }
 }

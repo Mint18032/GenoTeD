@@ -23,41 +23,41 @@
         <dependency>
             <groupId>com.intuit.karate</groupId>
             <artifactId>karate-junit5</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intuit.karate</groupId>
             <artifactId>karate-junit5</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intuit.karate</groupId>
             <artifactId>karate-core</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
+            <version>5.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.0</version>
+            <version>5.9.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intuit.karate</groupId>
             <artifactId>karate-gatling</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.1</version>
             <scope>test</scope>
         </dependency>
         <!--        <dependency>-->
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.13.9</version>
+            <version>2.13.10</version>
         </dependency>
         <!--    OpenAPI parser    -->
         <dependency>
@@ -92,7 +92,13 @@
         <dependency>
             <groupId>org.iban4j</groupId>
             <artifactId>iban4j</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.4-RELEASE</version>
+        </dependency>
+        <!-- https://github.com/DiUS/java-faker-->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
 

@@ -1,11 +1,10 @@
 package io.testrest;
 
 import io.testrest.datatype.parameter.NormalizedParameterName;
-import io.testrest.dictionary.Dictionary;
+import io.testrest.core.dictionary.Dictionary;
 import io.testrest.helper.ExtendedRandom;
 
 public class Environment {
-
 
     private static Configuration configuration;
     private static Environment instance = null;

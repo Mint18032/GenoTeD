@@ -11,9 +11,10 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/afterbanks.com.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/cybertaxonomy.eu.json"; // path to openapi specification, can be either a link or a file.
     private final int maxFuzzingTimes = 5; // number of fuzzing times per operation
     private final int numberOfMutants = 10; // number of mutants for each nominal test
+    private static String locale = "en"; // locale used for generating data (See supported locales at https://github.com/DiUS/java-faker/tree/master#supported-locales)
     private String outputPath;
     private String testingSessionName;
     private String odgFileName;
@@ -68,6 +69,14 @@ public class Configuration {
 
     public int getNumberOfMutants() {
         return numberOfMutants;
+    }
+
+    public static void setLocale(String locale) {
+        Configuration.locale = locale;
+    }
+
+    public static String getLocale() {
+        return locale;
     }
 
     public void setOutputPath(String outputPath) {

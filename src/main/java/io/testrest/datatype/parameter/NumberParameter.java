@@ -21,8 +21,6 @@ public class NumberParameter extends ParameterLeaf {
     private boolean exclusiveMaximum = false;
     private boolean exclusiveMinimum = false;
 
-    private static final Logger logger = Logger.getLogger(NumberParameter.class.getName());
-
     public NumberParameter(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         super(parent, parameterMap, operation, name);
 
@@ -276,7 +274,7 @@ public class NumberParameter extends ParameterLeaf {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
+    public Collection<ArrayParameter> getArrays() {
         return new LinkedList<>();
     }
 

@@ -1,6 +1,6 @@
 package io.testrest.datatype.parameter;
 
-import io.testrest.porterStemmer.PorterStemmer;
+import io.testrest.datatype.normalizer.PorterStemmer;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -12,8 +12,6 @@ public class NormalizedParameterName {
     private final static Set<String> qualifiedNames = new HashSet<>();
 
     private String normalizedParameterName;
-
-    private static final Logger logger = Logger.getLogger(NormalizedParameterName.class.getName());
 
     public NormalizedParameterName(ParameterName parameterName) {
         setNormalizedParameterName(parameterName);

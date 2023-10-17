@@ -2,7 +2,6 @@ package io.testrest.datatype.normalizer;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.datatype.graph.OperationNode;
-import io.testrest.porterStemmer.PorterStemmer;
 
 public class ParameterComparator extends Normalizer {
     /**

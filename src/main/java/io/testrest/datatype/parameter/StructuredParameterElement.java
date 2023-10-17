@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 public abstract class StructuredParameterElement extends ParameterElement {
-    private static final Logger logger = Logger.getLogger(StructuredParameterElement.class.getName());
     // By default, remove a structured parameter instead keeping it empty when representing it
     private boolean keepIfEmpty = false;
 
@@ -87,16 +86,16 @@ public abstract class StructuredParameterElement extends ParameterElement {
             return "$";
         }
 
-        else if (getParent() instanceof ParameterArray) {
+        else if (getParent() instanceof ArrayParameter) {
 
             // If this is the referenceElement of the array, return index = -1
-            if (this == ((ParameterArray) getParent()).getReferenceElement()) {
+            if (this == ((ArrayParameter) getParent()).getReferenceElement()) {
                 return getParent().getJsonPath() + "[-1]";
             }
 
             // If this is an element of the array, return its index
-            else if (((ParameterArray) getParent()).getElements().contains(this)) {
-                return getParent().getJsonPath() + "[" + ((ParameterArray) getParent()).getElements().indexOf(this) + "]";
+            else if (((ArrayParameter) getParent()).getElements().contains(this)) {
+                return getParent().getJsonPath() + "[" + ((ArrayParameter) getParent()).getElements().indexOf(this) + "]";
             }
 
             // If this is not contained in the array, return null
@@ -144,10 +143,10 @@ public abstract class StructuredParameterElement extends ParameterElement {
 
         // If the leaf is contained in a parent element (array or object), remove it from the parent
         else {
-            if (getParent() instanceof ParameterArray) {
-                return ((ParameterArray) getParent()).getElements().remove(this);
-            } else if (getParent() instanceof ParameterObject) {
-                return ((ParameterObject) getParent()).getProperties().remove(this);
+            if (getParent() instanceof ArrayParameter) {
+                return ((ArrayParameter) getParent()).getElements().remove(this);
+            } else if (getParent() instanceof ObjectParameter) {
+                return ((ObjectParameter) getParent()).getProperties().remove(this);
             }
         }
 

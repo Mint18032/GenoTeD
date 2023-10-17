@@ -277,8 +277,8 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
-        Collection<ParameterArray> arrays = new LinkedList<>();
+    public Collection<ArrayParameter> getArrays() {
+        Collection<ArrayParameter> arrays = new LinkedList<>();
 
         // If the output parameter schema is already defined, add its arrays
         if (outputParameterSchema != null) {
@@ -297,13 +297,13 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
 
     // FIXME: currently not supported
     @Override
-    public Collection<ParameterObject> getObjects() {
+    public Collection<ObjectParameter> getObjects() {
         return new LinkedList<>();
     }
 
     // FIXME: currently not supported
     @Override
-    public Collection<ParameterObject> getReferenceObjects() {
+    public Collection<ObjectParameter> getReferenceObjects() {
         return new LinkedList<>();
     }
 

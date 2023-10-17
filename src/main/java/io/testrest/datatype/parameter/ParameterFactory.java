@@ -36,9 +36,9 @@ public class ParameterFactory {
 
         switch (type) {
             case ARRAY:
-                return new ParameterArray(parent, elementMap, operation, name);
+                return new ArrayParameter(parent, elementMap, operation, name);
             case OBJECT:
-                return new ParameterObject(parent, elementMap, operation, name);
+                return new ObjectParameter(parent, elementMap, operation, name);
             case BOOLEAN:
                 return new BooleanParameter(parent, elementMap, operation, name);
             case NUMBER:
@@ -65,9 +65,9 @@ public class ParameterFactory {
 
     public static ParameterElement getParameterElement(ParameterElement parent, JsonElement jsonElement, OperationNode operation, String name) {
         if (jsonElement instanceof JsonObject) {
-            return new ParameterObject((JsonObject) jsonElement, operation, parent, name);
+            return new ObjectParameter((JsonObject) jsonElement, operation, parent, name);
         } else if (jsonElement instanceof JsonArray) {
-            return new ParameterArray((JsonArray) jsonElement, operation, parent, name);
+            return new ArrayParameter((JsonArray) jsonElement, operation, parent, name);
         } else if (jsonElement instanceof JsonPrimitive) {
             JsonPrimitive primitive = (JsonPrimitive) jsonElement;
             if (primitive.isString()) {

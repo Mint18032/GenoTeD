@@ -7,13 +7,10 @@ import io.testrest.helper.ObjectHelper;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 public class BooleanParameter extends ParameterLeaf {
-
-    private static final Logger logger = Logger.getLogger(BooleanParameter.class.getName());
 
     public BooleanParameter(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         super(parent, parameterMap, operation, name);
@@ -87,7 +84,7 @@ public class BooleanParameter extends ParameterLeaf {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
+    public Collection<ArrayParameter> getArrays() {
         return new LinkedList<>();
     }
 

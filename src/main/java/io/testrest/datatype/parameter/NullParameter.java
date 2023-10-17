@@ -57,7 +57,7 @@ public class NullParameter extends ParameterLeaf {
      * @return an empty list
      */
     @Override
-    public Collection<ParameterArray> getArrays() {
+    public Collection<ArrayParameter> getArrays() {
         return new LinkedList<>();
     }
 

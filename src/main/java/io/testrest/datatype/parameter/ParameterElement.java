@@ -330,13 +330,13 @@ public abstract class ParameterElement extends Taggable {
 
         // If the parameter is contained in a parent element (array or object), remove it from the parent
         else {
-            if (getParent() instanceof ParameterArray) {
-                ((ParameterArray) getParent()).getElements().remove(this);
-                ((ParameterArray) getParent()).getElements().add(newParameter);
+            if (getParent() instanceof ArrayParameter) {
+                ((ArrayParameter) getParent()).getElements().remove(this);
+                ((ArrayParameter) getParent()).getElements().add(newParameter);
                 return true;
-            } else if (getParent() instanceof ParameterObject) {
-                ((ParameterObject) getParent()).getProperties().remove(this);
-                ((ParameterObject) getParent()).getProperties().add(newParameter);
+            } else if (getParent() instanceof ObjectParameter) {
+                ((ObjectParameter) getParent()).getProperties().remove(this);
+                ((ObjectParameter) getParent()).getProperties().add(newParameter);
                 return true;
             }
         }
@@ -617,20 +617,20 @@ public abstract class ParameterElement extends Taggable {
      * Return a collection containing the arrays in the parameter element and underlying elements.
      * @return the collection of arrays in the parameter.
      */
-    public abstract Collection<ParameterArray> getArrays();
+    public abstract Collection<ArrayParameter> getArrays();
 
     /**
      * Return a collection containing the objects in the parameter element and underlying elements.
      * @return the collection of objects in the parameter.
      */
-    public abstract Collection<ParameterObject> getObjects();
+    public abstract Collection<ObjectParameter> getObjects();
 
     /**
      * Return a collection containing the objects in the parameter element and underlying elements. In case of arrays,
      * only the objects in reference element are returned.
      * @return the collection of objects in the parameter.
      */
-    public abstract Collection<ParameterObject> getReferenceObjects();
+    public abstract Collection<ObjectParameter> getReferenceObjects();
 
     /**
      * Returns all parameters elements of this element.
@@ -660,23 +660,23 @@ public abstract class ParameterElement extends Taggable {
     public abstract boolean isSet();
 
     public boolean isObject() {
-        return this instanceof ParameterObject;
+        return this instanceof ObjectParameter;
     }
 
     public boolean isArray() {
-        return this instanceof ParameterArray;
+        return this instanceof ArrayParameter;
     }
 
     public boolean isArrayOfLeaves() {
-        return this instanceof ParameterArray && ((ParameterArray) this).getReferenceElement() instanceof ParameterLeaf;
+        return this instanceof ArrayParameter && ((ArrayParameter) this).getReferenceElement() instanceof ParameterLeaf;
     }
 
     public boolean isArrayOfArrays() {
-        return this instanceof ParameterArray && ((ParameterArray) this).getReferenceElement() instanceof ParameterArray;
+        return this instanceof ArrayParameter && ((ArrayParameter) this).getReferenceElement() instanceof ArrayParameter;
     }
 
     public boolean isArrayOfObjects() {
-        return this instanceof ParameterArray && ((ParameterArray) this).getReferenceElement() instanceof ParameterObject;
+        return this instanceof ArrayParameter && ((ArrayParameter) this).getReferenceElement() instanceof ObjectParameter;
     }
 
     public boolean isLeaf() {
@@ -704,7 +704,7 @@ public abstract class ParameterElement extends Taggable {
      * @return true if parameter is reference element.
      */
     public boolean isReferenceElement() {
-        return parent != null && parent instanceof ParameterArray && ((ParameterArray) parent).getReferenceElement() == this;
+        return parent != null && parent instanceof ArrayParameter && ((ArrayParameter) parent).getReferenceElement() == this;
     }
 
     /**
@@ -712,7 +712,7 @@ public abstract class ParameterElement extends Taggable {
      * @return true if parameter is an element of an array parameter.
      */
     public boolean isArrayElement() {
-        return parent != null && parent instanceof ParameterArray && ((ParameterArray) parent).getElements().contains(this);
+        return parent != null && parent instanceof ArrayParameter && ((ArrayParameter) parent).getElements().contains(this);
     }
 
     /**
@@ -720,7 +720,7 @@ public abstract class ParameterElement extends Taggable {
      * @return true if parameter is property of an object.
      */
     public boolean isObjectProperty() {
-        return parent != null && parent instanceof ParameterObject && ((ParameterObject) parent).getProperties().contains(this);
+        return parent != null && parent instanceof ObjectParameter && ((ObjectParameter) parent).getProperties().contains(this);
     }
 }
 

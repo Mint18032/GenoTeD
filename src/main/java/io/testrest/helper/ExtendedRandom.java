@@ -1,9 +1,12 @@
 package io.testrest.helper;
 
+import com.github.javafaker.service.FakeValuesService;
+import com.github.javafaker.service.RandomService;
 import com.google.common.io.Resources;
+import io.testrest.Configuration;
 import io.testrest.Environment;
-import io.testrest.dictionary.Dictionary;
-import io.testrest.dictionary.DictionaryEntry;
+import io.testrest.core.dictionary.Dictionary;
+import io.testrest.core.dictionary.DictionaryEntry;
 import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 
@@ -17,12 +20,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.time.temporal.ChronoUnit.values;
 
 /**
  * Extension of the java.util.Random class providing primitives for random strings, lengths, and other.
  */
 public class ExtendedRandom extends Random {
+    FakeValuesService fakeValuesService = new FakeValuesService(
+            new Locale(Configuration.getLocale()), new RandomService());
 
     /**
      * Returns a positive integer.
