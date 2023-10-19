@@ -35,6 +35,13 @@ public class DictionaryEntry {
         }
     }
 
+    public DictionaryEntry(String name, Object value) {
+        this.parameterName = new ParameterName(name);
+        this.normalizedParameterName = new NormalizedParameterName(name);
+        this.discoveryTime = Timestamp.from(Instant.now());
+        this.value = value;
+    }
+
     public ParameterName getParameterName() {
         return parameterName;
     }

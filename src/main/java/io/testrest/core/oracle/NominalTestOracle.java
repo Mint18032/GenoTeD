@@ -1,12 +1,21 @@
 package io.testrest.core.oracle;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.intuit.karate.Results;
+import com.intuit.karate.core.StepResult;
+import io.testrest.Environment;
+import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.graph.OperationNode;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NominalTestOracle extends StatusCodeOracle {
     public NominalTestOracle() {
@@ -42,7 +51,7 @@ public class NominalTestOracle extends StatusCodeOracle {
             }
         }
 
-        if (results.getFeaturesPassed() == results.getFeaturesTotal()) {
+        if (results.getFeaturesPassed() == results.getFeaturesTotal() && results.getFeaturesPassed() > 0) {
             receiveResponseValues(results);
         }
 
@@ -55,6 +64,22 @@ public class NominalTestOracle extends StatusCodeOracle {
      */
     public void receiveResponseValues(Results results) {
         System.out.println("+++++++++++++++++++++++++++++++++++\n");
-        System.out.println();
+        List<StepResult> stepResults = results.getScenarioResults().collect(Collectors.toList()).get(0).getStepResults();
+        StepResult print_step = stepResults.get(stepResults.size() - 1);
+        String response = print_step.getStepLog();
+        response = response.substring(response.lastIndexOf("[print] ") + 8, response.length() - 2);
+        System.out.println(response);
+
+        if (response.startsWith("{") && response.endsWith("}")) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+
+            Map<Object, Object> map = new HashMap<>(gson.fromJson(response, type));
+
+            for (Map.Entry<Object, Object> entry : map.entrySet()) {
+                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(entry.getKey().toString(), entry.getValue()));
+            }
+        }
     }
 }

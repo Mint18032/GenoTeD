@@ -46,8 +46,8 @@ public class Dictionary {
 
     public List<DictionaryEntry> getEntriesByNormalizedParameterName(NormalizedParameterName normalizedParameterName,
                                                                      ParameterType parameterType) {
-        return dictionary.stream().filter(e -> e.getNormalizedParameterName().equals(normalizedParameterName) &&
-                e.getParameterType().equals(parameterType)).collect(Collectors.toList());
+        return dictionary.stream().filter(e -> e.getNormalizedParameterName().equals(normalizedParameterName) && (
+                e.getParameterType() == null || e.getParameterType().equals(parameterType))).collect(Collectors.toList());
     }
 
     public List<DictionaryEntry> getEntriesByParameterName(ParameterName parameterName, ParameterType parameterType) {

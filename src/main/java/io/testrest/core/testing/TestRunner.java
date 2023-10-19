@@ -14,7 +14,7 @@ public class TestRunner {
 
     @Karate.Test
     public Results testOperation(String testPath, String operationId) {
-        return Karate.run(testPath).outputHtmlReport(false).outputCucumberJson(true).tags("@" + operationId).parallel(0);
+        return Karate.run(testPath).outputHtmlReport(false).outputCucumberJson(false).outputJunitXml(false).tags("@" + operationId).parallel(0);
     }
 
     /**

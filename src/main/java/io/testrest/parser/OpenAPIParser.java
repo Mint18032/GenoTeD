@@ -12,7 +12,7 @@ import io.swagger.v3.parser.core.models.ParseOptions;
 import io.testrest.Environment;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationNode;
-import io.testrest.datatype.OperationNodeList;
+import io.testrest.datatype.graph.OperationNodeList;
 import io.testrest.datatype.normalizer.PathNormalizer;
 import io.testrest.helper.ExtendedRandom;
 

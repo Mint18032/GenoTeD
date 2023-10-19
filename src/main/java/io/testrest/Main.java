@@ -1,6 +1,6 @@
 package io.testrest;
 
-import io.testrest.datatype.OperationNodeList;
+import io.testrest.datatype.graph.OperationNodeList;
 import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.core.testGenerator.ErrorTestGenerator;
 import io.testrest.datatype.graph.GraphBuilder;
@@ -56,16 +56,16 @@ public class Main {
         TestSequence nominalTestSequence = nominalTestGenerator.generateTest(ODG);
 
         if (nominalTestSequence.isEmpty()) {
-            logger.warning("No nominal test case was generated.");
+            logger.warning("No nominal test case was successfully generated.");
             System.exit(-1);
         }
 
-        List<String> allTestPaths = new ArrayList<>(nominalTestGenerator.getNominalTestPaths());
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
         logger.info("Successfully generated the Nominal test cases. Starting generating error testcases.");
         ErrorTestGenerator errorTestGenerator = new ErrorTestGenerator(OpenAPIParser.getUrls());
         errorTestGenerator.generateTest(nominalTestSequence);
 
+        List<String> allTestPaths = new ArrayList<>(nominalTestGenerator.getNominalTestPaths());
         if (!errorTestGenerator.getTestSequence().isEmpty()) {
             logger.info("Successfully generated the Error test cases. \n");
             allTestPaths.addAll(errorTestGenerator.getErrorTestPaths());
@@ -85,10 +85,6 @@ public class Main {
 
     public static Environment getEnvironment() {
         return environment;
-    }
-
-    public static void setEnvironment(Environment environment) {
-        Main.environment = environment;
     }
 
 }

@@ -1,4 +1,4 @@
-package io.testrest.datatype;
+package io.testrest.datatype.graph;
 
 import io.testrest.datatype.graph.OperationNode;
 
@@ -29,7 +29,7 @@ public class OperationNodeList {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class OperationNodeList {\n");
+        sb.append("Class OperationNodeList {\n");
         for(OperationNode operationNode : operationNodeList) {
             sb.append(operationNode.toString());
         }
