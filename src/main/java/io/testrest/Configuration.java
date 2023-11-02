@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/apis.guru.json"; // path to openapi specification, can be either a link or a file.
+    private static final String openApiSpecPath = "specifications/swaggers/flickr.com.json"; // path to openapi specification, can be either a link or a file.
     private static final int maxFuzzingTimes = 5; // number of fuzzing times per operation
     private static final int numberOfMutants = 10; // number of mutants for each nominal test
     private static String locale = "en"; // locale used for generating data (See supported locales at https://github.com/DiUS/java-faker/tree/master#supported-locales)

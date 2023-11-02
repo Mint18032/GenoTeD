@@ -19,18 +19,14 @@ public class NullParameter extends ParameterLeaf {
 
     public NullParameter(Parameter other) {
         super(other);
-        this.value = "null";
     }
 
     public NullParameter(NullParameter other, OperationNode operation, ParameterElement parent) {
         super(other, operation, parent);
-        this.value = "null";
     }
 
     public NullParameter(JsonElement jsonElement, OperationNode operation, ParameterElement parent, String name) {
         super(operation, parent);
-
-        setValue(null);
 
         this.name = new ParameterName(Objects.requireNonNullElse(name, ""));
         this.normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
@@ -62,13 +58,8 @@ public class NullParameter extends ParameterLeaf {
     }
 
     @Override
-    public String getJSONString() {
+    public String getJSONString(Object value) {
         return getJSONHeading() + "null";
-    }
-
-    @Override
-    public boolean hasValue() {
-        return true;
     }
 
     @Override

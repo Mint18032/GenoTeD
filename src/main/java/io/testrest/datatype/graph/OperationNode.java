@@ -115,15 +115,12 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class OperationNode {\n");
-        sb.append("    operationNodeId: ").append(this.operationNodeId).append("\n");
-        sb.append("    path: ").append(this.path).append("\n");
-        sb.append("    method: ").append(this.method).append("\n");
-        sb.append("    tags: ").append(this.getTags()).append("\n");
-        sb.append("    operationId: ").append(this.getOperationId()).append("\n");
-        sb.append("    parameters: ").append(this.getParameters()).append("\n");
-        sb.append("    requestBody: ").append(this.getRequestBody()).append("\n");
-        sb.append("}");
+        sb.append(this.operationNodeId).append(" {");
+        sb.append("    ").append(this.method);
+        sb.append("    ").append(this.path);
+//        sb.append("    parameters: ").append(this.getParameters()).append("\n");
+//        sb.append("    requestBody: ").append(this.getRequestBody()).append("\n");
+        sb.append(" }");
         return sb.toString();
     }
 

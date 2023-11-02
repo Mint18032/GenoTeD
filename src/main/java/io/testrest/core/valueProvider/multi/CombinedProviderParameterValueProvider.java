@@ -13,6 +13,7 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
     protected NormalizedDictionaryParameterValueProvider normalizedDictionaryParameterValueProvider = new NormalizedDictionaryParameterValueProvider();
     protected RandomParameterValueProvider randomParameterValueProvider = new RandomParameterValueProvider();
     protected EnumParameterValueProvider enumParameterValueProvider = new EnumParameterValueProvider();
+    protected RegexParameterValueProvider regexParameterValueProvider = new RegexParameterValueProvider();
     protected DefaultParameterValueProvider defaultParameterValueProvider = new DefaultParameterValueProvider();
     protected ExamplesParameterValueProvider examplesParameterValueProvider = new ExamplesParameterValueProvider();
 
@@ -28,6 +29,13 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
         if (parameterLeaf.isEnum()) {
             return enumParameterValueProvider.provideValueFor(parameterLeaf);
         }
+
+        Object valueFromRegex = regexParameterValueProvider.provideValueFor(parameterLeaf);
+        if (valueFromRegex != null) {
+            System.out.println("REGEX VALUE: " + valueFromRegex);
+            return valueFromRegex;
+        }
+
         List<Object> possibleValues = new ArrayList<>();
         if (parameterLeaf.getExamples() != null) {
             possibleValues.add(examplesParameterValueProvider.provideValueFor(parameterLeaf));
@@ -38,6 +46,7 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
         possibleValues.add(randomParameterValueProvider.provideValueFor(parameterLeaf));
         System.out.println(parameterLeaf.getName());
         System.out.println(possibleValues);
+
         return possibleValues.get(getEnvironment().getRandom().nextInt(0, possibleValues.size()));
     }
 

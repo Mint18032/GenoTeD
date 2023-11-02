@@ -365,7 +365,7 @@ public abstract class ParameterElement extends Taggable {
      * Method to get the parameter as a JSON string. It can be used to construct JSON request bodies.
      * @return the JSON string.
      */
-    public abstract String getJSONString();
+    public abstract String getJSONString(Object value);
 
     /**
      * Returns the JSON path for the element, e.g., owner.name
@@ -381,15 +381,15 @@ public abstract class ParameterElement extends Taggable {
      * @param explode Parameter to change the way a specific style is rendered
      * @return A string with the rendered value
      */
-    public abstract String getValueAsFormattedString (ParameterStyle style, boolean explode);
+    public abstract String getValueAsFormattedString (ParameterStyle style, boolean explode, Object value);
 
     /**
      * Shorthand for getValueAsFormattedString where the value of 'explode' is the same of the instance one.
      * @param style the style to be used for the rendering.
      * @return a string with the rendered value.
      */
-    public String getValueAsFormattedString (ParameterStyle style) {
-        return getValueAsFormattedString (style, this.explode);
+    public String getValueAsFormattedString (ParameterStyle style, Object value) {
+        return getValueAsFormattedString (style, this.explode, value);
     }
 
     /**
@@ -397,12 +397,8 @@ public abstract class ParameterElement extends Taggable {
      * This function can be used to get the default rendering of a Parameter.
      * @return A string with the rendered value
      */
-    public String getValueAsFormattedString () {
-        return getValueAsFormattedString(this.style, this.explode);
-    }
-
-    public Object getValue() {
-        return null;
+    public String getValueAsFormattedString (Object value) {
+        return getValueAsFormattedString(this.style, this.explode, value);
     }
 
     public ParameterStyle getStyle() {
@@ -420,8 +416,6 @@ public abstract class ParameterElement extends Taggable {
     public void setExplode(boolean explode) {
         this.explode = explode;
     }
-
-    public abstract boolean hasValue();
 
     public final boolean isEnum() {
         return !this.enumValues.isEmpty();

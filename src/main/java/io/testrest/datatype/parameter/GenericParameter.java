@@ -45,8 +45,8 @@ public class GenericParameter extends ParameterLeaf {
     }
 
     @Override
-    public String getJSONString() {
-        return getJSONHeading() + getConcreteValue().toString();
+    public String getJSONString(Object value) {
+        return getJSONHeading() + value.toString();
     }
 
     @Override

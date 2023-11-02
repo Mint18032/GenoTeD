@@ -54,21 +54,18 @@ public class Main {
 
         NominalTestGenerator nominalTestGenerator = new NominalTestGenerator(OpenAPIParser.getUrls());
         TestSequence nominalTestSequence = nominalTestGenerator.generateTest(ODG);
-
-        if (nominalTestSequence.isEmpty()) {
-            logger.warning("No nominal test case was successfully generated.");
-            System.exit(-1);
-        }
-
-        logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
-        logger.info("Successfully generated the Nominal test cases. Starting generating error testcases.");
-        ErrorTestGenerator errorTestGenerator = new ErrorTestGenerator(OpenAPIParser.getUrls());
-        errorTestGenerator.generateTest(nominalTestSequence);
-
         List<String> allTestPaths = new ArrayList<>(nominalTestGenerator.getNominalTestPaths());
-        if (!errorTestGenerator.getTestSequence().isEmpty()) {
-            logger.info("Successfully generated the Error test cases. \n");
-            allTestPaths.addAll(errorTestGenerator.getErrorTestPaths());
+        logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
+
+        if (!nominalTestSequence.isEmpty()) {
+            logger.info("Starting generating error testcases.");
+            ErrorTestGenerator errorTestGenerator = new ErrorTestGenerator(OpenAPIParser.getUrls());
+            errorTestGenerator.generateTest(nominalTestSequence);
+
+            if (!errorTestGenerator.getTestSequence().isEmpty()) {
+                logger.info("Successfully generated the Error test cases. \n");
+                allTestPaths.addAll(errorTestGenerator.getErrorTestPaths());
+            }
         }
 
         logger.info("Running test cases");

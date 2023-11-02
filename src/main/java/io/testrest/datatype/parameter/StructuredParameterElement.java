@@ -153,11 +153,6 @@ public abstract class StructuredParameterElement extends ParameterElement {
         return false;
     }
 */
-    /**
-     * Helper function used to remove null-valued (for Leaves) and empty (for structured) children Parameters
-     * in order to have a valid representation of the structured parameter.
-     */
-    public abstract void removeUninitializedParameters();
 
 }
 

@@ -71,11 +71,11 @@ public class ParameterFactory {
         } else if (jsonElement instanceof JsonPrimitive) {
             JsonPrimitive primitive = (JsonPrimitive) jsonElement;
             if (primitive.isString()) {
-                return new StringParameter(primitive, operation, parent, name);
+                return new StringParameter(operation, parent, name);
             } else if (primitive.isNumber()) {
                 return new NumberParameter(primitive, operation, parent, name);
             } else if (primitive.isBoolean()) {
-                return new BooleanParameter(primitive, operation, parent, name);
+                return new BooleanParameter(operation, parent, name);
             }
         } else if (jsonElement instanceof JsonNull) {
             return new NullParameter(jsonElement, operation, parent, name);

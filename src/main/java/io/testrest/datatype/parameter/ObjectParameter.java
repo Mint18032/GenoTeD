@@ -141,7 +141,7 @@ public class ObjectParameter extends StructuredParameterElement {
     }
 
     @Override
-    public String getJSONString() {
+    public String getJSONString(Object value) {
         StringBuilder stringBuilder = new StringBuilder();
 
         // If object is inside an array, no heading is printed
@@ -150,7 +150,7 @@ public class ObjectParameter extends StructuredParameterElement {
         } else {
             stringBuilder.append(getJSONHeading()).append("{");
         }
-        properties.forEach(p -> stringBuilder.append(p.getJSONString()).append(", "));
+        properties.forEach(p -> stringBuilder.append(p.getJSONString(value)).append(", "));
         int index = stringBuilder.lastIndexOf(",");
         return stringBuilder.substring(0, index > 0 ? index : stringBuilder.length()) + "}";
     }
@@ -212,7 +212,7 @@ public class ObjectParameter extends StructuredParameterElement {
     }
 
     // TODO: create function to remove from a StringBuilder last matching chars? Maybe in a Helper class
-    public String getValueAsFormattedString (ParameterStyle style, boolean explode) {
+    public String getValueAsFormattedString (ParameterStyle style, boolean explode, Object value) {
         logger.warning("Format for deep nested object is not defined in the reference RFC. Use this method only for " +
                 "RFC defined behaviors.");
         StringBuilder stringBuilder = new StringBuilder();
@@ -357,22 +357,8 @@ public class ObjectParameter extends StructuredParameterElement {
 
             default:
                 logger.warning(getName() + ": Style not consistent with parameter type. Returning " + getStyle() + " style.");
-                return getValueAsFormattedString();
+                return getValueAsFormattedString(value);
         }
-    }
-
-    public boolean hasValue() {
-        boolean hasValue = true;
-
-        for (ParameterElement element : properties) {
-            hasValue = hasValue && element.hasValue();
-        }
-
-        if (!hasValue) {
-            logger.warning("Parameter " + getName() + " has an invalid value.");
-        }
-
-        return hasValue;
     }
 
     @Override
@@ -404,34 +390,6 @@ public class ObjectParameter extends StructuredParameterElement {
     @Override
     public boolean isEmpty() {
         return properties.isEmpty();
-    }
-
-    @Override
-    public void removeUninitializedParameters() {
-        if (getOperation().isReadOnly()) {
-            throw new EditReadOnlyOperationException(getOperation());
-        }
-        List<ParameterElement> newProperties = new LinkedList<>(this.properties);
-
-        this.properties.stream().filter(
-                p -> ParameterLeaf.class.isAssignableFrom(p.getClass()) && p.getValue() == null
-        ).forEach(p -> {
-            //logger.warn("Empty valued parameter '" + p.getName() + "' found. It will be removed.");
-            newProperties.remove(p);
-        });
-
-        this.properties.stream().filter(
-                p -> StructuredParameterElement.class.isAssignableFrom(p.getClass())
-        ).forEach(p -> {
-            StructuredParameterElement structuredP = (StructuredParameterElement) p;
-            structuredP.removeUninitializedParameters();
-            if (structuredP.isEmpty() && !structuredP.isKeepIfEmpty()) {
-                //logger.warn("Empty valued parameter '" + p.getName() + "' found. It will be removed.");
-                newProperties.remove(p);
-            }
-        });
-
-        this.properties = newProperties;
     }
 
     @Override

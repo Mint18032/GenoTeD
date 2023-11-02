@@ -195,45 +195,10 @@ public class ArrayParameter extends StructuredParameterElement {
         return this.elements.isEmpty();
     }
 
-    /**
-     * This function only operates on elements in the instance element list. The reference item is only used as a
-     * template, so it won't be removed even if empty-valued.
-     */
     @Override
-    public void removeUninitializedParameters() {
-        if (getOperation().isReadOnly()) {
-            throw new EditReadOnlyOperationException(getOperation());
-        }
-
-        List<ParameterElement> newElements = new LinkedList<>(this.elements);
-        List<ParameterElement> elementsToRemove = new LinkedList<>();
-
-        newElements.forEach(e -> {
-            if (ParameterLeaf.class.isAssignableFrom(e.getClass())) {
-                if (e.getValue() == null) {
-                    //logger.warn("Empty valued parameter '" + e.getName() + "' found. It will be removed.");
-                    elementsToRemove.add(e);
-                }
-            } else if (StructuredParameterElement.class.isAssignableFrom(e.getClass())) {
-                StructuredParameterElement structuredE = (StructuredParameterElement) e;
-                structuredE.removeUninitializedParameters();
-
-                if (structuredE.isEmpty() && !structuredE.isKeepIfEmpty()) {
-                    //logger.warn("Empty valued parameter '" + e.getName() + "' found. It will be removed.");
-                    elementsToRemove.add(e);
-                }
-            }
-        });
-
-        newElements.removeAll(elementsToRemove);
-
-        this.elements = newElements;
-    }
-
-    @Override
-    public String getJSONString() {
+    public String getJSONString(Object value) {
         StringBuilder stringBuilder = new StringBuilder(getJSONHeading() + "[");
-        elements.forEach(e -> stringBuilder.append(e.getJSONString()).append(", "));
+        elements.forEach(e -> stringBuilder.append(e.getJSONString(value)).append(", "));
         int index = stringBuilder.lastIndexOf(",");
         return stringBuilder.substring(0, index > 0 ? index : stringBuilder.length()) + "]";
     }
@@ -299,7 +264,7 @@ public class ArrayParameter extends StructuredParameterElement {
         return true;
     }
 
-    public String getValueAsFormattedString (ParameterStyle style, boolean explode) {
+    public String getValueAsFormattedString (ParameterStyle style, boolean explode, Object value) {
         logger.warning("Format for deep nested arrays is not defined in the reference RFC. Use this method only for " +
                 "RFC defined behaviors.");
         StringBuilder stringBuilder = new StringBuilder();
@@ -395,20 +360,6 @@ public class ArrayParameter extends StructuredParameterElement {
                 logger.warning(getName() + ": Style not consistent with parameter type. Returning 'simple' style.");
                 return this.getValueAsFormattedString(ParameterStyle.SIMPLE);
         }
-    }
-
-    public boolean hasValue() {
-        boolean hasValue = true;
-
-        for (ParameterElement element : elements) {
-            hasValue = hasValue && element.hasValue();
-        }
-
-        if (!hasValue) {
-            logger.warning("Parameter " + getName() + " has an invalid value.");
-        }
-
-        return hasValue;
     }
 
     @Override
@@ -548,72 +499,6 @@ public class ArrayParameter extends StructuredParameterElement {
         } else {
             // Missing parenthesis
             return null;
-        }
-    }
-
-    /**
-     * Check if the values of the elements in the array correspond to those specified in the provided string.
-     * FIXME: deal with decimal numbers in some way.
-     * @param commaSeparatedValues the values in the array, comma-separated.
-     * @return true if the array has the provided values.
-     */
-    public boolean hasValues(String commaSeparatedValues) {
-
-        // Only applicable to array of leaves
-        if (this.isArrayOfLeaves()) {
-
-            boolean hasValues = true;
-
-            List<String> stringValues = elements.stream().map(e -> ((ParameterLeaf) e).getConcreteValue().toString()).collect(Collectors.toList());
-
-            // Remove square brackets, if present
-            if (commaSeparatedValues.length() > 2 && commaSeparatedValues.startsWith("[") && commaSeparatedValues.endsWith("]")) {
-                commaSeparatedValues = commaSeparatedValues.substring(1, commaSeparatedValues.length() - 1);
-            }
-
-            String[] values = commaSeparatedValues.split(",");
-            if (values.length == elements.size()) {
-                for (String value : values) {
-
-                    // Cut out quotes from values
-                    if (value.length() > 2 && (value.startsWith("'") && value.endsWith("'")) ||
-                            (value.startsWith("\"") && value.endsWith("\""))) {
-                        value = value.substring(1, value.length() - 1);
-                    }
-
-                    hasValues = hasValues && stringValues.remove(value);
-                }
-                return hasValues;
-            }
-        }
-        return false;
-    }
-
-    public void setValuesFromCommaSeparatedString(String commaSeparatedValues) {
-
-        // Only applicable to array of leaves
-        if (this.isArrayOfLeaves()) {
-
-            // Remove square brackets, if present
-            if (commaSeparatedValues.length() > 2 && commaSeparatedValues.startsWith("[") && commaSeparatedValues.endsWith("]")) {
-                commaSeparatedValues = commaSeparatedValues.substring(1, commaSeparatedValues.length() - 1);
-            }
-
-            String[] values = commaSeparatedValues.split(",");
-
-            for (String value : values) {
-
-                // Cut out quotes from values
-                if (value.length() > 2 && (value.startsWith("'") && value.endsWith("'")) ||
-                        (value.startsWith("\"") && value.endsWith("\""))) {
-                    value = value.substring(1, value.length() - 1);
-                }
-
-                // Create new element for the array from reference element
-                ParameterLeaf newLeaf = (ParameterLeaf) this.getReferenceElement().deepClone();
-                newLeaf.setValue(value);
-                this.addElement(newLeaf);
-            }
         }
     }
 }

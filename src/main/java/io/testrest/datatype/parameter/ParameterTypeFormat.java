@@ -19,6 +19,7 @@ public enum ParameterTypeFormat {
     DATE,
     DATE_TIME,
     TIME,
+    YEAR,
     DURATION,
     PASSWORD,
     HOSTNAME,
@@ -84,6 +85,8 @@ public enum ParameterTypeFormat {
                 return DATE_TIME;
             case ("time"):
                 return TIME;
+            case ("year"):
+                return YEAR;
             case ("duration"):
                 return DURATION;
             case ("password"):

@@ -58,7 +58,7 @@ public class ConstraintViolationMutator extends Mutator {
                 newEntry.setValue(mutateValue.toString());
                 interaction.setMutateInfo("Constraint Violation Mutation. Provided random value to enum parameter " + parameter.getName());
             } else if (parameter instanceof StringParameter) {
-                String mutateValue = mutateLength((StringParameter) parameter);
+                String mutateValue = mutateLength((StringParameter) parameter, newEntry.getValue());
                 newEntry.setValue(mutateValue);
                 interaction.setMutateInfo("Constraint Violation Mutation. Violated length constraint of parameter " + parameter.getName());
             } else if (parameter instanceof NumberParameter) {
@@ -95,7 +95,7 @@ public class ConstraintViolationMutator extends Mutator {
      * String length is changed to violate length constraints
      * @param parameter the parameter to mutate
      */
-    private String mutateLength(StringParameter parameter) {
+    private String mutateLength(StringParameter parameter, Object value) {
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 
@@ -112,14 +112,14 @@ public class ConstraintViolationMutator extends Mutator {
         Optional<Integer> chosenLength = random.nextElement(lengths);
 
         // If the current value is longer, just cut the string
-        if (chosenLength.isPresent() && ((String) parameter.getValue()).length() > chosenLength.get()) {
-            return ((String) parameter.getValue()).substring(0, chosenLength.get());
+        if (chosenLength.isPresent() && value.toString().length() > chosenLength.get()) {
+            return value.toString().substring(0, chosenLength.get());
         }
 
         // If the current value is shorter, add random characters
-        else if (chosenLength.isPresent() && ((String) parameter.getValue()).length() < chosenLength.get()) {
-            return (parameter.getValue() +
-                    random.nextRandomString(chosenLength.get() - ((String) parameter.getValue()).length()));
+        else if (chosenLength.isPresent() && value.toString().length() < chosenLength.get()) {
+            return (value +
+                    random.nextRandomString(chosenLength.get() - value.toString().length()));
         }
 
         return null;

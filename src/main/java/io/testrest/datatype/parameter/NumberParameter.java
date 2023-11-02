@@ -10,6 +10,7 @@ import io.testrest.helper.ObjectHelper;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -85,15 +86,12 @@ public class NumberParameter extends ParameterLeaf {
             this.type = ParameterType.INTEGER;
             if (longValue == (long) integerValue) {
                 this.format = ParameterTypeFormat.INT32;
-                setValue(integerValue);
             } else {
                 this.format = ParameterTypeFormat.INT64;
-                setValue(longValue);
             }
         } else {
             this.type = ParameterType.NUMBER;
             this.format = ParameterTypeFormat.DOUBLE;
-            setValue(doubleValue);
         }
 
         this.name = new ParameterName(Objects.requireNonNullElse(name, ""));
@@ -162,9 +160,6 @@ public class NumberParameter extends ParameterLeaf {
 
     @Override
     public boolean isValueCompliant(Object value) {
-        if (value instanceof ParameterLeaf) {
-            value = ((ParameterLeaf) value).getConcreteValue();
-        }
         try {
             double doubleValue = ObjectHelper.castToNumber(value).doubleValue();
 
@@ -208,7 +203,7 @@ public class NumberParameter extends ParameterLeaf {
 
         ExtendedRandom random = Environment.getInstance().getRandom();
 
-        if (format == null) return ParameterTypeFormat.MISSING;
+        if (format == null || format == ParameterTypeFormat.MISSING) return inferFormatFromName();
 
         switch (format) {
             case INT8:
@@ -259,6 +254,23 @@ public class NumberParameter extends ParameterLeaf {
         return ParameterTypeFormat.INT32;
     }
 
+    /**
+     * Infers a format from the name of the parameter.
+     * @return the inferred format.
+     */
+    public ParameterTypeFormat inferFormatFromName() {
+        if (name.toString().toLowerCase(Locale.ROOT).endsWith("time") || name.toString().toLowerCase(Locale.ROOT).startsWith("time")) {
+            return ParameterTypeFormat.TIME;
+        } else if (name.toString().toLowerCase(Locale.ROOT).endsWith("year") || name.toString().toLowerCase(Locale.ROOT).startsWith("year")) {
+            return ParameterTypeFormat.YEAR;
+        } else if (name.contains("duration")) {
+            return ParameterTypeFormat.DURATION;
+        } else if (name.contains("phone")) {
+            return ParameterTypeFormat.PHONE;
+        }
+        return ParameterTypeFormat.MISSING;
+    }
+
     @Override
     public NumberParameter deepClone() {
         return this;
@@ -279,12 +291,12 @@ public class NumberParameter extends ParameterLeaf {
     }
 
     @Override
-    public String getJSONString() {
-        String stringValue = getConcreteValue().toString();
+    public String getJSONString(Object value) {
+        String stringValue = value.toString();
 
         // If the numeric value is integer (mathematical meaning, i.e., no decimal digits), print it without the .0
-        if (getConcreteValue() instanceof Double && ((Double) getConcreteValue()) % 1 == 0) {
-            stringValue = Long.toString(((Double) getConcreteValue()).longValue());
+        if (value instanceof Double && ((Double) value) % 1 == 0) {
+            stringValue = Long.toString(((Double) value).longValue());
         }
 
         return getJSONHeading() + stringValue;

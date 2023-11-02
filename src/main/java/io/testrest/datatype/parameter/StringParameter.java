@@ -1,7 +1,5 @@
 package io.testrest.datatype.parameter;
 
-
-import com.google.gson.JsonPrimitive;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.Environment;
@@ -19,7 +17,8 @@ public class StringParameter extends ParameterLeaf {
 
     private Integer maxLength; // MUST be >= 0
     private Integer minLength = 0;
-    private String pattern; // TODO: add support for pattern
+
+    private String pattern;
 
     private static final Logger logger = Logger.getLogger(StringParameter.class.getName());
 
@@ -83,10 +82,8 @@ public class StringParameter extends ParameterLeaf {
         pattern = other.pattern;
     }
 
-    public StringParameter(JsonPrimitive jsonPrimitive, OperationNode operation, ParameterElement parent, String name) {
+    public StringParameter(OperationNode operation, ParameterElement parent, String name) {
         super(operation, parent);
-
-        setValue(jsonPrimitive.getAsString());
 
         this.name = new ParameterName(Objects.requireNonNullElse(name, ""));
         this.normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
@@ -130,9 +127,6 @@ public class StringParameter extends ParameterLeaf {
 
     @Override
     public boolean isValueCompliant(Object value) {
-        if (value instanceof ParameterLeaf) {
-            value = ((ParameterLeaf) value).getConcreteValue();
-        }
         try {
             String stringValue = ObjectHelper.castToString(value);
 
@@ -180,6 +174,8 @@ public class StringParameter extends ParameterLeaf {
                 return ParameterTypeFormat.DATE_TIME;
             case TIME:
                 return ParameterTypeFormat.TIME;
+            case YEAR:
+                return ParameterTypeFormat.YEAR;
             case DURATION:
                 return ParameterTypeFormat.DURATION;
             case PASSWORD:
@@ -262,6 +258,8 @@ public class StringParameter extends ParameterLeaf {
             return ParameterTypeFormat.PASSWORD;
         } else if (name.endsWith("time") || name.startsWith("time")) {
             return ParameterTypeFormat.TIME;
+        } else if (name.endsWith("year") || name.startsWith("year")) {
+            return ParameterTypeFormat.YEAR;
         } else if (name.contains("duration")) {
             return ParameterTypeFormat.DURATION;
         } else if (name.contains("iban")) {
@@ -306,6 +304,8 @@ public class StringParameter extends ParameterLeaf {
                 return ParameterTypeFormat.TIME;
             }
             return ParameterTypeFormat.DATE_TIME;
+        } else if (name.endsWith("year") || name.startsWith("year")) {
+            return ParameterTypeFormat.YEAR;
         } else if (name.contains("sha-1") || name.endsWith("hash") || name.contains("md5") ||
                 name.contains("sha-256")) {
             return ParameterTypeFormat.HASH;
@@ -340,14 +340,22 @@ public class StringParameter extends ParameterLeaf {
         return new LinkedList<>();
     }
 
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
     @Override
-    public String getJSONString() {
+    public String getJSONString(Object value) {
 
         // If leaf is inside an array, don't print the leaf name
         if (this.getParent() instanceof ArrayParameter) {
-            return "\"" + getConcreteValue() + "\"";
+            return "\"" + value.toString() + "\"";
         } else {
-            return getJSONHeading() + "\"" + getConcreteValue() + "\"";
+            return getJSONHeading() + "\"" + value.toString() + "\"";
         }
     }
 }

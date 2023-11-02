@@ -1,5 +1,6 @@
 package io.testrest.helper;
 
+import com.github.javafaker.Faker;
 import com.github.javafaker.service.FakeValuesService;
 import com.github.javafaker.service.RandomService;
 import com.google.common.io.Resources;
@@ -27,6 +28,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 public class ExtendedRandom extends Random {
     FakeValuesService fakeValuesService = new FakeValuesService(
             new Locale(Configuration.getLocale()), new RandomService());
+    Faker faker = new Faker(new Locale(Configuration.getLocale()));
 
     /**
      * Returns a positive integer.
@@ -276,7 +278,7 @@ public class ExtendedRandom extends Random {
     public String nextDateTime() {
         if (nextBoolean()) {
             return nextDateTime(LocalDateTime.of(2000, 1, 1, 0, 0, 0),
-                    LocalDateTime.of(2022, 1, 1, 0, 0, 0));
+                    LocalDateTime.now());
         } else {
             // UNIX timestamp
             return String.valueOf(System.currentTimeMillis() + nextLong(-100000L, 100000L));
@@ -297,10 +299,16 @@ public class ExtendedRandom extends Random {
     {
         return nextTime(LocalTime.of(0, 0, 0), LocalTime.of(23, 59, 59));
     }
+
     public String nextTime(LocalTime min, LocalTime max)
     {
         return nextDateTime(LocalDateTime.of(2000, 1, 1, min.getHour(), min.getMinute(), min.getSecond()),
                 LocalDateTime.of(2000, 1, 1, max.getHour(), max.getMinute(), max.getSecond()), "HH:mm:ss");
+    }
+
+    public String nextYear()
+    {
+        return nextInt(1999, 2024).toString();
     }
 
     public String nextTimeDuration()
@@ -573,49 +581,27 @@ public class ExtendedRandom extends Random {
      */
     public String nextPhoneNumber()
     {
-        switch (nextIntBetweenInclusive(0, 5)) {
-            default:
-            case 0:
-                return String.format("%04d", nextLength(0, 9999)) + nextNumeric(7);
-            case 1:
-                return String.format("%04d", nextLength(0, 9999)) + " " + nextNumeric(7);
-            case 2:
-                return "+" + nextIntBetweenInclusive(0, 9999) + " " + nextNumeric(11);
-            case 3:
-                return "+" + nextIntBetweenInclusive(0, 9999) + nextNumeric(11);
-            case 4:
-                return "(+" + nextIntBetweenInclusive(0, 9999) + ") " + nextNumeric(11);
-            case 5:
-                return "+" + nextIntBetweenInclusive(0, 9999) + "-" + nextNumeric(11);
-        }
+        return faker.phoneNumber().phoneNumber();
     }
+
     /**
      * Return a random email (example@site.com)
      * @return the random email
      */
     public String nextEmail()
     {
-        String[] domain = new String[] {"gmail.com", "live.com", "outlook.com"};
-
-        String email;
-        if (nextIntBetweenInclusive(0, 100) < 80) {
-            email = domain[nextInt(domain.length)];
-        }
-        else {
-            email = nextDomain(true);
-        }
-
-        return nextLetterString(nextInt(1, 10)) + "@" + email;
+        return faker.internet().emailAddress();
     }
 
     public String nextURI() {
-        StringBuilder str = new StringBuilder(nextProtocol() + "://" + nextDomain(true) + "/");
+        StringBuilder str = new StringBuilder(nextProtocol() + "://" + nextDomain() + "/");
 
         for (int i = 0; i < nextInt(2); i++) {
             str.append(nextString(10)).append("/");
         }
 
         return str.toString();
+//        return faker.internet().url();
     }
 
     public String nextIPV4() {
@@ -651,19 +637,8 @@ public class ExtendedRandom extends Random {
         return randAddress;
     }
 
-    public String nextDomain(boolean topDomain) {
-        String[] topDomainString = {"com", "it", "info", "ch", "de", "gov", "co.uk", "io", "me"};
-
-        StringBuilder s = new StringBuilder(nextLetterString(nextInt(1, 10)));
-        for (int i = 0; i < nextInt(2); i++) {
-            s.append(".").append(nextLetterString(nextIntBetweenInclusive(1, 10)));
-        }
-
-        if (topDomain) {
-            s.append(".").append(topDomainString[nextInt(topDomainString.length)]);
-        }
-
-        return s.toString();
+    public String nextDomain() {
+        return faker.internet().domainName();
     }
 
     public String nextProtocol() {
@@ -738,14 +713,14 @@ public class ExtendedRandom extends Random {
 
     public String nextCountryCode(int alpha) {
         if (alpha == 3) {
-            return getAlpha3CountryCodes()[nextInt(249)];
+            return faker.country().countryCode3();
         }
 
-        return getAlpha2CountryCodes()[nextInt(249)];
+        return faker.country().countryCode2();
     }
 
     public String nextCurrency() {
-        return getCurrencies()[nextInt(157)];
+        return faker.currency().code();
     }
 
     public String[] getAlpha3CountryCodes() {
@@ -759,5 +734,10 @@ public class ExtendedRandom extends Random {
     public String[] getCurrencies() {
         return new String[]{"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "none", "NPR", "NZD", "OMR", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLE", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMW"};
     }
+
+    public String nextName() {
+        return faker.artist().name();
+    }
+
 }
 

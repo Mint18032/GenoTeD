@@ -29,7 +29,6 @@ public class DictionaryEntry {
             this.source = leaf;
             this.discoveryTime = Timestamp.from(Instant.now());
             this.value = value;
-            leaf.setValue(value);
         } else {
             throw new RuntimeException("Can not create dictionary entry from leaf with some null values.");
         }

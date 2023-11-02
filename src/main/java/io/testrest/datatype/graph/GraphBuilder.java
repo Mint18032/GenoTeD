@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.Main;
 import io.testrest.datatype.normalizer.ParameterComparator;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,7 +36,12 @@ public class GraphBuilder {
                 }
         }
 
-//        ODG.exportToFile();
+        try {
+            ODG.exportToFile();
+        } catch (IOException e) {
+            System.out.println("Error occurred when export ODG to file.");
+        }
+
         System.out.println(ODG.toMatrix());
     }
 }

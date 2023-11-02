@@ -145,9 +145,9 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
     }
 
     @Override
-    public String getJSONString() {
+    public String getJSONString(Object value) {
         if (outputParameterSchema != null) {
-            return outputParameterSchema.getJSONString();
+            return outputParameterSchema.getJSONString(value);
         }
         logger.warning("Requested JSON string for parameter '" + getName() + "(operation '" + getOperation() + "')," +
                 " but no schema was selected. Returning an empty string.");
@@ -160,18 +160,13 @@ public abstract class CombinedSchemaParameter extends ParameterElement {
     }
 
     @Override
-    public String getValueAsFormattedString(ParameterStyle style, boolean explode) {
+    public String getValueAsFormattedString(ParameterStyle style, boolean explode, Object value) {
         if (outputParameterSchema != null) {
-            return outputParameterSchema.getValueAsFormattedString(style, explode);
+            return outputParameterSchema.getValueAsFormattedString(style, explode, value);
         }
         logger.warning("Requested formatted string for parameter '" + getName() + "(operation '" + getOperation() + "')," +
                 " but no schema was selected. Returning an empty string.");
         return "";
-    }
-
-    @Override
-    public boolean hasValue() {
-        return outputParameterSchema != null && outputParameterSchema.hasValue();
     }
 
     @Override

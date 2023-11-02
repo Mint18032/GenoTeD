@@ -58,6 +58,9 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
             case TIME:
                 generatedString = random.nextTime();
                 break;
+            case YEAR:
+                generatedString = random.nextYear();
+                break;
             case DURATION:
                 generatedString = random.nextTimeDuration();
                 break;
@@ -65,7 +68,7 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
                 generatedString = random.nextRandomString(length);
                 break;
             case HOSTNAME:
-                generatedString = random.nextDomain(true);
+                generatedString = random.nextDomain();
                 break;
             case URI:
                 generatedString = random.nextURI();
@@ -118,6 +121,10 @@ public class RandomParameterValueProvider extends ParameterValueProvider {
 
         // Get the actual format, or infer it
         ParameterTypeFormat format = parameter.inferFormat();
+
+        if (format == ParameterTypeFormat.YEAR) {
+            return Integer.parseInt(random.nextYear());
+        }
 
         // With 0.5 probability, restrict the range of the generated value. This is done because values in the
         // restricted range (0 - 120 in this case) are used more commonly than other random values.

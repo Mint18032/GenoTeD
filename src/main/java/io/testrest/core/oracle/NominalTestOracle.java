@@ -8,7 +8,7 @@ import io.testrest.Environment;
 import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.graph.OperationNode;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -27,48 +27,62 @@ public class NominalTestOracle extends StatusCodeOracle {
      * Deletes 4xx testcases and saves returned values of other testcases to Dictionary.
      * @param operationNode the Operation to be tested.
      * @param testPaths paths to the testcases.
-     * @return true if testcases are valid.
+     * @return true if testcases can be used to mutate.
      */
     @Override
     public boolean assessOperationTest(OperationNode operationNode, List<String> testPaths) {
         Results results = this.testRunner.testOperation(testPaths.get(0), operationNode.getOperationId());
+        boolean delete = false;
 
         if (results.getErrors().size() > 0) {
             String error = results.getErrors().get(0);
             String status = error.substring(error.indexOf("status code was: ") + 17, error.indexOf("status code was: ") + 20);
 
-            if (status.startsWith("4") || error.contains("Unexpected token")) {
-                testPaths.forEach(path -> {
-                            try {
-                                deleteTestcase(path, operationNode.getOperationId());
-                            } catch (IOException e) {
-                                logger.warning("Exception raised when attempting to delete testcase for Operation " + operationNode.getOperationId());
-                                logger.log(Level.INFO, e.getMessage());
-                            }
-                        });
-                logger.info("Deleted testcase returning 4xx status code for Operation: " + operationNode.getOperationId());
-                return false;
+            if (status.equals("411") && addLength(operationNode.getOperationId(), testPaths)) {
+                results = this.testRunner.testOperation(testPaths.get(0), operationNode.getOperationId());
+                if (results.getErrors().size() > 0) {
+                    error = results.getErrors().get(0);
+                    status = error.substring(error.indexOf("status code was: ") + 17, error.indexOf("status code was: ") + 20);
+                }
+            }
+            if (status.startsWith("4") || error.contains("Unexpected token") || (!status.startsWith("5") && results.getFeaturesPassed() == 0)) {
+                delete = true;
             }
         }
 
-        if (results.getFeaturesPassed() == results.getFeaturesTotal() && results.getFeaturesPassed() > 0) {
-            receiveResponseValues(results);
+        if (!delete && results.getFeaturesPassed() == results.getFeaturesTotal() && results.getFeaturesPassed() > 0) {
+            delete = !receiveResponseValues(operationNode.getOperationId(), results, testPaths);
         }
 
-        return true;
+        if (delete) {
+            testPaths.forEach(path -> {
+                try {
+                    deleteTestcase(path, operationNode.getOperationId());
+                } catch (IOException e) {
+                    logger.warning("Exception raised when attempting to delete testcase for Operation " + operationNode.getOperationId());
+                    logger.log(Level.INFO, e.getMessage());
+                }
+            });
+
+            logger.info("Deleted testcase returning 4xx status code for Operation: " + operationNode.getOperationId());
+        }
+
+        return !delete;
     }
 
     /**
      * Gets values returned by a request and saves them to Dictionary.
      * @param results karate results object.
+     * @return true if response value received successfully (status 2xx or 5xx).
      */
-    public void receiveResponseValues(Results results) {
-        System.out.println("+++++++++++++++++++++++++++++++++++\n");
+    public boolean receiveResponseValues(String operationId, Results results, List<String> testPaths) {
+        System.out.println("RESPONSE: \n");
         List<StepResult> stepResults = results.getScenarioResults().collect(Collectors.toList()).get(0).getStepResults();
         StepResult print_step = stepResults.get(stepResults.size() - 1);
         String response = print_step.getStepLog();
         response = response.substring(response.lastIndexOf("[print] ") + 8, response.length() - 2);
         System.out.println(response);
+        String status = "200";
 
         if (response.startsWith("{") && response.endsWith("}")) {
             Gson gson = new Gson();
@@ -76,10 +90,68 @@ public class NominalTestOracle extends StatusCodeOracle {
 
             Map<Object, Object> map = new HashMap<>(gson.fromJson(response, type));
 
+            if (map.containsKey("code") && isStatusCode(map.get("code").toString())) {
+                status = map.get("code").toString();
+            } else if (map.containsKey("status") && isStatusCode(map.get("status").toString())) {
+                status = map.get("status").toString();
+            }
+
             for (Map.Entry<Object, Object> entry : map.entrySet()) {
                 System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
                 Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(entry.getKey().toString(), entry.getValue()));
             }
+        } else if (response.startsWith("<") && response.endsWith(">")) {
+            if (response.contains("Length Required") && response.contains("411")) {
+                status = "411";
+                if (addLength(operationId, testPaths)) {
+                    results = this.testRunner.testOperation(testPaths.get(0), operationId);
+                    status = receiveResponseValues(operationId, results, testPaths) ? "200" : "400";
+                }
+            }
         }
+
+        return status.startsWith("2") || status.startsWith("5");
+    }
+
+    private boolean isStatusCode(String str) {
+        if (str == null || str.length() != 3) {
+            return false;
+        }
+        try {
+            int num = Integer.parseInt(str);
+            return num > 0;
+        } catch(NumberFormatException e){
+            return false;
+        }
+    }
+
+    private boolean addLength(String operationId, List<String> testPaths) {
+        System.out.println("Blalala");
+        for (String testPath : testPaths) {
+            try {
+                File inputFile = new File(testPath);
+                BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+
+                StringBuilder sb = new StringBuilder();
+                String currentLine;
+
+                while ((currentLine = reader.readLine()) != null) {
+                    sb.append(currentLine).append(System.getProperty("line.separator"));
+                    if (currentLine.contains("Scenario: " + operationId)) {
+                        sb.append("\t\tGiven header content-length = 0").append(System.getProperty("line.separator"));
+                    }
+                }
+
+                reader.close();
+
+                FileWriter fileWriter = new FileWriter(inputFile, false);
+                fileWriter.write(sb.toString());
+                fileWriter.close();
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

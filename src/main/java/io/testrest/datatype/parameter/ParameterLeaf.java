@@ -11,8 +11,6 @@ public abstract class ParameterLeaf extends ParameterElement {
 
     private static final Logger logger = Logger.getLogger(ParameterLeaf.class.getName());
 
-    protected Object value;
-
     public ParameterLeaf(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         super(parent, parameterMap, operation, name);
     }
@@ -28,12 +26,10 @@ public abstract class ParameterLeaf extends ParameterElement {
 
     protected ParameterLeaf(ParameterLeaf other) {
         super(other);
-//        value = ObjectHelper.deepCloneObject(other);
     }
 
     protected ParameterLeaf(Parameter other, OperationNode operation) {
         super(other, operation);
-//        value = ObjectHelper.deepCloneObject(other);
     }
 
     protected ParameterLeaf(ParameterLeaf other, OperationNode operation, ParameterElement parent) {
@@ -53,7 +49,6 @@ public abstract class ParameterLeaf extends ParameterElement {
         defaultValue = ObjectHelper.deepCloneObject(other.getDefaultValue());
         enumValues = new HashSet<>(ObjectHelper.deepCloneObject(other.getEnumValues()));
         examples = new HashSet<>(ObjectHelper.deepCloneObject(other.getExamples()));
-        value = ObjectHelper.deepCloneObject(other.value);
     }
 
     public ParameterLeaf(OperationNode operation, ParameterElement parent) {
@@ -68,13 +63,9 @@ public abstract class ParameterLeaf extends ParameterElement {
                 normalizedName.toString().toLowerCase().endsWith("username");
     }
 
-    public String getValueAsFormattedString(ParameterStyle style, boolean explode) {
-        if (value == null) {
-            logger.warning("Called 'getValueAsFormattedString' function on null-valued parameter.");
-            return "";
-        }
+    public String getValueAsFormattedString(ParameterStyle style, boolean explode, Object value) {
 
-        String encodedValue = getConcreteValue().toString();
+        String encodedValue = value.toString();
 /*
         // Encode body parameters in x-www-form-urlencoded
         if (this.getLocation() == ParameterLocation.REQUEST_BODY &&
@@ -85,11 +76,6 @@ public abstract class ParameterLeaf extends ParameterElement {
         // Remove slashes in path parameters
         if (this.getLocation() == ParameterLocation.PATH) {
             encodedValue = encodedValue.replaceAll("/", "").replaceAll("\\\\", "");
-        }
-
-        // If numeric value (double) is integer (not decimal), convert it to long to prevent the printing of .0
-        if (getConcreteValue() instanceof Double && ((Double) getConcreteValue()) % 1 == 0) {
-            encodedValue = Long.toString(((Double) getConcreteValue()).longValue());
         }
 
         switch (style) {
@@ -117,43 +103,6 @@ public abstract class ParameterLeaf extends ParameterElement {
         }
     }
 
-    @Override
-    public Object getValue() {
-        return value;
-    }
-
-    /**
-     * @return the concrete value of the parameter, i.e., if the value is a reference to another leaf, the concrete
-     * value of that leaf is returned.
-     */
-    public Object getConcreteValue() {
-        if (value instanceof ParameterLeaf) {
-            return ((ParameterLeaf) value).getConcreteValue();
-        }
-        return value;
-    }
-
-    public void setValue(Object value) {
-//        if (getOperation().isReadOnly()) {
-//            throw new EditReadOnlyOperationException(getOperation());
-//        }
-        if (this.isObjectTypeCompliant(value)) {
-            this.value = value;
-        } else {
-            logger.warning("Setting value '" + value + "' to parameter '" +
-                    this.getName() + "' is not possible due to type mismatch.");
-        }
-    }
-
-    public void removeValue() {
-        this.value = null;
-    }
-
-    @Override
-    public boolean isSet() {
-        return getConcreteValue() != null || this instanceof NullParameter;
-    }
-
     public String getJsonPath() {
 
         String thisJsonPath = "['" + this.getName() + "']";
@@ -179,14 +128,6 @@ public abstract class ParameterLeaf extends ParameterElement {
         } else {
             return getParent().getJsonPath() + thisJsonPath;
         }
-    }
-
-    @Override
-    public boolean hasValue() {
-        if (value == null) {
-            logger.warning("Parameter " + getName() + " has an invalid value.");
-        }
-        return value != null;
     }
 
     @Override
@@ -221,6 +162,11 @@ public abstract class ParameterLeaf extends ParameterElement {
     @Override
     public Collection<CombinedSchemaParameter> getCombinedSchemas() {
         return new LinkedList<>();
+    }
+
+    @Override
+    public boolean isSet() {
+        return false;
     }
 /*
     @Override

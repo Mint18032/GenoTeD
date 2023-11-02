@@ -39,10 +39,8 @@ public class BooleanParameter extends ParameterLeaf {
         super(other, operation, parent);
     }
 
-    public BooleanParameter(JsonPrimitive jsonPrimitive, OperationNode operation, ParameterElement parent, String name) {
+    public BooleanParameter(OperationNode operation, ParameterElement parent, String name) {
         super(operation, parent);
-
-        setValue(jsonPrimitive.getAsBoolean());
 
         this.name = new ParameterName(Objects.requireNonNullElse(name, ""));
         this.normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
@@ -68,7 +66,7 @@ public class BooleanParameter extends ParameterLeaf {
     @Override
     public boolean isValueCompliant(Object value) {
         if (value instanceof ParameterLeaf) {
-            value = ((ParameterLeaf) value).getConcreteValue();
+            value = ((ParameterLeaf) value);
         }
         try {
             boolean booleanValue = ObjectHelper.castToBoolean(value);
@@ -89,8 +87,8 @@ public class BooleanParameter extends ParameterLeaf {
     }
 
     @Override
-    public String getJSONString() {
-        return getJSONHeading() + getConcreteValue().toString();
+    public String getJSONString(Object value) {
+        return getJSONHeading() + value.toString();
     }
 
     @Override
