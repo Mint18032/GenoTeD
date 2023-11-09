@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.intuit.karate.Results;
 import com.intuit.karate.core.StepResult;
 import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.graph.OperationNode;
 
@@ -51,7 +52,7 @@ public class NominalTestOracle extends StatusCodeOracle {
         }
 
         if (!delete && results.getFeaturesPassed() == results.getFeaturesTotal() && results.getFeaturesPassed() > 0) {
-            delete = !receiveResponseValues(operationNode.getOperationId(), results, testPaths);
+            delete = !receiveResponseValues(operationNode, results, testPaths);
         }
 
         if (delete) {
@@ -75,7 +76,7 @@ public class NominalTestOracle extends StatusCodeOracle {
      * @param results karate results object.
      * @return true if response value received successfully (status 2xx or 5xx).
      */
-    public boolean receiveResponseValues(String operationId, Results results, List<String> testPaths) {
+    public boolean receiveResponseValues(OperationNode operationNode, Results results, List<String> testPaths) {
         System.out.println("RESPONSE: \n");
         List<StepResult> stepResults = results.getScenarioResults().collect(Collectors.toList()).get(0).getStepResults();
         StepResult print_step = stepResults.get(stepResults.size() - 1);
@@ -96,16 +97,27 @@ public class NominalTestOracle extends StatusCodeOracle {
                 status = map.get("status").toString();
             }
 
-            for (Map.Entry<Object, Object> entry : map.entrySet()) {
-                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-                Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(entry.getKey().toString(), entry.getValue()));
+            if (status.startsWith("2")) {
+                // TODO: parse response
+                List<String> outputs = operationNode.getOutputs();
+                outputs.forEach(output -> {
+                    if (map.containsKey(output)) {
+                        System.out.println("Key: " + output + ", Value: " + map.get(output));
+                        Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(output, map.get(output)));
+                    }
+                });
             }
+
+//            for (Map.Entry<Object, Object> entry : map.entrySet()) {
+//                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//                Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(entry.getKey().toString(), entry.getValue()));
+//            }
         } else if (response.startsWith("<") && response.endsWith(">")) {
             if (response.contains("Length Required") && response.contains("411")) {
                 status = "411";
-                if (addLength(operationId, testPaths)) {
-                    results = this.testRunner.testOperation(testPaths.get(0), operationId);
-                    status = receiveResponseValues(operationId, results, testPaths) ? "200" : "400";
+                if (addLength(operationNode.getOperationId(), testPaths)) {
+                    results = this.testRunner.testOperation(testPaths.get(0), operationNode.getOperationId());
+                    status = receiveResponseValues(operationNode, results, testPaths) ? "200" : "400";
                 }
             }
         }

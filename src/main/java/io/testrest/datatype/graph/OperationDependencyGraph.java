@@ -60,6 +60,10 @@ public class OperationDependencyGraph {
         return dependentNodes;
     }
 
+    public OperationNode getOperationNodeById(String operationId) {
+        return graph.vertexSet().stream().filter(v -> v.getOperationId().equals(operationId)).collect(Collectors.toList()).get(0);
+    }
+
     /**
      * Exports ODG to a file.
      */

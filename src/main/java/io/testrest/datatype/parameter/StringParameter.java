@@ -22,6 +22,9 @@ public class StringParameter extends ParameterLeaf {
 
     private static final Logger logger = Logger.getLogger(StringParameter.class.getName());
 
+    public StringParameter() {
+    }
+
     public StringParameter(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         super(parent, parameterMap, operation, name);
 

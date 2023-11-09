@@ -53,7 +53,8 @@ public class TestInteraction extends Taggable {
         this.mutateInfo = "none";
 
         dictionaryEntryList.forEach(entry -> {
-            this.requestInputs.add(new DictionaryEntry(entry.getSource(), entry.getValue()));
+            this.requestInputs.add(entry.getSource() != null ? new DictionaryEntry(entry.getSource(), entry.getValue())
+                    : new DictionaryEntry(entry.getParameterName().toString(), entry.getValue()));
         });
 
     }
@@ -240,7 +241,11 @@ public class TestInteraction extends Taggable {
     }
 
     public void removeInput(DictionaryEntry entry) {
-        requestInputs.removeIf(input -> input.getSource().equals(entry.getSource()));
+        try {
+            requestInputs.removeIf(input -> input.getSource().equals(entry.getSource()));
+        } catch (NullPointerException e) {
+            requestInputs.removeIf(input -> input.getSource().getName().equals(entry.getParameterName()));
+        }
     }
 
     @Override

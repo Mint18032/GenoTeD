@@ -26,4 +26,9 @@ public class DependencyEdge extends DefaultEdge {
     public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
     }
+
+    @Override
+    public String toString() {
+        return parameterName;
+    }
 }

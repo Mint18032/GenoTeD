@@ -22,7 +22,7 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
     private List<String> outputs;
 
     private List<ParameterLeaf> parameterLeafList;
-    private static int idGenerationNum = 0;
+    private static int idGenerationNum = 1;
 
     public OperationNode(HttpMethod method) {
         super();

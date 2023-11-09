@@ -11,6 +11,8 @@ public abstract class ParameterLeaf extends ParameterElement {
 
     private static final Logger logger = Logger.getLogger(ParameterLeaf.class.getName());
 
+    public ParameterLeaf() {}
+
     public ParameterLeaf(ParameterElement parent, Parameter parameterMap, OperationNode operation, String name) {
         super(parent, parameterMap, operation, name);
     }

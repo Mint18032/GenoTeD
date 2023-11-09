@@ -1,15 +1,12 @@
 package io.testrest.core.testGenerator;
 
 import io.testrest.Environment;
+import io.testrest.core.mutator.*;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.ParameterLocation;
 import io.testrest.datatype.parameter.ParameterName;
 import io.testrest.core.dictionary.DictionaryEntry;
-import io.testrest.core.mutator.ConstraintViolationMutator;
-import io.testrest.core.mutator.MissingRequiredMutator;
-import io.testrest.core.mutator.WrongTypeMutator;
 import io.testrest.core.oracle.ErrorTestOracle;
-import io.testrest.core.mutator.Mutator;
 import io.testrest.core.testing.TestInteraction;
 import io.testrest.core.testing.TestSequence;
 import org.jgrapht.alg.util.Pair;
@@ -41,6 +38,7 @@ public class ErrorTestGenerator extends TestGenerator {
         mutators.add(new MissingRequiredMutator());
         mutators.add(new WrongTypeMutator());
         mutators.add(new ConstraintViolationMutator());
+        mutators.add(new UnmatchedRegexMutator());
     }
 
     /**
@@ -82,6 +80,7 @@ public class ErrorTestGenerator extends TestGenerator {
                             mutators.clear();
                             mutators.add(new ConstraintViolationMutator());
                             mutators.add(new WrongTypeMutator());
+                            mutators.add(new UnmatchedRegexMutator());
 
                             interaction.getRequestInputs().forEach(entry -> mutators.forEach(mutator -> {
                                 if (mutator.isParameterMutable(entry.getSource())) {

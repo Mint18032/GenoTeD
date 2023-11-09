@@ -24,7 +24,7 @@ public class DictionaryEntry {
     public DictionaryEntry(ParameterLeaf leaf, Object value) {
         if (leaf.getName() != null && leaf.getOperation() != null) {
             this.parameterName = leaf.getName();
-            this.normalizedParameterName = leaf.getNormalizedName();
+            this.normalizedParameterName = leaf.getNormalizedName() != null ? leaf.getNormalizedName() : NormalizedParameterName.computeParameterNormalizedName(leaf);
             this.type = leaf.getType();
             this.source = leaf;
             this.discoveryTime = Timestamp.from(Instant.now());
