@@ -29,6 +29,8 @@ public enum ParameterLocation {
                 return QUERY;
             case "cookie":
                 return COOKIE;
+            case "body":
+            case "formdata":
             case "request_body":
                 return REQUEST_BODY;
             case "response_body":

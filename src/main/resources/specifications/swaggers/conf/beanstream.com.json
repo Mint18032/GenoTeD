@@ -1,0 +1,6 @@
+{
+  "name": "Beanstream Payments",
+  "openApiSpecPath": "specifications/swaggers/beanstream.com.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Flickr API Schema",
+  "openApiSpecPath": "specifications/swaggers/flickr.com.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10,
+  "default_dictionary": {
+    "api-key": ["34a219d526cd56173b2a12609b2ebf07"]
+  }
+}

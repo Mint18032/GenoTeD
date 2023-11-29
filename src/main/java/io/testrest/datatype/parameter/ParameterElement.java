@@ -240,7 +240,7 @@ public abstract class ParameterElement extends Taggable {
 
 //        parent = other.parent;
 //        tags.addAll(other.tags);
-        normalizedName = new NormalizedParameterName(ParameterComparator.normalize(operation, other));
+        normalizedName = NormalizedParameterName.computeParameterNormalizedName(this);
     }
 
     protected ParameterElement(Parameter other, OperationNode operation, ParameterElement parent) {

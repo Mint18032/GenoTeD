@@ -1,0 +1,6 @@
+{
+  "name": "APIs.guru",
+  "openApiSpecPath": "specifications/swaggers/apis.guru.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}

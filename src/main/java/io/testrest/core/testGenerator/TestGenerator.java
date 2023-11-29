@@ -1,6 +1,7 @@
 package io.testrest.core.testGenerator;
 
 import io.testrest.Environment;
+import io.testrest.boot.AuthenticationInfo;
 import io.testrest.core.oracle.StatusCodeOracle;
 import io.testrest.core.testing.TestSequence;
 
@@ -17,6 +18,8 @@ public abstract class TestGenerator {
     protected TestSequence testSequence;
 
     private StatusCodeOracle statusCodeOracle;
+
+    protected AuthenticationInfo authenticationInfo = Environment.getConfiguration().getAuthenticationInfo();
 
     public TestGenerator() {
         environment = Environment.getInstance();

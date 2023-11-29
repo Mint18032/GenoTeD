@@ -2,17 +2,10 @@ package io.testrest.datatype.normalizer;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.datatype.graph.OperationNode;
+import io.testrest.datatype.parameter.NormalizedParameterName;
+import io.testrest.datatype.parameter.ParameterElement;
 
 public class ParameterComparator extends Normalizer {
-    /**
-     * Normalizes parameter name follows 2 schemes: idCompletion and PorterStemmer.
-     *
-     * @param parameter an operation's parameter.
-     * @return name after being normalized.
-     */
-    public static String normalize(OperationNode operation, Parameter parameter) {
-        return PorterStemming(idCompletion(operation, parameter));
-    }
 
     /**
      * Matches  2 parameters' names by comparing their stemming results. The comparison is case-insensitive.
@@ -20,18 +13,18 @@ public class ParameterComparator extends Normalizer {
      * @param p2 second parameter.
      * @return true if the 2 names are considered the same.
      */
-    public static boolean matchedNames(OperationNode o1, Parameter p1, OperationNode o2, Parameter p2) {
+    public static boolean matchedNames(ParameterElement p1, ParameterElement p2) {
         if (!ofSameType(p1, p2)) {
             return false;
         }
-        String p1_name = PorterStemming(idCompletion(o1, p1));
-        String p2_name = PorterStemming(idCompletion(o2, p2));
+        String p1_name = p1.getNormalizedName().toString();
+        String p2_name = p2.getNormalizedName().toString();
         return p1_name.equalsIgnoreCase(p2_name);
     }
 
-    public static boolean matchedNames(OperationNode o1, Parameter p1, String p2) {
-        String p1_name = PorterStemming(idCompletion(o1, p1));
-        String p2_name = PorterStemming(p2);
+    public static boolean matchedNames(ParameterElement p1, String p2) {
+        String p1_name = p1.getNormalizedName().toString();
+        String p2_name = NormalizedParameterName.computeNormalizedName(p2);
         return p1_name.equalsIgnoreCase(p2_name);
     }
 
@@ -76,28 +69,7 @@ public class ParameterComparator extends Normalizer {
         return name;
     }
 
-    /**
-     * Uses Porter Stemming algorithm to each parameter name to compare. E.g, pet & pets are considered the same as the root pet.
-     *
-     * @param name field name.
-     * @return Porter Stemming algorithm result.
-     */
-    public static String PorterStemming(String name) {
-        // split String by Capital letters
-        String[] strArray = name.split("(?=\\p{Lu})");
-
-        // stemming substrings
-        String stemmed_name = "";
-        PorterStemmer porterStemmer = new PorterStemmer();
-        for (String s : strArray){
-            stemmed_name += porterStemmer.stemWord(s);
-        }
-
-//        System.out.println(name + " stemmed to " + stemmed_name);
-        return stemmed_name;
-    }
-
-    public static boolean ofSameType(Parameter p1, Parameter p2) {
-        return p1.getSchema().getType().equals(p2.getSchema().getType());
+    public static boolean ofSameType(ParameterElement p1, ParameterElement p2) {
+        return p1.getType().equals(p2.getType());
     }
 }

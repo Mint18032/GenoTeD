@@ -83,33 +83,39 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
                 if (p.getIn().equals("header")) {
                     setContainsHeader(true);
                 }
-
-                // TODO: match oneof, anyof, allof types
-                switch (p.getSchema().getType()) {
-                    case "number":
-                    case "integer":
-                        NumberParameter numberParameter = new NumberParameter(p, this);
-                        parameterLeafList.add(numberParameter);
-                        break;
-                    case "boolean":
-                        parameterLeafList.add(new BooleanParameter(p, this));
-                        break;
-                    default: // "string"
-                        StringParameter stringParameter = new StringParameter(p, this);
-                        parameterLeafList.add(stringParameter);
-                        break;
-        //                case "array":
-        //                    parameterElementList.add(new ArrayParameter(p, this));
-        //                    break;
-        //                default: //object
-        //                    parameterElementList.add(new ObjectParameter(p, this));
-                }
+                parameterLeafList.add(newParameter(p));
             }
+
             System.out.println(parameterLeafList);
         //        for(ParameterLeaf leaf : parameterLeafList) {
         //            System.out.println(leaf.getNormalizedName());
         //        }
         }
+    }
+
+    private ParameterLeaf newParameter(Parameter p) {
+        ParameterLeaf newParam;
+
+        // TODO: match oneof, anyof, allof types
+        switch (p.getSchema().getType()) {
+            case "number":
+            case "integer":
+                newParam = new NumberParameter(p, this);
+                break;
+            case "boolean":
+                newParam = new BooleanParameter(p, this);
+                break;
+            default: // "string"
+                newParam = new StringParameter(p, this);
+                break;
+//                case "array":
+//                    newParam = new ArrayParameter(p, this);
+//                    break;
+//                default: //object
+//                    newParam = new ObjectParameter(p, this);
+        }
+
+        return newParam;
     }
 
     @Override

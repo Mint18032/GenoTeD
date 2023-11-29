@@ -3,7 +3,6 @@ package io.testrest.datatype.parameter;
 import io.testrest.datatype.normalizer.PorterStemmer;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class NormalizedParameterName {
 
@@ -34,7 +33,6 @@ public class NormalizedParameterName {
 
     }
 
-    // Todo: unify
     public static String computeNormalizedName(String name) {
 
         if (name.length() <= 2) {

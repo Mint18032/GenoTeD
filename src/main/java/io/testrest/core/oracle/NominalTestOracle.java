@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.intuit.karate.Results;
 import com.intuit.karate.core.StepResult;
 import io.testrest.Environment;
-import io.testrest.Main;
 import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.graph.OperationNode;
 
@@ -81,15 +80,15 @@ public class NominalTestOracle extends StatusCodeOracle {
         List<StepResult> stepResults = results.getScenarioResults().collect(Collectors.toList()).get(0).getStepResults();
         StepResult print_step = stepResults.get(stepResults.size() - 1);
         String response = print_step.getStepLog();
-        response = response.substring(response.lastIndexOf("[print] ") + 8, response.length() - 2);
+        response = response.substring(response.lastIndexOf("[print] ") + 8, response.length() - 2).strip();
         System.out.println(response);
         String status = "200";
 
-        if (response.startsWith("{") && response.endsWith("}")) {
+        if (response.startsWith("{")) {
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
 
-            Map<Object, Object> map = new HashMap<>(gson.fromJson(response, type));
+            Map<String, Object> map = new HashMap<>(gson.fromJson(response, type));
 
             if (map.containsKey("code") && isStatusCode(map.get("code").toString())) {
                 status = map.get("code").toString();
@@ -98,20 +97,17 @@ public class NominalTestOracle extends StatusCodeOracle {
             }
 
             if (status.startsWith("2")) {
-                // TODO: parse response
+//                Parse response
                 List<String> outputs = operationNode.getOutputs();
                 outputs.forEach(output -> {
-                    if (map.containsKey(output)) {
-                        System.out.println("Key: " + output + ", Value: " + map.get(output));
-                        Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(output, map.get(output)));
+                    Object value = findValueByKey(map, output);
+                    if (value != null) {
+                        System.out.println("Key: " + output + ", Value: " + value);
+                        Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(output, value.toString()));
                     }
                 });
             }
 
-//            for (Map.Entry<Object, Object> entry : map.entrySet()) {
-//                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-//                Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(entry.getKey().toString(), entry.getValue()));
-//            }
         } else if (response.startsWith("<") && response.endsWith(">")) {
             if (response.contains("Length Required") && response.contains("411")) {
                 status = "411";
@@ -123,6 +119,20 @@ public class NominalTestOracle extends StatusCodeOracle {
         }
 
         return status.startsWith("2") || status.startsWith("5");
+    }
+
+    private static Object findValueByKey(Map<String, Object> map, String key) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().equals(key)) {
+                return entry.getValue();
+            } else if (entry.getValue() instanceof Map) {
+                Object nestedValue = findValueByKey((Map<String, Object>) entry.getValue(), key);
+                if (nestedValue != null) {
+                    return nestedValue;
+                }
+            }
+        }
+        return null;
     }
 
     private boolean isStatusCode(String str) {

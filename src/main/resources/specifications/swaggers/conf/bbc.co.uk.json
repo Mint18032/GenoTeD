@@ -1,0 +1,10 @@
+{
+  "name": "Radio & Music Services",
+  "openApiSpecPath": "specifications/swaggers/bbc.co.uk.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10,
+  "default_dictionary": {
+    "Authorization": ["Bearer"],
+    "X-API-Key": [""]
+  }
+}

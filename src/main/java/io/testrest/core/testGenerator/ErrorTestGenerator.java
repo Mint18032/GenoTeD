@@ -45,7 +45,7 @@ public class ErrorTestGenerator extends TestGenerator {
      * Main test generate and validate function.
      */
     public void generateTest(TestSequence nominalTestSequence) {
-        int numberOfMutants = Environment.getConfiguration().getNumberOfMutants();
+        Double numberOfMutants = Environment.getConfiguration().getNumberOfMutants();
 
         // Iterate on interaction of test sequence
         for (TestInteraction interaction : nominalTestSequence) {

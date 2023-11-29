@@ -1,0 +1,6 @@
+{
+  "name": "BC Laws",
+  "openApiSpecPath": "specifications/swaggers/bclaws.ca_bclaws.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}

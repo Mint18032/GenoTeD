@@ -1,8 +1,8 @@
 package io.testrest.datatype.graph;
 
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.testrest.Main;
 import io.testrest.datatype.normalizer.ParameterComparator;
+import io.testrest.datatype.parameter.ParameterElement;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,10 +25,10 @@ public class GraphBuilder {
             if (operationNodeList.get(i).getParameters() != null)
                 for (int j = 0; j < operationNodeList.size(); j++) {
                     if (i != j && operationNodeList.get(j).getOutputs() != null) {
-                        for (Parameter pi: operationNodeList.get(i).getParameters()) {
+                        for (ParameterElement pi: operationNodeList.get(i).getParameterLeafList()) {
                             for (String pj: operationNodeList.get(j).getOutputs()) {
-                                if (ParameterComparator.matchedNames(operationNodeList.get(i), pi, pj)) {
-                                    ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(ParameterComparator.normalize(operationNodeList.get(i), pi)));
+                                if (ParameterComparator.matchedNames(pi, pj)) {
+                                    ODG.addEdge(operationNodeList.get(i), operationNodeList.get(j), new DependencyEdge(pi.getNormalizedName().toString()));
                                 }
                             }
                         }

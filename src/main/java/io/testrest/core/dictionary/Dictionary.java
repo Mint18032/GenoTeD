@@ -1,5 +1,6 @@
 package io.testrest.core.dictionary;
 
+import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.NormalizedParameterName;
 import io.testrest.datatype.parameter.ParameterName;
 import io.testrest.datatype.parameter.ParameterType;
@@ -29,7 +30,7 @@ public class Dictionary {
                 .filter(entry -> entry.getParameterName().equals(dictionaryEntry.getParameterName()) &&
                         entry.getNormalizedParameterName().equals(dictionaryEntry.getNormalizedParameterName()) &&
                         entry.getValue().equals(dictionaryEntry.getValue()) &&
-                        entry.getParameterType().equals(dictionaryEntry.getParameterType()))
+                        (entry.getParameterType() == null || entry.getParameterType().equals(dictionaryEntry.getParameterType())))
                 .collect(Collectors.toList());
 
         // If there are no similar entries, add entry to dictionary

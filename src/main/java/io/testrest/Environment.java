@@ -1,8 +1,12 @@
 package io.testrest;
 
+import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.parameter.NormalizedParameterName;
 import io.testrest.core.dictionary.Dictionary;
 import io.testrest.helper.ExtendedRandom;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Environment {
 
@@ -16,6 +20,19 @@ public class Environment {
         NormalizedParameterName.setQualifiableNames(configuration.getQualifiableNames());
         this.globalDictionary = new Dictionary();
         this.random = new ExtendedRandom();
+
+        // Add values from default dictionary to global dictionary
+        if (configuration.getConfigMap().containsKey("default_dictionary")) {
+            if (configuration.getConfigMap().get("default_dictionary") instanceof Map) {
+                Map default_dictionary = (Map) configuration.getConfigMap().get("default_dictionary");
+                for (Object key : default_dictionary.keySet()) {
+                    if (default_dictionary.get(key) instanceof ArrayList)
+                        for (Object value : (ArrayList) default_dictionary.get(key)) {
+                            globalDictionary.addEntry(new DictionaryEntry(key.toString(), value.toString()));
+                        }
+                }
+            }
+        }
     }
 
     public static Environment getInstance() {

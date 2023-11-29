@@ -1,0 +1,6 @@
+{
+  "name": "Auckland Museum API Team",
+  "openApiSpecPath": "specifications/swaggers/aucklandmuseum.com.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Datumbox",
+  "openApiSpecPath": "specifications/swaggers/datumbox.com.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10,
+  "default_dictionary": {
+    "api_key": ["9bfe06400ee9edf639b4aeaee3eceba7"]
+  }
+}

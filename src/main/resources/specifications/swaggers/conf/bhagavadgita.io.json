@@ -1,0 +1,6 @@
+{
+  "name": "Bhagavad Gita",
+  "openApiSpecPath": "specifications/swaggers/bhagavadgita.io.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}

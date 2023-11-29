@@ -1,0 +1,8 @@
+{
+  "name": "CognitiveServiceManagementClient",
+  "openApiSpecPath": "specifications/swaggers/azure.com_cognitiveservices.json",
+  "default_dictionary": {
+    "api-version": ["2016-02-01-preview"],
+    "subscriptionId": ["10032000EB160ECE"]
+  }
+}

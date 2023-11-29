@@ -49,7 +49,7 @@ public class NominalTestGenerator extends TestGenerator {
      * @param ODG Operation Dependencies Graph.
      */
     public TestSequence generateTest(OperationDependencyGraph ODG) {
-        int maxFuzzingTimes = Environment.getConfiguration().getMaxFuzzingTimes();
+        Double maxFuzzingTimes = Environment.getConfiguration().getMaxFuzzingTimes();
 
         while (ODG.getGraph().vertexSet().size() > 0) {
             List<OperationNode> nodeToTest = ODG.getLeaves();
@@ -126,6 +126,11 @@ public class NominalTestGenerator extends TestGenerator {
                 sb.append(generateQueryInput(parameterLeaf));
         }
 
+        for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
+            if (parameterLeaf.getLocation() == ParameterLocation.REQUEST_BODY)
+                sb.append(generateBodyInput(parameterLeaf));
+        }
+
         sb.append("\n\t\tWhen method ").append(operation.getMethod());
 
         String response_status = operation.getResponses().entrySet().stream()
@@ -174,7 +179,8 @@ public class NominalTestGenerator extends TestGenerator {
 
     public String generateQueryInput(ParameterLeaf parameterLeaf) {
         StringBuilder input = new StringBuilder();
-        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
+        Object value = authenticationInfo != null && authenticationInfo.isAuthParam(parameterLeaf.getName().toString(), parameterLeaf.getLocation()) ?
+                authenticationInfo.getAuthValue(null) : this.parameterValueProvider.provideValueFor(parameterLeaf);
         input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
         input.append("\"").append(value).append("\"");
 
@@ -185,7 +191,8 @@ public class NominalTestGenerator extends TestGenerator {
 
     public String generateHeaderInput(ParameterLeaf parameterLeaf) {
         StringBuilder input = new StringBuilder();
-        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
+        Object value = authenticationInfo != null && authenticationInfo.isAuthParam(parameterLeaf.getName().toString(), parameterLeaf.getLocation()) ?
+                authenticationInfo.getAuthValue(null) : this.parameterValueProvider.provideValueFor(parameterLeaf);
         input.append(" '").append(parameterLeaf.getName().toString()).append("' : ");
         input.append("'").append(value).append("',");
 
@@ -196,9 +203,10 @@ public class NominalTestGenerator extends TestGenerator {
 
     public String generateBodyInput(ParameterLeaf parameterLeaf) {
         StringBuilder input = new StringBuilder();
-        Object value = this.parameterValueProvider.provideValueFor(parameterLeaf);
-        input.append("\n\t\tAnd param ").append(parameterLeaf.getName().toString()).append(" = ");
-        input.append("\"").append(value).append("\"");
+        Object value = authenticationInfo != null && authenticationInfo.isAuthParam(parameterLeaf.getName().toString(), parameterLeaf.getLocation()) ?
+                authenticationInfo.getAuthValue(null) : this.parameterValueProvider.provideValueFor(parameterLeaf);
+        input.append("\n\t\tAnd request { ").append(parameterLeaf.getName().toString()).append(": ");
+        input.append("\"").append(value).append("\" }");
 
         pendingEntries.add(new DictionaryEntry(parameterLeaf, value));
 

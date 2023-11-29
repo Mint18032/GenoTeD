@@ -1,19 +1,26 @@
 package io.testrest;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import io.testrest.boot.AuthenticationInfo;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class Configuration {
 
-    private static final String openApiSpecPath = "specifications/swaggers/flickr.com.json"; // path to openapi specification, can be either a link or a file.
-    private static final int maxFuzzingTimes = 5; // number of fuzzing times per operation
-    private static final int numberOfMutants = 10; // number of mutants for each nominal test
+    private static final String configPath = "src/main/resources/test_config.json";
+    private final Logger logger = Logger.getLogger(Configuration.class.getName());
+    private static String openApiSpecPath; // path to openapi specification, can be either a link or a file.
+    private static Double maxFuzzingTimes; // number of fuzzing times per operation
+    private static Double numberOfMutants; // number of mutants for each nominal test
     private static String locale = "en"; // locale used for generating data (See supported locales at https://github.com/DiUS/java-faker/tree/master#supported-locales)
     private String outputPath;
     private String testingSessionName;
@@ -21,6 +28,8 @@ public class Configuration {
     private String openAPIName;
     private int specVersion;
     private List<String> qualifiableNames;
+    private Map<Object, Object> configMap;
+    private AuthenticationInfo authenticationInfo;
 
     public Configuration() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
@@ -31,6 +40,8 @@ public class Configuration {
         qualifiableNames = new ArrayList<>();
         qualifiableNames.add("id");
         qualifiableNames.add("name");
+        parseConfig();
+
         setSpecVersion(2);
 
         try {
@@ -50,8 +61,52 @@ public class Configuration {
             }
             reader.close();
         } catch (IOException e) {
-            System.out.println("Unable to specify specification version\n" + e.getMessage());
+            logger.fine("Unable to specify specification version\n" + e.getMessage());
             setSpecVersion(4);
+        }
+    }
+
+    private void parseConfig() {
+        StringBuilder fileContent = new StringBuilder();
+        try {
+            File file = new File(configPath);
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                fileContent.append(sc.nextLine());
+            }
+        } catch (IOException e) {
+            logger.warning("Unable to read test config at " + configPath + '\n' + e.getMessage());
+        }
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        configMap = new HashMap<>(gson.fromJson(fileContent.toString(), type));
+
+        if (configMap.containsKey("openApiSpecPath"))
+            openApiSpecPath = configMap.get("openApiSpecPath").toString();
+        else {
+            logger.warning("Unable to specify OpenAPI specification path");
+            System.exit(-1);
+        }
+
+        if (configMap.containsKey("maxFuzzingTimes")) {
+            maxFuzzingTimes = (Double) configMap.get("maxFuzzingTimes");
+        } else {
+            maxFuzzingTimes = 5.0;
+        }
+
+        if (configMap.containsKey("numberOfMutants")) {
+            numberOfMutants = (Double) configMap.get("numberOfMutants");
+        } else {
+            numberOfMutants = 10.;
+        }
+
+        if (configMap.containsKey("authenticationCommand")) {
+            if (configMap.get("authenticationCommand") instanceof Map) {
+                Map auth_map = (Map) configMap.get("authenticationCommand");
+                if (auth_map.containsKey("command"))
+                    authenticationInfo = new AuthenticationInfo(auth_map.get("description").toString(), auth_map.get("command").toString());
+            }
         }
     }
 
@@ -63,11 +118,11 @@ public class Configuration {
         return outputPath;
     }
 
-    public int getMaxFuzzingTimes() {
+    public Double getMaxFuzzingTimes() {
         return maxFuzzingTimes;
     }
 
-    public int getNumberOfMutants() {
+    public Double getNumberOfMutants() {
         return numberOfMutants;
     }
 
@@ -122,5 +177,13 @@ public class Configuration {
 
     public void setSpecVersion(int specVersion) {
         this.specVersion = specVersion;
+    }
+
+    public Map<Object, Object> getConfigMap() {
+        return configMap;
+    }
+
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
     }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "Power BI Embedded Management Client",
+  "openApiSpecPath": "specifications/swaggers/azure.com_powerbiembedded.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10,
+  "default_dictionary": {
+    "api-version": ["2016-01-29"],
+    "subscriptionId": ["10032000EB160ECE"]
+  }
+}

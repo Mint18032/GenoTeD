@@ -1,0 +1,9 @@
+{
+  "name": "Afterbanks",
+  "openApiSpecPath": "specifications/swaggers/afterbanks.com.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10,
+  "default_dictionary": {
+    "servicekey": [""]
+  }
+}

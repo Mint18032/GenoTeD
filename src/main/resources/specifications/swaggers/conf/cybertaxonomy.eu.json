@@ -1,0 +1,6 @@
+{
+  "name": "EU BON UTIS",
+  "openApiSpecPath": "specifications/swaggers/cybertaxonomy.eu.json",
+  "maxFuzzingTimes": 5,
+  "numberOfMutants": 10
+}
