@@ -148,7 +148,7 @@ public class NominalTestOracle extends StatusCodeOracle {
     }
 
     private boolean addLength(String operationId, List<String> testPaths) {
-        System.out.println("Blalala");
+        System.out.println("Adding content-length to request.");
         for (String testPath : testPaths) {
             try {
                 File inputFile = new File(testPath);

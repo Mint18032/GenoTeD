@@ -1,6 +1,6 @@
 {
-  "name": "APIs.guru",
-  "openApiSpecPath": "specifications/swaggers/apis.guru.json",
+  "name": "Test",
+  "openApiSpecPath": "specifications/restgo/languagetool_openapi.yaml",
   "maxFuzzingTimes": 5,
   "numberOfMutants": 10
 }

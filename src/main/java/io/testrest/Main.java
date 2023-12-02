@@ -70,6 +70,7 @@ public class Main {
 
         logger.info("Running test cases");
         testRunner.testAll(allTestPaths);
+        testRunner.showReport();
     }
 
     public static Configuration getConfiguration() {
