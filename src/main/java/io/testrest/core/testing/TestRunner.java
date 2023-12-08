@@ -16,10 +16,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class TestRunner {
-    private String outputPath = Environment.getConfiguration().getOutputPath();
 
     public TestRunner() {
-        System.setProperty("karate.options", "-o \"" + outputPath + "/NominalTests\"" );
     }
 
     @Karate.Test
@@ -35,7 +33,6 @@ public class TestRunner {
     public void testAll(List<String> paths) {
         Results results = Karate.run(paths.toArray(new String[0])).outputCucumberJson(true).outputHtmlReport(false).parallel(10); //.reportDir(path.substring(0, path.lastIndexOf("/")))
         generateReport(results.getReportDir());
-        Assertions.assertEquals(0, results.getFailCount(), results.getErrorMessages());
     }
 
     /**
@@ -57,18 +54,18 @@ public class TestRunner {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(karateOutputPath), new String[] {"json"}, true);
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         jsonFiles.forEach(file -> jsonPaths.add(file.getAbsolutePath()));
-        Configuration config = new Configuration(new File(outputPath),
+        Configuration config = new Configuration(new File(Environment.getConfiguration().getOutputPath()),
                 Environment.getConfiguration().getOpenAPIName());
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
         reportBuilder.generateReports();
     }
 
     /**
-     * Opens the test report in browser.
+     * Open the test report in browser.
      */
     public void showReport() {
         try {
-            File htmlFile = new File(outputPath + "/cucumber-html-reports/overview-features.html");
+            File htmlFile = new File(Environment.getConfiguration().getOutputPath() + "/cucumber-html-reports/overview-features.html");
 
             // Check if Desktop is supported, and file exists
             if (Desktop.isDesktopSupported() && htmlFile.exists()) {

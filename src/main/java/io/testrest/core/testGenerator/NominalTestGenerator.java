@@ -123,12 +123,14 @@ public class NominalTestGenerator extends TestGenerator {
 
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
-                sb.append(generateQueryInput(parameterLeaf));
+//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextBoolean()) // randomly select or drop non-required param
+                    sb.append(generateQueryInput(parameterLeaf));
         }
 
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.REQUEST_BODY)
-                sb.append(generateBodyInput(parameterLeaf));
+//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextBoolean()) // randomly select or drop non-required param
+                    sb.append(generateBodyInput(parameterLeaf));
         }
 
         sb.append("\n\t\tWhen method ").append(operation.getMethod());
