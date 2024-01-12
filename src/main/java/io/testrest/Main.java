@@ -27,7 +27,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        environment = Environment.getInstance();
+        if (args.length > 0)
+            environment = new Environment(args[0]);
+        else
+            environment = new Environment("src/main/resources/test_config.json");
+
         configuration = Environment.getConfiguration();
         String openApiSpecPath = Configuration.getOpenApiSpecPath();
         TestRunner testRunner = new TestRunner();

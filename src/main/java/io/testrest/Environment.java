@@ -15,8 +15,8 @@ public class Environment {
     private ExtendedRandom random;
     private Dictionary globalDictionary;
 
-    public Environment() {
-        configuration = new Configuration();
+    public Environment(String configPath) {
+        configuration = new Configuration(configPath);
         NormalizedParameterName.setQualifiableNames(configuration.getQualifiableNames());
         this.globalDictionary = new Dictionary();
         this.random = new ExtendedRandom();
@@ -33,11 +33,13 @@ public class Environment {
                 }
             }
         }
+
+        instance = this;
     }
 
     public static Environment getInstance() {
         if (instance == null) {
-            instance = new Environment();
+            instance = new Environment(Configuration.getConfigPath());
         }
         return instance;
     }

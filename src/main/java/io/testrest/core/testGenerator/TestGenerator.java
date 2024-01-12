@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TestGenerator {
-    private Environment environment;
 
     private String testOutPutPath;
 
@@ -22,17 +21,8 @@ public abstract class TestGenerator {
     protected AuthenticationInfo authenticationInfo = Environment.getConfiguration().getAuthenticationInfo();
 
     public TestGenerator() {
-        environment = Environment.getInstance();
         testFiles = new ArrayList<>();
         testSequence = new TestSequence();
-    }
-
-    public Environment getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
     }
 
     public abstract void generateTestBackground(String url, String filename);

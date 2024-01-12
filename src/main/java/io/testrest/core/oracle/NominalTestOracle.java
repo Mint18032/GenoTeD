@@ -4,7 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intuit.karate.Results;
 import com.intuit.karate.core.StepResult;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.datatype.graph.OperationNode;
 
@@ -103,7 +103,7 @@ public class NominalTestOracle extends StatusCodeOracle {
                     Object value = findValueByKey(map, output);
                     if (value != null) {
                         System.out.println("Key: " + output + ", Value: " + value);
-                        Environment.getInstance().getGlobalDictionary().addEntry(new DictionaryEntry(output, value.toString()));
+                        Main.getEnvironment().getGlobalDictionary().addEntry(new DictionaryEntry(output, value.toString()));
                     }
                 });
             }

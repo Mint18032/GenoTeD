@@ -1,12 +1,12 @@
 package io.testrest.core.valueProvider.single;
 
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.*;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.core.valueProvider.ParameterValueProvider;
 
 public class RandomParameterValueProvider extends ParameterValueProvider {
-    private static final ExtendedRandom random = Environment.getInstance().getRandom();
+    private static final ExtendedRandom random = Main.getEnvironment().getRandom();
 
     @Override
     public Object provideValueFor(ParameterLeaf parameterLeaf) {

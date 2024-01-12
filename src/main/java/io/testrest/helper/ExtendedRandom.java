@@ -5,7 +5,7 @@ import com.github.javafaker.service.FakeValuesService;
 import com.github.javafaker.service.RandomService;
 import com.google.common.io.Resources;
 import io.testrest.Configuration;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.core.dictionary.Dictionary;
 import io.testrest.core.dictionary.DictionaryEntry;
 import org.iban4j.CountryCode;
@@ -248,7 +248,7 @@ public class ExtendedRandom extends Random {
     }
 
     public String nextGlobalDictionaryEntry(int length) {
-        Dictionary globalDictionary = Environment.getInstance().getGlobalDictionary();
+        Dictionary globalDictionary = Main.getEnvironment().getGlobalDictionary();
         Optional<DictionaryEntry> chosenEntry = nextElement(globalDictionary.getEntriesByValueLength(length));
         return chosenEntry.map(dictionaryEntry -> dictionaryEntry.getValue().toString()).orElse(null);
     }

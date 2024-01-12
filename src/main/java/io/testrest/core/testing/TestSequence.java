@@ -1,6 +1,6 @@
 package io.testrest.core.testing;
 
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.helper.Taggable;
 
@@ -306,7 +306,7 @@ public class TestSequence extends Taggable implements List<TestInteraction> {
     }
 
     private String generateRandomTestSequenceName() {
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
         return random.nextWord() + "-" + random.nextWord();
     }
 

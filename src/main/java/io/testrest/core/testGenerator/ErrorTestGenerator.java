@@ -1,6 +1,7 @@
 package io.testrest.core.testGenerator;
 
 import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.core.mutator.*;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.ParameterLocation;
@@ -65,7 +66,7 @@ public class ErrorTestGenerator extends TestGenerator {
                 mutableInteraction.addTag("mutated");
 
                 // Choose a random mutation pair
-                Optional<Pair<DictionaryEntry, Mutator>> mutable = Environment.getInstance().getRandom().nextElement(mutablePairs);
+                Optional<Pair<DictionaryEntry, Mutator>> mutable = Main.getEnvironment().getRandom().nextElement(mutablePairs);
 
                 if (mutable.isPresent()) {
 

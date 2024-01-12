@@ -9,7 +9,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.servers.ServerVariable;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.HttpMethod;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.graph.OperationNodeList;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 public class OpenAPIParser {
     private static final Logger logger = Logger.getLogger(OpenAPIParser.class.getName());
-    private static final ExtendedRandom random = Environment.getInstance().getRandom();
+    private static final ExtendedRandom random = Main.getEnvironment().getRandom();
     private static OpenAPI openAPI;
     private static List<Server> servers = new ArrayList<>();
     private static List<String> urls = new ArrayList<>(); // servers' Urls

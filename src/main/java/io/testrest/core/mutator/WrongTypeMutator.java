@@ -1,6 +1,6 @@
 package io.testrest.core.mutator;
 
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.BooleanParameter;
 import io.testrest.datatype.parameter.NumberParameter;
 import io.testrest.datatype.parameter.ParameterLeaf;
@@ -28,7 +28,7 @@ public class WrongTypeMutator extends Mutator {
     public void mutate(DictionaryEntry entry, TestInteraction interaction) {
         System.out.println("Applying wrong type mutation.");
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         ParameterLeaf parameter = entry.getSource();
         ParameterLeaf mutatedParameter;

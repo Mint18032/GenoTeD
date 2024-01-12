@@ -3,7 +3,7 @@ package io.testrest.datatype.parameter;
 import com.google.gson.JsonPrimitive;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.helper.ObjectHelper;
@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 public class NumberParameter extends ParameterLeaf {
 
@@ -201,7 +200,7 @@ public class NumberParameter extends ParameterLeaf {
      */
     public ParameterTypeFormat inferFormat() {
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         if (format == null || format == ParameterTypeFormat.MISSING) return inferFormatFromName();
 

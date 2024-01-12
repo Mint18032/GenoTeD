@@ -1,7 +1,7 @@
 package io.testrest.core.mutator;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.core.dictionary.DictionaryEntry;
 import io.testrest.core.testing.TestInteraction;
 import io.testrest.datatype.parameter.ParameterLeaf;
@@ -25,7 +25,7 @@ public class UnmatchedRegexMutator extends Mutator {
     public void mutate(DictionaryEntry entry, TestInteraction interaction) {
         System.out.println("Applying unmatched regex mutation.");
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         ParameterLeaf parameter = entry.getSource();
 

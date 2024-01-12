@@ -1,7 +1,6 @@
 package io.testrest.core.valueProvider.single;
 
-
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.core.valueProvider.CountableParameterValueProvider;
@@ -21,7 +20,7 @@ public class ExamplesParameterValueProvider extends CountableParameterValueProvi
 
     @Override
     public Object provideValueFor(ParameterLeaf parameterLeaf) {
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
         if (!strict) {
             return random.nextElement(parameterLeaf.getExamples()).orElse(null);
         } else {

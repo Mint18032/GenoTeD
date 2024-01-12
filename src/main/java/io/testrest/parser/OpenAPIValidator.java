@@ -1,7 +1,6 @@
 package io.testrest.parser;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.servers.Server;
 import io.testrest.Main;
 
 import java.util.logging.Logger;
@@ -21,7 +20,7 @@ public class OpenAPIValidator {
     }
 
     public static boolean isValidServer(String serverUrl) {
-        if (serverUrl.trim().length() <= 4 || !serverUrl.contains("http")) {
+        if (serverUrl.trim().length() <= 4) {
             logger.warning("Server url: '" + serverUrl + "' is invalid and will be ignored.");
             return false;
         }

@@ -1,6 +1,7 @@
 package io.testrest.core.valueProvider.multi;
 
 import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.core.valueProvider.single.*;
 import io.testrest.core.valueProvider.ParameterValueProvider;
@@ -18,7 +19,7 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
     protected ExamplesParameterValueProvider examplesParameterValueProvider = new ExamplesParameterValueProvider();
 
     public CombinedProviderParameterValueProvider() {
-        environment = Environment.getInstance();
+        environment = Main.getEnvironment();
     }
 
     @Override

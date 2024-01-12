@@ -1,6 +1,6 @@
 package io.testrest.core.mutator;
 
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.NumberParameter;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.datatype.parameter.StringParameter;
@@ -97,7 +97,7 @@ public class ConstraintViolationMutator extends Mutator {
      */
     private String mutateLength(StringParameter parameter, Object value) {
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         // Save to this list the possible lengths of the mutated string
         List<Integer> lengths = new ArrayList<>();
@@ -132,7 +132,7 @@ public class ConstraintViolationMutator extends Mutator {
      */
     private Object mutateNumber(NumberParameter parameter) {
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         List<Double> values = new ArrayList<>();
         if (parameter.getMinimum() != null && parameter.getMinimum() > Double.MIN_VALUE) {

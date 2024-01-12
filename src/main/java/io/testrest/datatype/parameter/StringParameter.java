@@ -2,7 +2,7 @@ package io.testrest.datatype.parameter;
 
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.helper.ObjectHelper;
@@ -162,7 +162,7 @@ public class StringParameter extends ParameterLeaf {
      */
     public ParameterTypeFormat inferFormat() {
 
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         if (format == null) return ParameterTypeFormat.MISSING;
 
@@ -232,15 +232,15 @@ public class StringParameter extends ParameterLeaf {
                 return ParameterTypeFormat.EMAIL;
             }
 
-            for (String currency : Environment.getInstance().getRandom().getCurrencies()) {
+            for (String currency : Main.getEnvironment().getRandom().getCurrencies()) {
                 if (currency.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.CURRENCY;
             }
 
-            for (String code : Environment.getInstance().getRandom().getAlpha2CountryCodes()) {
+            for (String code : Main.getEnvironment().getRandom().getAlpha2CountryCodes()) {
                 if (code.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.COUNTRY_CODE;
             }
 
-            for (String code : Environment.getInstance().getRandom().getAlpha3CountryCodes()) {
+            for (String code : Main.getEnvironment().getRandom().getAlpha3CountryCodes()) {
                 if (code.equalsIgnoreCase(example.toString())) return ParameterTypeFormat.COUNTRY_CODE;
             }
         }
@@ -253,7 +253,7 @@ public class StringParameter extends ParameterLeaf {
      * @return the inferred format.
      */
     public ParameterTypeFormat inferFormatFromName() {
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
 
         if (name.contains("email") || name.contains("e-mail")) {
             return ParameterTypeFormat.EMAIL;

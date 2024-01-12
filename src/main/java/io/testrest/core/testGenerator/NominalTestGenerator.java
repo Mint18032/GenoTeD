@@ -1,6 +1,7 @@
 package io.testrest.core.testGenerator;
 
 import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.graph.OperationDependencyGraph;
 import io.testrest.datatype.graph.OperationNode;
 import io.testrest.datatype.parameter.ParameterLeaf;
@@ -158,7 +159,7 @@ public class NominalTestGenerator extends TestGenerator {
         if (statusCodePassed) {
             // add pending entries of successfully generated testcases to Dictionary
             pendingEntries.forEach(dictionaryEntry -> {
-                getEnvironment().getGlobalDictionary().addEntry(dictionaryEntry);
+                Main.getEnvironment().getGlobalDictionary().addEntry(dictionaryEntry);
             });
 
             // generate new test interaction

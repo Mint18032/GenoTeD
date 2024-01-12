@@ -1,7 +1,6 @@
 package io.testrest.core.valueProvider.single;
 
-
-import io.testrest.Environment;
+import io.testrest.Main;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.core.dictionary.Dictionary;
 import io.testrest.core.dictionary.DictionaryEntry;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 public class DictionaryParameterValueProvider extends CountableParameterValueProvider {
 
     // Get values from global dictionary by default
-    private Dictionary dictionary = Environment.getInstance().getGlobalDictionary();
+    private Dictionary dictionary = Main.getEnvironment().getGlobalDictionary();
 
     @Override
     public int countAvailableValuesFor(ParameterLeaf parameterLeaf) {
@@ -28,7 +27,7 @@ public class DictionaryParameterValueProvider extends CountableParameterValuePro
 
     @Override
     public Object provideValueFor(ParameterLeaf parameterLeaf) {
-        ExtendedRandom random = Environment.getInstance().getRandom();
+        ExtendedRandom random = Main.getEnvironment().getRandom();
         Optional<DictionaryEntry> entry;
         if (!strict) {
             entry = random.nextElement(dictionary.getEntriesByParameterName(parameterLeaf.getName(), parameterLeaf.getType()));

@@ -1,6 +1,6 @@
 {
-  "name": "Test",
-  "openApiSpecPath": "specifications/restgo/languagetool_openapi.yaml",
+  "name": "person",
+  "openApiSpecPath": "src/main/resources/specifications/restgo/person_openapi.yaml",
   "maxFuzzingTimes": 5,
   "numberOfMutants": 10
 }

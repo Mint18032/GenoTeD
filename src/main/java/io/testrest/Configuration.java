@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class Configuration {
 
-    private static final String configPath = "src/main/resources/test_config.json";
+    private static String configPath;
     private final Logger logger = Logger.getLogger(Configuration.class.getName());
     private static String openApiSpecPath; // path to openapi specification, can be either a link or a file.
     private static Double maxFuzzingTimes; // number of fuzzing times per operation
@@ -31,7 +31,7 @@ public class Configuration {
     private Map<Object, Object> configMap;
     private AuthenticationInfo authenticationInfo;
 
-    public Configuration() {
+    public Configuration(String configPath) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
         LocalDateTime now = LocalDateTime.now();
         testingSessionName = "testing-session-" + dtf.format(now);
@@ -40,12 +40,13 @@ public class Configuration {
         qualifiableNames = new ArrayList<>();
         qualifiableNames.add("id");
         qualifiableNames.add("name");
+        Configuration.configPath = configPath;
         parseConfig();
 
         setSpecVersion(2);
 
         try {
-            File inputFile = new File("src/main/resources/" + openApiSpecPath);
+            File inputFile = new File(openApiSpecPath);
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             String currentLine;
 
@@ -185,5 +186,13 @@ public class Configuration {
 
     public AuthenticationInfo getAuthenticationInfo() {
         return authenticationInfo;
+    }
+
+    public static String getConfigPath() {
+        return configPath;
+    }
+
+    public static void setConfigPath(String configPath) {
+        Configuration.configPath = configPath;
     }
 }
