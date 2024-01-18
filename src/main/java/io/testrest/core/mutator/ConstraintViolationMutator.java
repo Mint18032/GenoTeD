@@ -79,16 +79,18 @@ public class ConstraintViolationMutator extends Mutator {
     }
 
     /**
-     * Assigns to the parameter a value outside the enum constraints
+     * Gives the parameter a value outside the enum constraints
      * @param parameter the parameter to mutate
      */
     private Object mutateEnum(ParameterLeaf parameter) {
-        // Set a random value to the parameter (it is very unlikely that the generated value belongs to the enum values
-        // FIXME: check that the generated value does not belong to the enum values
-        return valueProvider.provideValueFor(parameter);
+        Object newValue = valueProvider.provideValueFor(parameter);
 
-        //TODO: remove: it is replaced by RandomValueProvider
-        //parameter.setValue(parameter.generateCompliantValue());
+        // Assures that random value is not similar to an enum value
+        while (parameter.getEnumValues().contains(newValue)) {
+            newValue = valueProvider.provideValueFor(parameter);
+        }
+
+        return newValue;
     }
 
     /**
