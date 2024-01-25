@@ -44,7 +44,12 @@ public class OpenAPIParser {
         ParseOptions parseOptions = new ParseOptions();
         parseOptions.setResolve(true);
         parseOptions.setResolveFully(true);
-        openAPI = new OpenAPIV3Parser().read(openApiSpecPath, null, parseOptions);
+
+        try {
+            openAPI = new OpenAPIV3Parser().read(openApiSpecPath, null, parseOptions);
+        } catch (NullPointerException e) {
+            throw new CannotParseOpenAPIException("Could not find path to specification.");
+        }
 
         if (openAPI == null) {
             throw new CannotParseOpenAPIException("getOpenAPI() returns null.");
