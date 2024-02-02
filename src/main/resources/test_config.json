@@ -1,6 +1,7 @@
 {
-  "name": "person",
-  "openApiSpecPath": "src/main/resources/specifications/restgo/person_openapi.yaml",
+  "name": "REST Countries",
+  "openApiSpecPath": "src/main/resources/specifications/restgo/market_openapi.yaml",
   "maxFuzzingTimes": 5,
-  "numberOfMutants": 10
+  "numberOfMutants": 10,
+  "fuzzingStrategy": "dictionary_first"
 }

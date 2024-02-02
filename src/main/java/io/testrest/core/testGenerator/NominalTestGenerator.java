@@ -118,19 +118,20 @@ public class NominalTestGenerator extends TestGenerator {
         String path = operation.getPath();
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.PATH || parameterLeaf.getLocation() == ParameterLocation.MISSING)
-                path = generatePathInput(parameterLeaf, path);
+//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextInt(1, 10) > 3) // randomly select or drop non-required param. Not worked
+                    path = generatePathInput(parameterLeaf, path);
         }
         sb.append("\n\t\tGiven path \"").append(path).append("\"");
 
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.QUERY)
-//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextBoolean()) // randomly select or drop non-required param
+//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextInt(1, 10) > 3) // randomly select or drop non-required param. Not worked
                     sb.append(generateQueryInput(parameterLeaf));
         }
 
         for(ParameterLeaf parameterLeaf : operation.getParameterLeafList()) {
             if (parameterLeaf.getLocation() == ParameterLocation.REQUEST_BODY)
-//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextBoolean()) // randomly select or drop non-required param
+//                if (parameterLeaf.isRequired() || Environment.getInstance().getRandom().nextInt(1, 10) > 3) // randomly select or drop non-required param. Not worked
                     sb.append(generateBodyInput(parameterLeaf));
         }
 

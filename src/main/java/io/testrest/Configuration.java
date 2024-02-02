@@ -3,6 +3,7 @@ package io.testrest;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.testrest.boot.AuthenticationInfo;
+import io.testrest.core.valueProvider.FuzzingStrategy;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,6 +22,7 @@ public class Configuration {
     private static String openApiSpecPath; // path to openapi specification, can be either a link or a file.
     private static Double maxFuzzingTimes; // number of fuzzing times per operation
     private static Double numberOfMutants; // number of mutants for each nominal test
+    private static FuzzingStrategy fuzzingStrategy; // strategy to choose value for parameters
     private static String locale = "en"; // locale used for generating data (See supported locales at https://github.com/DiUS/java-faker/tree/master#supported-locales)
     private String outputPath;
     private String testingSessionName;
@@ -67,6 +69,14 @@ public class Configuration {
         }
     }
 
+    public static FuzzingStrategy getFuzzingStrategy() {
+        return fuzzingStrategy;
+    }
+
+    public static void setFuzzingStrategy(FuzzingStrategy fuzzingStrategy) {
+        Configuration.fuzzingStrategy = fuzzingStrategy;
+    }
+
     private void parseConfig() {
         StringBuilder fileContent = new StringBuilder();
         try {
@@ -100,6 +110,12 @@ public class Configuration {
             numberOfMutants = (Double) configMap.get("numberOfMutants");
         } else {
             numberOfMutants = 10.;
+        }
+
+        if (configMap.containsKey("fuzzingStrategy")) {
+            fuzzingStrategy = FuzzingStrategy.getStrategy(configMap.get("fuzzingStrategy").toString());
+        } else {
+            fuzzingStrategy = FuzzingStrategy.DICTIONARY_FIRST;
         }
 
         if (configMap.containsKey("authenticationCommand")) {

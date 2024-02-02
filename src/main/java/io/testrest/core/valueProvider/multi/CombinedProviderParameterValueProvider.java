@@ -1,7 +1,9 @@
 package io.testrest.core.valueProvider.multi;
 
+import io.testrest.Configuration;
 import io.testrest.Environment;
 import io.testrest.Main;
+import io.testrest.core.valueProvider.FuzzingStrategy;
 import io.testrest.datatype.parameter.ParameterLeaf;
 import io.testrest.core.valueProvider.single.*;
 import io.testrest.core.valueProvider.ParameterValueProvider;
@@ -24,9 +26,16 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
 
     @Override
     public Object provideValueFor(ParameterLeaf parameterLeaf) {
+        List<Object> possibleValues = new ArrayList<>();
+
         if (normalizedDictionaryParameterValueProvider.countAvailableValuesFor(parameterLeaf) > 0) {
-            return normalizedDictionaryParameterValueProvider.provideValueFor(parameterLeaf);
+            if (Configuration.getFuzzingStrategy() == FuzzingStrategy.DICTIONARY_FIRST) {
+                return normalizedDictionaryParameterValueProvider.provideValueFor(parameterLeaf);
+            }
+
+            possibleValues.add(normalizedDictionaryParameterValueProvider.provideValueFor(parameterLeaf));
         }
+
         if (parameterLeaf.isEnum()) {
             return enumParameterValueProvider.provideValueFor(parameterLeaf);
         }
@@ -37,7 +46,6 @@ public class CombinedProviderParameterValueProvider extends ParameterValueProvid
             return valueFromRegex;
         }
 
-        List<Object> possibleValues = new ArrayList<>();
         if (parameterLeaf.getExamples() != null) {
             possibleValues.add(examplesParameterValueProvider.provideValueFor(parameterLeaf));
         }
