@@ -9,8 +9,13 @@ import io.testrest.parser.OpenAPIParser;
 import io.testrest.core.testing.TestRunner;
 import io.testrest.core.testing.TestSequence;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Main {
@@ -60,6 +65,7 @@ public class Main {
         TestSequence nominalTestSequence = nominalTestGenerator.generateTest(ODG);
         List<String> allTestPaths = new ArrayList<>(nominalTestGenerator.getNominalTestPaths());
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
+        logReport("Operation coverage: " + nominalTestSequence.operationCoverage());
 
         if (!nominalTestSequence.isEmpty()) {
             logger.info("Starting generating error testcases.");
@@ -75,10 +81,22 @@ public class Main {
         logger.info("Running test cases");
         testRunner.testAll(allTestPaths);
         testRunner.showReport();
+
+
     }
 
     public static Configuration getConfiguration() {
         return configuration;
+    }
+
+    public static void logReport(String info) {
+        try {
+            FileWriter myWriter = new FileWriter(configuration.getOutputPath() + "/cov.txt", true);
+            myWriter.write(info);
+            myWriter.close();
+        } catch (IOException e) {
+            logger.warning("Unable to report coverage data" + '\n' + e.getMessage());
+        }
     }
 
     public static OperationNodeList getOperationList() {

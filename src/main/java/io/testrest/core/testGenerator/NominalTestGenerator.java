@@ -1,5 +1,6 @@
 package io.testrest.core.testGenerator;
 
+import com.google.common.base.Stopwatch;
 import io.testrest.Environment;
 import io.testrest.Main;
 import io.testrest.datatype.graph.OperationDependencyGraph;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class NominalTestGenerator extends TestGenerator {
@@ -47,34 +49,47 @@ public class NominalTestGenerator extends TestGenerator {
 
     /**
      * Main test generate and validate function.
-     * @param ODG Operation Dependencies Graph.
+     * @param operationDependencyGraph Operation Dependencies Graph.
      */
-    public TestSequence generateTest(OperationDependencyGraph ODG) {
+    public TestSequence generateTest(OperationDependencyGraph operationDependencyGraph) {
         Double maxFuzzingTimes = Environment.getConfiguration().getMaxFuzzingTimes();
+        int numOfOperations = operationDependencyGraph.getGraph().vertexSet().size();
+        int loops = 0;
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
-        while (ODG.getGraph().vertexSet().size() > 0) {
-            List<OperationNode> nodeToTest = ODG.getLeaves();
+        while (testSequence.operationCoverage() < numOfOperations
+                && stopwatch.elapsed(TimeUnit.MINUTES) < (long) numOfOperations) {
 
-            if (nodeToTest.size() == 0) {
-                nodeToTest = ODG.getNextDependentNodes();
-            }
+            OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
 
-            nodeToTest = OperationsSorter.semanticSort(nodeToTest);
+            while (ODG.getGraph().vertexSet().size() > 0) {
+                List<OperationNode> nodeToTest = ODG.getLeaves();
 
-            // Test each operation
-            for (OperationNode operationNode : nodeToTest) {
-                while (operationNode.getTestedTimes() <= maxFuzzingTimes) {
-                    boolean success = generateOperationTest(operationNode);
-                    operationNode.markAsTested();
+                if (nodeToTest.size() == 0) {
+                    nodeToTest = ODG.getNextDependentNodes();
+                }
 
-                    // Remove successfully tested nodes
-                    if (success || operationNode.getTestedTimes() == maxFuzzingTimes) {
-                        ODG.getGraph().removeVertex(operationNode);
-                        break;
+                nodeToTest = OperationsSorter.semanticSort(nodeToTest);
+
+                // Test each operation
+                for (OperationNode operationNode : nodeToTest) {
+                    while (operationNode.getTestedTimes() <= maxFuzzingTimes) {
+                        boolean success = generateOperationTest(operationNode);
+                        operationNode.markAsTested();
+
+                        // Remove successfully tested nodes
+                        if (success || operationNode.getTestedTimes() == maxFuzzingTimes) {
+                            ODG.getGraph().removeVertex(operationNode);
+                            break;
+                        }
                     }
                 }
             }
+
+            loops++;
         }
+
+        Main.logReport("Loops (ODG traverse times): " + loops);
 
         return testSequence;
     }

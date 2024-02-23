@@ -24,6 +24,20 @@ public class OperationDependencyGraph {
     public OperationDependencyGraph() {
     }
 
+    public OperationDependencyGraph deepClone() {
+        OperationDependencyGraph newODG = new OperationDependencyGraph();
+
+        this.getGraph().vertexSet()
+                .forEach(v -> {
+                    v.resetTestedTimes();
+                    newODG.addVertex(v);
+                });
+        this.getGraph().edgeSet().forEach(e ->
+                newODG.getGraph().addEdge(this.getGraph().getEdgeSource(e), this.getGraph().getEdgeTarget(e), e));
+
+        return newODG;
+    }
+
     public Graph<OperationNode, DependencyEdge> getGraph() {
         return graph;
     }

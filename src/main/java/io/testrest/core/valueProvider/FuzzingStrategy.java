@@ -4,8 +4,6 @@ public enum FuzzingStrategy {
     RANDOM,
     DICTIONARY_FIRST;
 
-//   try reinforcement learning ?
-
     public static FuzzingStrategy getStrategy(String stringStrategy) {
         for (FuzzingStrategy strategy : FuzzingStrategy.values()) {
             if (strategy.name().equalsIgnoreCase(stringStrategy)) {

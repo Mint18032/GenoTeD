@@ -1,6 +1,7 @@
 package io.testrest.core.testing;
 
 import io.testrest.Main;
+import io.testrest.datatype.graph.OperationNode;
 import io.testrest.helper.ExtendedRandom;
 import io.testrest.helper.Taggable;
 
@@ -15,19 +16,12 @@ import java.util.stream.Collectors;
  * ordered sequences, the order is anyway managed by this class in order to support further extensions.
  */
 public class TestSequence extends Taggable implements List<TestInteraction> {
-
-    public String readOnlyParameter = "";
-
     private String generator = "UserInstantiated";
     private String name = generateRandomTestSequenceName();
     private List<TestInteraction> testInteractions = new LinkedList<>();
 
     // Time information
     private final Timestamp generatedAt;
-
-    // Outcome
-//    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-//    private Map<Oracle, TestResult> testResults = new HashMap<>();
 
     public TestSequence() {
         generatedAt = new Timestamp(System.currentTimeMillis());
@@ -47,6 +41,25 @@ public class TestSequence extends Taggable implements List<TestInteraction> {
 
     protected void setTestInteractions(List<TestInteraction> testInteractions) {
         this.testInteractions = testInteractions;
+    }
+
+    /**
+     * Counts tested operations.
+     * @return number of tested operations.
+     */
+    public int operationCoverage() {
+        if (testInteractions == null || testInteractions.isEmpty()) {
+            return 0; // Handle empty or null list gracefully
+        }
+
+        Set<OperationNode> uniqueOperations = new HashSet<>();
+        for (TestInteraction interaction : testInteractions) {
+            OperationNode operation = interaction.getOperation();
+            if (operation != null) { // Handle null OperationNode values
+                uniqueOperations.add(operation);
+            }
+        }
+        return uniqueOperations.size();
     }
 
     /**

@@ -230,6 +230,10 @@ public class OperationNode extends io.swagger.v3.oas.models.Operation {
         return testingAttempts;
     }
 
+    public void resetTestedTimes() {
+        this.testingAttempts = 0;
+    }
+
     public void markAsTested() {
         testingAttempts++;
     }
