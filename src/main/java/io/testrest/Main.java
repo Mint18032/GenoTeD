@@ -92,7 +92,7 @@ public class Main {
     public static void logReport(String info) {
         try {
             FileWriter myWriter = new FileWriter(configuration.getOutputPath() + "/cov.txt", true);
-            myWriter.write(info);
+            myWriter.write(info.concat("\n"));
             myWriter.close();
         } catch (IOException e) {
             logger.warning("Unable to report coverage data" + '\n' + e.getMessage());

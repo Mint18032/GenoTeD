@@ -56,13 +56,13 @@ public class NominalTestGenerator extends TestGenerator {
         int numOfOperations = operationDependencyGraph.getGraph().vertexSet().size();
         int loops = 0;
         Stopwatch stopwatch = Stopwatch.createStarted();
+        OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
 
         while (testSequence.operationCoverage() < numOfOperations
-                && stopwatch.elapsed(TimeUnit.MINUTES) < (long) numOfOperations) {
+                && stopwatch.elapsed(TimeUnit.MINUTES) < (long) 60
+                && ODG.getGraph().vertexSet().size() > 0) {
 
-            OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
-
-            while (ODG.getGraph().vertexSet().size() > 0) {
+//            while (ODG.getGraph().vertexSet().size() > 0) {
                 List<OperationNode> nodeToTest = ODG.getLeaves();
 
                 if (nodeToTest.size() == 0) {
@@ -78,15 +78,21 @@ public class NominalTestGenerator extends TestGenerator {
                         operationNode.markAsTested();
 
                         // Remove successfully tested nodes
-                        if (success || operationNode.getTestedTimes() == maxFuzzingTimes) {
+                        if (success) {
                             ODG.getGraph().removeVertex(operationNode);
+                            break;
+                        }
+                        // Limit to avoid infinite loop
+                        if (operationNode.getTestedTimes() == maxFuzzingTimes) {
+                            operationNode.resetTestedTimes();
                             break;
                         }
                     }
                 }
-            }
+//            }
 
             loops++;
+            Main.logReport("Loop: " + loops + ". Operation coverage: " + testSequence.operationCoverage());
         }
 
         Main.logReport("Loops (ODG traverse times): " + loops);
