@@ -6,6 +6,7 @@ import com.intuit.karate.Results;
 import com.intuit.karate.core.StepResult;
 import io.testrest.Main;
 import io.testrest.core.dictionary.DictionaryEntry;
+import io.testrest.datatype.HttpStatusCode;
 import io.testrest.datatype.graph.OperationNode;
 
 import java.io.*;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class NominalTestOracle extends StatusCodeOracle {
+
     public NominalTestOracle() {
         super();
         logger = Logger.getLogger(NominalTestOracle.class.getName());
@@ -118,6 +120,7 @@ public class NominalTestOracle extends StatusCodeOracle {
             }
         }
 
+        currentStatus = new HttpStatusCode(Integer.parseInt(status));
         return status.startsWith("2") || status.startsWith("5");
     }
 
@@ -133,18 +136,6 @@ public class NominalTestOracle extends StatusCodeOracle {
             }
         }
         return null;
-    }
-
-    private boolean isStatusCode(String str) {
-        if (str == null || str.length() != 3) {
-            return false;
-        }
-        try {
-            int num = Integer.parseInt(str);
-            return num > 0;
-        } catch(NumberFormatException e){
-            return false;
-        }
     }
 
     private boolean addLength(String operationId, List<String> testPaths) {
@@ -176,4 +167,5 @@ public class NominalTestOracle extends StatusCodeOracle {
 
         return true;
     }
+
 }

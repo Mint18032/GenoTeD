@@ -46,6 +46,11 @@ public class TestRunner {
         Assertions.assertEquals(0, results.getFailCount(), results.getErrorMessages());
     }
 
+    @Karate.Test
+    public Results testScenario(String testPath, String operationId, String scenario) {
+        return Karate.run(testPath).outputHtmlReport(false).outputCucumberJson(false).outputJunitXml(false).tags("@" + operationId).scenarioName(scenario).parallel(0);
+    }
+
     /**
      * Create a Cucumber's visualized report.
      * @param karateOutputPath path to Karate report.

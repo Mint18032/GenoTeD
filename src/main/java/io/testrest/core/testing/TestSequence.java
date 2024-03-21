@@ -63,6 +63,34 @@ public class TestSequence extends Taggable implements List<TestInteraction> {
     }
 
     /**
+     * Counts number of bug found.
+     * @return number of unique bugs.
+     */
+    public int getBugFound(Boolean isErrorTest) {
+        if (testInteractions == null || testInteractions.isEmpty()) {
+            return 0; // Handle empty or null list gracefully
+        }
+
+        Set<String> uniqueBugs = new HashSet<>();
+        if (isErrorTest) {
+            for (TestInteraction interaction : testInteractions) {
+                if (interaction.getResponseStatusCode() != null && !interaction.getResponseStatusCode().isClientError()) {
+                    uniqueBugs.add(interaction.getOperation().getOperationId().concat(interaction.getMutateInfo())
+                            .concat(interaction.getResponseStatusCode().toString()));
+                }
+            }
+        } else {       // nominal test
+            for (TestInteraction interaction : testInteractions) {
+                if (interaction.getResponseStatusCode() != null && interaction.getResponseStatusCode().isServerError()) {
+                    uniqueBugs.add(interaction.getOperation().getOperationId().concat(interaction.getResponseStatusCode().toString()));
+                }
+            }
+        }
+
+        return uniqueBugs.size();
+    }
+
+    /**
      * Returns the number of test interactions inside the test sequence.
      * @return the number of test interactions inside the test sequence.
      */

@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Api Documentation
+  title: User API
   description: Api Documentation
   termsOfService: urn:tos
   contact: {}

@@ -3,6 +3,7 @@ package io.testrest;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.testrest.boot.AuthenticationInfo;
+import io.testrest.core.testGenerator.TraverseStrategy;
 import io.testrest.core.valueProvider.FuzzingStrategy;
 
 import java.io.BufferedReader;
@@ -23,6 +24,7 @@ public class Configuration {
     private static Double maxFuzzingTimes; // number of fuzzing times per operation
     private static Double numberOfMutants; // number of mutants for each nominal test
     private static FuzzingStrategy fuzzingStrategy; // strategy to choose value for parameters
+    private static TraverseStrategy traverseStrategy; // strategy to traverse the ODG
     private static String locale = "en"; // locale used for generating data (See supported locales at https://github.com/DiUS/java-faker/tree/master#supported-locales)
     private String outputPath;
     private String testingSessionName;
@@ -118,6 +120,12 @@ public class Configuration {
             fuzzingStrategy = FuzzingStrategy.DICTIONARY_FIRST;
         }
 
+        if (configMap.containsKey("traverseStrategy")) {
+            traverseStrategy = TraverseStrategy.getStrategy(configMap.get("traverseStrategy").toString());
+        } else {
+            traverseStrategy = TraverseStrategy.ALL;
+        }
+
         if (configMap.containsKey("authenticationCommand")) {
             if (configMap.get("authenticationCommand") instanceof Map) {
                 Map auth_map = (Map) configMap.get("authenticationCommand");
@@ -210,5 +218,9 @@ public class Configuration {
 
     public static void setConfigPath(String configPath) {
         Configuration.configPath = configPath;
+    }
+
+    public static TraverseStrategy getTraverseStrategy() {
+        return traverseStrategy;
     }
 }

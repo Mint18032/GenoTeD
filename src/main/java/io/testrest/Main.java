@@ -66,6 +66,7 @@ public class Main {
         List<String> allTestPaths = new ArrayList<>(nominalTestGenerator.getNominalTestPaths());
         logger.info("Nominal test cases are located at " + nominalTestGenerator.getTestOutPutPath());
         logReport("Operation coverage: " + nominalTestSequence.operationCoverage());
+        Main.logReport("Bugs found from nominal tests: " + nominalTestSequence.getBugFound(false));
 
         if (!nominalTestSequence.isEmpty()) {
             logger.info("Starting generating error testcases.");
@@ -75,13 +76,13 @@ public class Main {
             if (!errorTestGenerator.getTestSequence().isEmpty()) {
                 logger.info("Successfully generated the Error test cases. \n");
                 allTestPaths.addAll(errorTestGenerator.getErrorTestPaths());
+                logReport("Bugs found from error tests: " + errorTestGenerator.getTestSequence().getBugFound(true));
             }
         }
 
         logger.info("Running test cases");
         testRunner.testAll(allTestPaths);
         testRunner.showReport();
-
 
     }
 

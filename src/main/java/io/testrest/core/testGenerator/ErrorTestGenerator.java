@@ -96,6 +96,7 @@ public class ErrorTestGenerator extends TestGenerator {
                         if (success) {
                             System.out.println("BEFORE MUTATION: \n" + interaction.getRequestInputs().toString());
                             System.out.println("AFTER MUTATION: \n" + mutableInteraction.getRequestInputs().toString());
+//                            mutableInteraction.setResponseStatusCode(getStatusCodeOracle().getResponseStatus(mutableInteraction.getOperation().getOperationId(), mutableInteraction.getMutateInfo(), getErrorTestPaths()));
 
                             testSequence.add(mutableInteraction);
                         }

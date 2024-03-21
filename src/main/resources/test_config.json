@@ -1,7 +1,8 @@
 {
   "name": "REST Countries",
-  "openApiSpecPath": "src/main/resources/specifications/restgo/restcountries_openapi.yaml",
+  "openApiSpecPath": "src/main/resources/specifications/restgo/user_openapi.yaml",
   "maxFuzzingTimes": 5,
   "numberOfMutants": 10,
-  "fuzzingStrategy": "dictionary_first"
+  "fuzzingStrategy": "random",
+  "traverseStrategy": "uncovered"
 }

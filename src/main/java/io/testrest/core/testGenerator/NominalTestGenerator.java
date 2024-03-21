@@ -1,6 +1,7 @@
 package io.testrest.core.testGenerator;
 
 import com.google.common.base.Stopwatch;
+import io.testrest.Configuration;
 import io.testrest.Environment;
 import io.testrest.Main;
 import io.testrest.datatype.graph.OperationDependencyGraph;
@@ -17,6 +18,8 @@ import io.testrest.core.testing.TestSequence;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,13 +59,17 @@ public class NominalTestGenerator extends TestGenerator {
         int numOfOperations = operationDependencyGraph.getGraph().vertexSet().size();
         int loops = 0;
         Stopwatch stopwatch = Stopwatch.createStarted();
-        OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd HH:mm:ss:SS");
 
-        while (testSequence.operationCoverage() < numOfOperations
+        if (Configuration.getTraverseStrategy().equals(TraverseStrategy.UNCOVERED)) {
+
+            Main.logReport(Configuration.getFuzzingStrategy() + " loop uncovered only, limit time = 60");
+            OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
+
+            while (testSequence.operationCoverage() < numOfOperations
                 && stopwatch.elapsed(TimeUnit.MINUTES) < (long) 60
                 && ODG.getGraph().vertexSet().size() > 0) {
 
-//            while (ODG.getGraph().vertexSet().size() > 0) {
                 List<OperationNode> nodeToTest = ODG.getLeaves();
 
                 if (nodeToTest.size() == 0) {
@@ -89,10 +96,44 @@ public class NominalTestGenerator extends TestGenerator {
                         }
                     }
                 }
-//            }
 
-            loops++;
-            Main.logReport("Loop: " + loops + ". Operation coverage: " + testSequence.operationCoverage());
+                loops++;
+                Main.logReport(dtf.format(LocalDateTime.now()) + " - Loop: " + loops + ". Operation coverage: " + testSequence.operationCoverage());
+            }
+        } else { // Traverse all by default
+            Main.logReport(Configuration.getFuzzingStrategy() + " loop all, limit time = 60");
+            while (testSequence.operationCoverage() < numOfOperations
+                    && stopwatch.elapsed(TimeUnit.MINUTES) < (long) 60) {
+
+                OperationDependencyGraph ODG = operationDependencyGraph.deepClone();
+                while (ODG.getGraph().vertexSet().size() > 0) {
+                    List<OperationNode> nodeToTest = ODG.getLeaves();
+
+                    if (nodeToTest.size() == 0) {
+                        nodeToTest = ODG.getNextDependentNodes();
+                    }
+
+                    nodeToTest = OperationsSorter.semanticSort(nodeToTest);
+
+                    // Test each operation
+                    for (OperationNode operationNode : nodeToTest) {
+                        while (operationNode.getTestedTimes() <= maxFuzzingTimes) {
+                            boolean success = generateOperationTest(operationNode);
+                            operationNode.markAsTested();
+
+                            // Remove successfully tested nodes
+                            // Limit to avoid infinite loop
+                            if (success || operationNode.getTestedTimes() == maxFuzzingTimes) {
+                                ODG.getGraph().removeVertex(operationNode);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                loops++;
+                Main.logReport(dtf.format(LocalDateTime.now()) + " - Loop: " + loops + ". Operation coverage: " + testSequence.operationCoverage());
+            }
         }
 
         Main.logReport("Loops (ODG traverse times): " + loops);
@@ -185,7 +226,9 @@ public class NominalTestGenerator extends TestGenerator {
             });
 
             // generate new test interaction
-            testSequence.append(new TestInteraction(operation, pendingEntries));
+            TestInteraction newTestInteraction = new TestInteraction(operation, pendingEntries);
+            newTestInteraction.setResponseStatusCode(getStatusCodeOracle().getCurrentStatus());
+            testSequence.append(newTestInteraction);
         }
 
         pendingEntries.clear();
