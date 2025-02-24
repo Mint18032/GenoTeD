@@ -1,41 +1,22 @@
-# TESTREST
+# GenoTeD
+
+## Introduction
+
+Based on the algorithmic idea of the automated testing tool
+[RestTestGen](https://ieeexplore.ieee.org/abstract/document/9159077), generating test input data for the API in a sequence of related operations, creating both test cases for normal cases and test cases for error cases. Thereby,
+creates a comprehensive testing method with practical applications, solving the need to
+write test inputs for APIs quickly and at a low cost. 
+
+Not only does it overcome the
+limitations of RestTestGen, the proposed tool - GenoTeD also excels in terms of error
+finding efficiency and comprehensiveness. In particular, GenoTeD has surpassed the reference solution in terms of bug finding efficiency. This has been demonstrated in the experiment, GenoTeD found 45 more bugs than RestTestGen,
+a 26% increase in the total number of bugs found by RestTestGen in 6 different APIs. In addition, the generated data is more user-friendly and closer to reality than
+RestTestGen's random data. Moreover, GenoTeD also integrates Karate and Cucumber to generate readable and reusable test cases, along with an intuitive reporting interface, enhancing the usability and practical applicability
+of the tool.
 
 ## Workflow
 
+The following graph illustrates the workflow of GenoTeD, which mostly based on the design of RestTestGen.
+Notably, the bold parts are the improvements compared to RestTestGen.
+
 ![](src/main/resources/img/workflow.png)
-
-## Approach
-
-### Generating Operation Dependency Graph
-
-- Computes Operation Dependency Graph (ODG) - models data dependencies among operations, helps in sorting the operations to test depending on their data dependencies (E.g: oper1's output is the input for oper2 -> test oper1 first)
-
-### Construction
-
-- A directed graph G = (N, V):
-N is the node represents an operation, v is the edge with
-v = n2 → n1, when there exists a data dependency between
-n2 (request, input) and n1 (response, output).
-- n1 should be tested before n2.
-
-### Dependency Inference
-
-Comparison operators used to
-match field names:
-
-- Case insensitive: The comparison is case insensitive,
-to work around developer mistakes in using a consistent
-casing across operations;
-- Id completion: add prefix to a field named *id*
-  - If it is a field of a structured
-object, the prefix is the name of the object. E.g., the
-field *id* of the object pet is renamed *petId*.
-  - If this field is not part of a structured object, it
-is prefixed with the name of the operation in which
-it is involved, after removing get/set verbs from the operation name. E.g, the operation getPet becomes Pet after removing the verb “get”, and it is
-used to change the field *id* into *petId*; (???)
-- Stemming: Using Porter Stemming algorithm to each parameter name to compare. E.g, pet & pets are considered the same as the root pet.
-
-## Implementation
-
-- Sử dụng [Swagger parser](https://github.com/swagger-api/swagger-parser)
